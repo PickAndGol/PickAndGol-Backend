@@ -1,10 +1,16 @@
 {
   "name": "pickandgol-backend",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "private": true,
+  "description": "Backend for PickAndGol project",
   "scripts": {
     "start": "node ./bin/www"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://gitlab.com/pickandgolteam/pickandgol-backend.git"
+  },
+  "author": "PickAndGol Team",
   "dependencies": {
     "body-parser": "~1.16.0",
     "cookie-parser": "~1.4.3",
