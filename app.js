@@ -14,6 +14,9 @@ var app = express();
 //  Base de datos
 require('./lib/connectMongoose');
 
+//Routes
+require('./routes/api/v1/users');
+
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));

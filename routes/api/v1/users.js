@@ -10,13 +10,13 @@ var modelUsuarios = require('../../../models/Users');
 router.post('/register', function(req,res){
 
     var user = req.body.name;
-    var email = req.body.mail;
+    var emaigl = req.body.mail;
     var pass = req.body.password;
 
 
     res.json({result:"ok", data:{"id":222}})
 
 
-}
+});
 
 module.exports = router;

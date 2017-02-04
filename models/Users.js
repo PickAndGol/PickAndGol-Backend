@@ -3,9 +3,9 @@
  */
 
 'use strict';
-var mongoose = require(mongoose);
+var mongoose = require('mongoose');
 
-var UserSchema = mongoose.Schema({
+var UserPickSchema = mongoose.Schema({
     name: {
         type: String,
         required: true,
@@ -23,7 +23,7 @@ var UserSchema = mongoose.Schema({
 
 // This function support callback or promise
 
-UserSchema.statics.saveNewUser = function(data, callback) {
+UserPickSchema.statics.saveNewUser = function(data, callback) {
 
     return new Promise(function(resolve,reject) {
 
@@ -61,5 +61,5 @@ UserSchema.statics.saveNewUser = function(data, callback) {
 
 }
 
-var Usuario = mongoose.model('Usuario',UserSchema);
+var userPick = mongoose.model('userPick',UserPickSchema);
 
