@@ -14,8 +14,7 @@ var app = express();
 //  Base de datos
 require('./lib/connectMongoose');
 
-//Routes
-require('./routes/api/v1/users');
+
 
 
 // view engine setup
@@ -32,6 +31,10 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', index);
 app.use('/users', users);
+
+
+//Routes
+app.use('/users',require('./routes/api/v1/users'));
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

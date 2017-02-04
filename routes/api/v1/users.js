@@ -6,15 +6,25 @@
 var express = require('express');
 var router = express.Router();
 var modelUsuarios = require('../../../models/Users');
+var mongoose =require('mongoose');
+var User = mongoose.model('userPick');
 
 router.post('/register', function(req,res){
 
-    var user = req.body.name;
-    var emaigl = req.body.mail;
-    var pass = req.body.password;
+
+    User.saveNewUser(req.body).then(function(data, err){
+        console.log(req.body);
+
+        if(err){
+            res.json({result:"ERROR", data:req.body});
+        }
+
+        res.json({result:"OK", data:data});
+
+    });
 
 
-    res.json({result:"ok", data:{"id":222}})
+
 
 
 });

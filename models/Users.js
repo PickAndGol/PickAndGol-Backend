@@ -25,13 +25,17 @@ var UserPickSchema = mongoose.Schema({
 
 UserPickSchema.statics.saveNewUser = function(data, callback) {
 
+
     return new Promise(function(resolve,reject) {
 
-        var usuario = new Usuario();
+
+        var usuario = new userPick();
 
         usuario.name = data.name;
         usuario.email = data.email;
         usuario.password = data.password;
+
+
 
         usuario.save(function (err, userSave) {
 
@@ -51,6 +55,7 @@ UserPickSchema.statics.saveNewUser = function(data, callback) {
                 callback(null, userSave);
                 return;
             }
+
 
             resolve(userSave);
             return;
