@@ -5,22 +5,36 @@
 
 var express = require('express');
 var router = express.Router();
-var modelUsuarios = require('../../../models/Users');
+require('../../../models/Users');
 var mongoose =require('mongoose');
 var User = mongoose.model('userPick');
 
-router.post('/register', function(req,res){
+router.post('/register', function(req,res) {
 
 
-    User.saveNewUser(req.body).then(function(data, err){
-        console.log(req.body);
+    User.existMail(req.body.email).then(function (data, err) {
 
-        if(err){
-            res.json({result:"ERROR", data:req.body});
+        console.log(data);
+        if(data){
+            console.log("El email existe");
+            res.json({
+                    "result": "ERROR",
+                    "data": { "code": 409, "description": "Conflict (email already exists)." }
+                }
+            );
+        }else{
+            console.log("No existe");
         }
 
-        res.json({result:"OK", data:data});
+        User.saveNewUser(req.body).then(function (data, err) {
+            console.log(req.body);
 
+            if (err) {
+                res.json({result: "ERROR", data: req.body});
+            }
+        res.json({result: "OK", data: data});
+
+        });
     });
 
 
