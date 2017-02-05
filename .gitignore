@@ -110,3 +110,10 @@ fabric.properties
 # *.ipr
 
 # End of https://www.gitignore.io/api/node,webstorm
+
+# ignore mongodb database and logs
+db
+dblogs
+
+# token secret
+local_config.js
