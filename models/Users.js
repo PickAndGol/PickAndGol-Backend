@@ -34,7 +34,7 @@ UserPickSchema.statics.saveNewUser = function(data, callback) {
         usuario.name = data.name;
         usuario.email = data.email;
         usuario.password = data.password;
-        usuari.enabled = data.enabled;
+        usuario.enabled = data.enabled;
 
         usuario.save(function (err, userSave) {
             if (err) {
@@ -66,8 +66,71 @@ UserPickSchema.statics.existMail = function(email, callback) {
 
     return new Promise(function (resolve, reject) {
 
+        var field = {}
+        field['email'] = email;
+        filterByField(field,null).then(function(data, err){
+
+            if(err){
+                if (callback) {
+                    console.log(err);
+                    callback(err, null);
+                    return;
+                }
+
+                reject("NOK");
+                return;
+            }
+            if (callback) {
+                callback(null, data);
+                return
+            }
+            resolve(data);
+            return;
+
+        });
+
+    });
+}
+
+UserPickSchema.statics.existName = function(nameUser, callback) {
+
+    return new Promise(function (resolve, reject) {
+
+        var field = {}
+        field['name'] = nameUser;
+        filterByField(field,null).then(function(data, err){
+
+            if(err){
+                if (callback) {
+                    console.log(err);
+                    callback(err, null);
+                    return;
+                }
+
+                reject("NOK");
+                return;
+            }
+            if (callback) {
+                callback(null, data);
+                return
+            }
+            resolve(data);
+            return;
+
+        });
+
+    });
+}
+
+
+var filterByField = function(filter, callback){
+
+    return new Promise(function(resolve, reject){
+
         var exist=false;
-        userPick.findOne({'email': email}, 'email', function (error, data) {
+
+
+        userPick.findOne(filter, function (error, data) {
 
 
             if (error) {
@@ -80,7 +143,6 @@ UserPickSchema.statics.existMail = function(email, callback) {
                 reject("NOK");
                 return;
             }
-
 
             if(data){
                 exist=true;
@@ -97,9 +159,9 @@ UserPickSchema.statics.existMail = function(email, callback) {
 
         });
 
-
     });
 }
+
 
 UserPickSchema.statics.login = function(email, password) {
     return new Promise(function(resolve, reject) {
@@ -147,6 +209,7 @@ UserPickSchema.statics.delete = function(id) {
         });
     });
 };
+
 
 var userPick = mongoose.model('userPick',UserPickSchema);
 
