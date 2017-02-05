@@ -57,7 +57,7 @@ Devuelve los datos de un usuario.
 
 * **URL**
 
-  /users/:user_id
+  `/users/:user_id`
 
 * **Método:**
 
@@ -144,7 +144,7 @@ Crea una nueva cuenta de usuario
 
 * **URL**
 
-  /users/
+  `/users/`
 
 * **Método:**
 
@@ -167,7 +167,7 @@ Crea una nueva cuenta de usuario
     {
       "email": "pepe1234@gmail.com",
       "name": "Pepito 1234",
-      "password": "pass"
+      "password": "f4d497bb0d021827c3feb27c77f22a7d"
     }
   ```
 
@@ -233,15 +233,334 @@ O
 
 #### Actualización de usuario
 
+Permite a un usuario modificar sus datos de perfil y su contraseña.
 
+* **Condiciones**
+  * Solo los usuarios autenticados podrán realizar la petición de actualización.
+  * Un usuario autenticado sólo puede actualizar su propio perfil.
+
+* **URL**
+  
+  `/users/:user_id`
+
+* **Método:**
+
+  `PUT`
+
+* **Parámetros en URL**
+
+    Ninguno
+
+* **Parámetros en datos**
+
+  * **Opcionales:**
+ 
+      * `email=[string]`
+      * `name=[string]`
+      * `old_password=[string]`
+      * `new_password=[string]`
+      * `photo_url=[string]`
+
+* **Ejemplo de datos en la petición:**
+  ```json
+    {
+      "email": "pepe12345@gmail.com",
+      "name": "Pepito Pérez",
+      "old_password": "f4d497bb0d034267c3feb27c77f22a7d",
+      "new_password": "a3fd6d74296bde7c7b90a34c26930f9a",
+      "photo_url": "https://images.pickandgol.s3.amazonaws.com/007e4567e89b"
+    }
+  ```
+
+* **Ejemplo de respuesta con éxito:**
+
+  * **Code:** 200
+  * **Content:**
+
+    ```json
+    {
+      "result": "OK",
+      "data": {
+        "id": 37,
+        "email": "pepe12345@hotmail.com",
+        "name": "Pepito Pérez",
+        "photo_url": "https://images.pickandgol.s3.amazonaws.com/007e4567e89b"
+
+      }
+    }
+    ```
+
+* **Ejemplos de respuesta fallida:**
+
+  * **Code:** 400
+  * **Content:**
+
+    ```json
+      {
+        "result": "ERROR",
+        "data": {
+          "code": 400,
+          "description": "Bad request."
+        }
+      }
+    ```
+
+O
+
+    * **Code:** 403
+  * **Content:**
+
+    ```json
+      {
+        "result": "ERROR",
+        "data": {
+          "code": 403,
+          "description": "Forbidden request."
+        }
+      }
+    ```
+O
+
+  * **Code:** 404
+  * **Content:**
+
+    ```json
+      {
+        "result": "ERROR",
+        "data": {
+          "code": 404,
+          "description": "Not found."
+        }
+      }
+    ```
 
 #### Baja de usuario
 
+Permite a un usuario darse de baja, eliminando su cuenta. 
+Se eliminará el listado de favoritos del usuario y sus reviews. 
+Si era dueño de algún bar, este pasará a ser propiedad del usuario del 
+sistema PICKANDGOL.
+
+* **Condiciones**
+
+  * Solo los usuarios autenticados podrán dar de baja un usuario.
+  * Un usuario autenticado sólo puede darse de baja a sí mismo.
+  * El usuario ADMIN puede dar de baja a cualquier usuario.
+
+* **URL**
+
+  `/users/:user_id`
+
+* **Método:**
+
+  `DELETE`
+
+*  **Parámetros en URL**
+
+   * **Obligatorios:**
+ 
+      * `id=[string]`
+
+* **Parámetros en datos**
+
+  Ninguno
+
+* **Ejemplo de respuesta con éxito:**
+
+  * **Code:** 200
+  * **Content:**
+
+    ```json
+    {
+      "result": "OK"
+    }
+    ```
+
+* **Ejemplos de respuesta fallida:**
+
+  * **Code:** 403
+  * **Content:**
+
+    ```json
+      {
+        "result": "ERROR",
+        "data": {
+          "code": 403,
+          "description": "Forbidden request."
+        }
+      }
+    ```
+O
+
+  * **Code:** 404
+  * **Content:**
+
+    ```json
+      {
+        "result": "ERROR",
+        "data": {
+          "code": 404,
+          "description": "Not found."
+        }
+      }
+    ```
+
 #### Recuperacion de contraseña de usuario
+
+Permite a un usuario recuperar su contraseña generando una nueva y 
+enviándola por email al usuario (si es que el email indicado existe).
+
+* **Condiciones**
+
+  * Cualquier usuario puede hacer la petición (esté autenticado o no).
+  * Por seguridad, se devolverá una respuesta de éxito aunque el email indicado no exista.
+
+* **URL**
+
+  `/recover/`
+
+* **Método:**
+
+  `POST`
+
+* **Parámetros en URL**
+
+    Ninguno
+
+* **Parámetros en datos**
+
+  * **Obligatorios:**
+ 
+      * `email=[string]`
+
+* **Ejemplo de datos en la petición:**
+  ```json
+    {
+      "email": "pepe1234@gmail.com"
+    }
+  ```
+
+* **Ejemplo de respuesta con éxito:**
+
+  * **Code:** 200
+  * **Content:**
+
+    ```json
+    {
+      "result": "OK"
+    }
+    ```
+
+* **Ejemplos de respuesta fallida:**
+
+  * **Code:** 400
+  * **Content:**
+
+    ```json
+      {
+        "result": "ERROR",
+        "data": {
+          "code": 400,
+          "description": "Bad request."
+        }
+      }
+    ```
 
 #### Login de usuario
 
+Permite a un usuario autenticarse en el sistema indicando su nombre de 
+usuario y contraseña.
+
 #### Bares favoritos de usuario
+
+* **Condiciones**
+
+  * Un usuario debe tener activada su cuenta para poder iniciar sesión.
+
+* **URL**
+
+  `/login/`
+
+* **Método:**
+
+  `POST`
+
+* **Parámetros en URL**
+
+    Ninguno
+
+* **Parámetros en datos**
+
+  * **Obligatorios:**
+ 
+      * `email=[string]`
+      * `password=[string]`
+
+* **Ejemplo de datos en la petición:**
+  ```json
+    {
+      "email": "pepe1234@gmail.com",
+      "password": "pass"
+    }
+  ```
+
+* **Ejemplo de respuesta con éxito:**
+
+  * **Code:** 200
+  * **Content:**
+
+    ```json
+    {
+      "result": "OK",
+      "data": {
+        "token": "eyJhbGci.OiJIUzI1NiI.sInR5cCI6"
+      }
+    }
+    ```
+
+* **Ejemplos de respuesta fallida:**
+
+  * **Code:** 400
+  * **Content:**
+
+    ```json
+      {
+        "result": "ERROR",
+        "data": {
+          "code": 400,
+          "description": "Bad request."
+        }
+      }
+    ```
+
+O
+
+  * **Code:** 401
+  * **Content:**
+
+    ```json
+      {
+        "result": "ERROR",
+        "data": {
+          "code": 401,
+          "description": "Bad credentials."
+        }
+      }
+    ```
+O
+
+  * **Code:** 403
+  * **Content:**
+
+    ```json
+      {
+        "result": "ERROR",
+        "data": {
+          "code": 403,
+          "description": "User account disabled."
+        }
+      }
+	```
 
 ### Api de bares
 
