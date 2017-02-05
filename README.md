@@ -47,3 +47,20 @@ la versión Android.
 ### Api de bares
 
 ### Api de eventos
+
+  - [GET /events/<EVENT_ID>](#detalle-de-evento)
+  - [POST /events/](#nuevo-evento)
+  - [PUT /events/<EVENT_ID>](#modificar-evento)
+  - [DELETE /events/<EVENT_ID>](#eliminar-evento)
+  - [GET /events/](#lista-de-eventos)
+
+#### Detalle de evento
+
+#### Nuevo evento
+
+#### Modificar evento
+
+#### Eliminar evento
+
+#### Lista de eventos
+
