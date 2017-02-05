@@ -46,6 +46,17 @@ la versión Android.
 
 ### Api de bares
 
+  - [GET /pubs/<PUB_ID>](#detalle-de-bar)
+  - [POST /pubs/](#nuevo-bar)
+  - [GET /pubs/](#listado-de-bares)
+
+#### Detalle de bar
+
+#### Nuevo bar
+
+#### Listado de bares
+
+
 ### Api de eventos
 
   - [GET /events/<EVENT_ID>](#detalle-de-evento)
