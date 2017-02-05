@@ -40,7 +40,6 @@ pubSchema.statics.savePub = function (newPub, callback) {
 
 pubSchema.statics.findPub = function (pubData, callback) {
 
-    //Buscamos por nombre.
     Pub.findOne({name:pubData.name}).exec(function (err, pub) {
         if (err){
             return callback(err);

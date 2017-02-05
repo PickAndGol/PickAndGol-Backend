@@ -45,7 +45,7 @@ router.post("/bars", function (req, res) {
         owner_id:pubOwner
     });
 
-    //Comprobamos si existe
+    // Check if already exists
     Pub.findPub(pubData, function (err, pub) {
         if (err){
             return res.json({"result": "ERROR", "data": { "code": 500 }});
@@ -58,7 +58,7 @@ router.post("/bars", function (req, res) {
                 }
             );
         }
-        //Si no existe creamos uno
+        // If not exist we will create
         Pub.savePub(pubData, function (err, pub) {
             if (err){
                 return res.json({"result": "ERROR", "data": { "code": 500 }});
