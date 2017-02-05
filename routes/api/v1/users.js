@@ -5,9 +5,13 @@
 
 var express = require('express');
 var router = express.Router();
+let jwtRouter = express.Router();
 require('../../../models/Users');
 var mongoose =require('mongoose');
 var User = mongoose.model('userPick');
+let jwtAuth = require('../../../lib/jwtAuth');
+
+jwtRouter.use(jwtAuth());
 
 router.post('/register', function(req,res) {
 
@@ -49,11 +53,42 @@ router.post('/register', function(req,res) {
 
         });
     });
-
-
-
-
-
 });
 
-module.exports = router;
+router.post('/login', function(req, res) {
+    function sendOKResponse(data) {
+        return res.json({ result: "OK", data: data });
+    }
+
+    function sendErrorResponse(data) {
+        return res.json({ result: "ERROR", data: data });
+    }
+
+    let email = req.body.email || null;
+    let password = req.body.password || null;
+
+    User.login(email, password)
+        .then(sendOKResponse)
+        .catch(sendErrorResponse);
+});
+
+jwtRouter.delete('/', function(req, res) {
+    function sendOKResponse() {
+        return res.json({ result: "OK" });
+    }
+
+    function sendErrorResponse(data) {
+        return res.json({ result: "ERROR", data: data });
+    }
+
+    let id = req.decoded.id || null;
+
+    User.delete(id)
+        .then(sendOKResponse)
+        .catch(sendErrorResponse);
+});
+
+module.exports = {
+    router: router,
+    jwtRouter: jwtRouter
+};

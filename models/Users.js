@@ -4,6 +4,8 @@
 
 'use strict';
 var mongoose = require('mongoose');
+let jwt = require('jsonwebtoken');
+let config = require('../local_config');
 
 var UserPickSchema = mongoose.Schema({
     name: {
@@ -17,8 +19,8 @@ var UserPickSchema = mongoose.Schema({
         index:true
     },
     password:String,
-    photo_url: String
-
+    photo_url: String,
+    enabled: Boolean
 });
 
 // This function support callback or promise
@@ -32,6 +34,7 @@ UserPickSchema.statics.saveNewUser = function(data, callback) {
         usuario.name = data.name;
         usuario.email = data.email;
         usuario.password = data.password;
+        usuario.enabled = data.enabled;
 
         usuario.save(function (err, userSave) {
             if (err) {
@@ -58,7 +61,6 @@ UserPickSchema.statics.saveNewUser = function(data, callback) {
     })
 
 }
-
 
 UserPickSchema.statics.existMail = function(email, callback) {
 
@@ -159,6 +161,54 @@ var filterByField = function(filter, callback){
 
     });
 }
+
+
+UserPickSchema.statics.login = function(email, password) {
+    return new Promise(function(resolve, reject) {
+        if (email == null || password == null) {
+            reject({ code: 400, description: "Email and password are required." });
+            return;
+        }
+
+        userPick.findOne({ email: email }, function(err, user) {
+            if (err) {
+                reject({ code: 400, description: "Bad request." });
+                return;
+            }
+
+            if (user.enabled === 'undefined' || !user.enabled) {
+                reject({ code: 403, description: "User account disabled." });
+                return;
+            }
+
+            if (user.password !== password) {
+                reject({ code: 401, description: "Bad credentials." });
+                return;
+            }
+
+            const TIME_TO_EXPIRE = 60 * 24;
+
+            let token = jwt.sign({ id: user._id }, config.jwt.secret, {
+                expiresIn: TIME_TO_EXPIRE
+            });
+
+            resolve({ token: token });
+        });
+    });
+};
+
+UserPickSchema.statics.delete = function(id) {
+    return new Promise(function(resolve, reject) {
+        userPick.remove({ _id: id }, function(err) {
+            if (err) {
+                reject({ code: 400, description: err });
+                return;
+            }
+
+            resolve();
+        });
+    });
+};
 
 
 var userPick = mongoose.model('userPick',UserPickSchema);
