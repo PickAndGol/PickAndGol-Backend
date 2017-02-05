@@ -26,6 +26,19 @@ router.post('/register', function(req,res) {
             console.log("No existe");
         }
 
+        User.existName(req.body.name).then(function(data,err) {
+
+            if(data){
+                console.log("El usuario Existe");
+                res.json({
+                        "result":"ERROR",
+                        "data": {"code": 409, "description": "Conflict (username already exists)."}
+            }
+                );
+            }
+
+        })
+
         User.saveNewUser(req.body).then(function (data, err) {
             console.log(req.body);
 
