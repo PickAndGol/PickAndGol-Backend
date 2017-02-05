@@ -87,7 +87,7 @@ Devuelve los datos de un usuario.
         "name": "Pepito Pérez",
         "photo_url": "https://images.pickandgol.s3.amazonaws.com/007e4567e89b",
         "email": "pepe1234@hotmail.com",
-        "bars": [ 19, 276 ]
+        "pubs": [ "572934f2b56205e4135132a2", "572934f2b56205e4135132a1" ]
       }
     }
     ```
@@ -806,11 +806,238 @@ O
 
 #### Detalle de evento
 
+Devuelve los detalles de un evento.
+
+* **URL**
+
+  `/events/:event_id`
+
+* **Método:**
+
+  `GET`
+
+*  **Parámetros en URL**
+
+   * **Obligatorios:**
+ 
+      * `event_id=[string]`
+
+* **Parámetros en datos**
+
+  Ninguno
+
+* **Ejemplo de respuesta con éxito:**
+
+  * **Code:** 200
+  * **Content:**
+
+    ```json
+    {
+      "result": "OK",
+      "data": {
+        "id": 14,
+        "name": "Liga 2016/17: Real Madrid - Barcelona",
+        "date": "2017-04-22T20:30:00.000Z",
+        "description": "Partido correspondiente a la J.33 de liga",
+        "photo_url": "https://images.pickandgol.s3.amazonaws.com/123e4567-e89b",
+        "category_id": 3,
+        "pubs": [ "572934f2b56205e4135132a0" ]
+      }
+    }
+    ```
+
+* **Ejemplos de respuesta fallida:**
+
+  * **Code:** 404
+  * **Content:**
+
+    ```json
+      {
+        "result": "ERROR",
+        "data": {
+          "code": 404,
+          "description": "Not found."
+        }
+      }
+    ```
+
 #### Nuevo evento
+
+Crea un nuevo evento, siempre asociado a un bar existente
+
+* **Condiciones**
+
+  * Solo los usuarios autenticados podrán crear un evento.
+  * El nuevo evento debe de estar asociado una categoría y bar existente.
+
+* **URL**
+
+  `/events/`
+
+* **Método:**
+
+  `POST`
+
+* **Parámetros en URL**
+
+    Ninguno
+
+* **Parámetros en datos**
+
+  * **Obligatorios:**
+ 
+      * `name=[string]`
+      * `date=[string]`
+      * `pub=[string]`
+      * `category=[integer]`
+
+  * **Opcionales:**
+
+      * `description=[string]`
+      * `photo_url=[string]`
+
+* **Ejemplo de datos en la petición:**
+  ```json
+    {
+      "name": "Liga 2016/17: Real Madrid - Barcelona",
+      "date": "2017-04-22T20:30:00.000Z",
+      "pub": "572934f2b56205e4135132a1",
+      "category": 3,
+      "description": "Partido correspondiente a la J.33 de Liga",
+      "photo_url" : "https://images.pickandgol.s3.amazonaws.com/123e4567-e89b"
+    }
+  ```
+
+* **Ejemplo de respuesta con éxito:**
+
+  * **Code:** 200
+  * **Content:**
+
+    ```json
+    {
+      "result": "OK",
+      "data": {
+        "id": 14,
+        "name": "Liga 2016/17: Real Madrid - Barcelona",
+        "date": "2017-04-22T20:30:00.000Z",
+        "description": "Partido correspondiente a la J.33 de liga",
+        "photo_url": "https://images.pickandgol.s3.amazonaws.com/123e4567-e89b",
+        "category_id": 3,
+        "pubs": [ "572934f2b56205e4135132a1" ]
+      }
+    }
+    ```
+
+* **Ejemplos de respuesta fallida:**
+
+  * **Code:** 400
+  * **Content:**
+
+    ```json
+      {
+        "result": "ERROR",
+        "data": {
+          "code": 400,
+          "description": "Bad request."
+        }
+      }
+    ```
+
+O
+
+  * **Code:** 403
+  * **Content:**
+
+    ```json
+      {
+        "result": "ERROR",
+        "data": {
+          "code": 403,
+          "description": "Forbidden request."
+        }
+      }
+    ```
 
 #### Modificar evento
 
+
 #### Eliminar evento
+
 
 #### Lista de eventos
 
+Devuelve una lista de eventos futuros.
+
+* **URL**
+
+  `/events/`
+
+* **Método:**
+
+  `GET`
+
+*  **Parámetros en URL**
+
+   * **Opcionales:**
+ 
+      * `offset=[integer]` (si no se indica, por defecto será 0)
+      * `limit=[integer]` (si no se indica, por defecto será 20)
+      * `pub=[string]`
+      * `text=[string]`
+      * `category=[integer]`
+      * `latitude=[float]`
+      * `longitude=[float]`
+      * `radius=[integer]`
+
+* **Parámetros en datos**
+
+  Ninguno
+
+  * **Ejemplo de respuesta con éxito:**
+
+  * **Code:** 200
+  * **Content:**
+
+    ```json
+    {
+      "result": "OK",
+      "data": {
+        "total": 2,
+        "items": [
+          {
+            "id": 14,
+            "name": "Liga 2016/17: Real Madrid - Barcelona",
+            "date": "2017-04-22T20:30:00.000Z",
+            "description": "Partido correspondiente a la J.33 de Liga",
+            "photo_url": "https://images.pickandgol.s3.amazonaws.com/123e4567b",
+            "category_id": 3,
+            "pubs": [ "572934f2b56205e4135132a4", "572934f2b56205e4135132a3", "572d1ccddb794a84154a16d9" ]
+          },
+          {
+            "id": 417,
+            "name": "G.P. Mónaco",
+            "date": "2017-05-28T14:00:00.000Z",
+            "description": "6ª prueba del mundial de F1",
+            "photo_url": "https://images.pickandgol.s3.amazonaws.com/987s6543h",
+            "category_id": 18,
+            "bars": []
+          }
+        ]
+      }
+    }
+    ```
+
+* **Ejemplos de respuesta fallida:**
+
+  * **Code:** 400
+  * **Content:**
+
+    ```json
+      {
+        "result": "ERROR",
+        "data": {
+          "code": 400,
+          "description": "Bad request."
+        }
+      }
+    ```
