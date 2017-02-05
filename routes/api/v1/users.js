@@ -5,9 +5,13 @@
 
 var express = require('express');
 var router = express.Router();
+let jwtRouter = express.Router();
 require('../../../models/Users');
 var mongoose =require('mongoose');
 var User = mongoose.model('userPick');
+let jwtAuth = require('../../../lib/jwtAuth');
+
+jwtRouter.use(jwtAuth());
 
 router.post('/register', function(req,res) {
 
@@ -55,4 +59,23 @@ router.post('/login', function(req, res) {
         .catch(sendErrorResponse);
 });
 
-module.exports = router;
+jwtRouter.delete('/', function(req, res) {
+    function sendOKResponse() {
+        return res.json({ result: "OK" });
+    }
+
+    function sendErrorResponse(data) {
+        return res.json({ result: "ERROR", data: data });
+    }
+
+    let id = req.decoded.id || null;
+
+    User.delete(id)
+        .then(sendOKResponse)
+        .catch(sendErrorResponse);
+});
+
+module.exports = {
+    router: router,
+    jwtRouter: jwtRouter
+};

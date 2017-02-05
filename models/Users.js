@@ -135,5 +135,18 @@ UserPickSchema.statics.login = function(email, password) {
     });
 };
 
+UserPickSchema.statics.delete = function(id) {
+    return new Promise(function(resolve, reject) {
+        userPick.remove({ _id: id }, function(err) {
+            if (err) {
+                reject({ code: 400, description: err });
+                return;
+            }
+
+            resolve();
+        });
+    });
+};
+
 var userPick = mongoose.model('userPick',UserPickSchema);
 
