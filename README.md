@@ -13,6 +13,7 @@
     - [POST /recover](#recuperacion-de-contrasena-de-usuario)
     - [POST /login](#login-de-usuario)
     - [GET /users/:user_id/favorites](#bares-favoritos-de-usuario)
+    - [POST /users/:user_id/favorites/:pub_id](#anadir-bar-como-favorito-de-usuario)
   * [Api de bares](#api-de-bares)
     - [GET /pubs/:pub_id](#detalle-de-bar)
     - [POST /pubs/](#nuevo-bar)
@@ -44,6 +45,7 @@ la versión Android.
   - [POST /recover](#recuperacion-de-contrasena-de-usuario)
   - [POST /login](#login-de-usuario)
   - [GET /users/:user_id/favorites](#bares-favoritos-de-usuario)
+  - [POST /users/:user_id/favorites/:pub_id](#anadir-bar-como-favorito-de-usuario)
 
 #### Detalle de usuario
 
@@ -51,8 +53,8 @@ Devuelve los datos de un usuario.
 
 * **Condiciones**
 
-  * Solo los usuarios autenticados podrán acceder a la información de perfil de un usuario.
-  * Los datos sensibles (email) de un usuario solo pueden ser consultados por el propio usuario.
+  * Sólo los usuarios autenticados podrán acceder a la información de perfil de un usuario.
+  * Los datos sensibles (email) de un usuario sólo pueden ser consultados por el propio usuario.
 
 
 * **URL**
@@ -67,7 +69,7 @@ Devuelve los datos de un usuario.
 
    * **Obligatorios:**
  
-      * `id=[string]`
+      * `user_id=[string]`
 
 * **Parámetros en datos**
 
@@ -140,7 +142,7 @@ Crea una nueva cuenta de usuario
 
 * **Condiciones**
 
-  * Solo los usuarios sin autenticar podrán crear un usuario.
+  * Sólo los usuarios sin autenticar podrán crear un usuario.
 
 * **URL**
 
@@ -236,7 +238,7 @@ O
 Permite a un usuario modificar sus datos de perfil y su contraseña.
 
 * **Condiciones**
-  * Solo los usuarios autenticados podrán realizar la petición de actualización.
+  * Sólo los usuarios autenticados podrán realizar la petición de actualización.
   * Un usuario autenticado sólo puede actualizar su propio perfil.
 
 * **URL**
@@ -343,7 +345,7 @@ sistema PICKANDGOL.
 
 * **Condiciones**
 
-  * Solo los usuarios autenticados podrán dar de baja un usuario.
+  * Sólo los usuarios autenticados podrán dar de baja un usuario.
   * Un usuario autenticado sólo puede darse de baja a sí mismo.
   * El usuario ADMIN puede dar de baja a cualquier usuario.
 
@@ -359,7 +361,7 @@ sistema PICKANDGOL.
 
    * **Obligatorios:**
  
-      * `id=[string]`
+      * `user_id=[string]`
 
 * **Parámetros en datos**
 
@@ -471,8 +473,6 @@ enviándola por email al usuario (si es que el email indicado existe).
 Permite a un usuario autenticarse en el sistema indicando su nombre de 
 usuario y contraseña.
 
-#### Bares favoritos de usuario
-
 * **Condiciones**
 
   * Un usuario debe tener activada su cuenta para poder iniciar sesión.
@@ -561,6 +561,227 @@ O
         }
       }
 	```
+
+#### Bares favoritos de usuario
+
+Devuelve una lista de los bares favoritos de un usuario.
+
+* **Condiciones**
+
+  * Sólo los usuarios autenticados podrán hacer esta petición.
+
+* **URL**
+
+  `/users/:user_id/favorites`
+
+* **Método:**
+
+  `GET`
+  
+*  **Parámetros en URL**
+
+   * **Obligatorios:**
+ 
+      * `user_id=[string]`
+
+* **Parámetros en datos**
+
+  Ninguno
+
+* **Ejemplo de respuesta con éxito:**
+
+  * **Code:** 200
+  * **Content:**
+
+    ```json
+    {
+      "result": "OK",
+      "data": {
+        "favorites": [
+          {
+            "id": 12,
+            "name": "Bar Casa Paco",
+            "latitude": "40.41665",
+            "longitude": "-3.70381",
+            "url": "http://www.barcasapaco.com",
+            "phone": "912345678",
+            "owner": 24
+          },
+          {
+            "id": 43,
+            "name": "Asador Madrid",
+            "latitude": "41.25765",
+            "longitude": "-3.64123",
+            "url": "http://www.asador-madrid.es",
+            "phone": "600123456",
+            "owner": 714
+          }
+        ]
+      }
+    }
+    ```
+
+* **Ejemplos de respuesta fallida:**
+
+  * **Code:** 400
+  * **Content:**
+
+    ```json
+      {
+        "result": "ERROR",
+        "data": {
+          "code": 400,
+          "description": "Bad request."
+        }
+      }
+    ```
+
+O
+
+  * **Code:** 403
+  * **Content:**
+
+    ```json
+      {
+        "result": "ERROR",
+        "data": {
+          "code": 403,
+          "description": "Forbidden request."
+        }
+      }
+    ```
+O
+
+  * **Code:** 404
+  * **Content:**
+
+    ```json
+      {
+        "result": "ERROR",
+        "data": {
+          "code": 404,
+          "description": "Not found."
+        }
+      }
+    ```
+
+#### Añadir bar como favorito de usuario
+
+Añade un bar como favorito de un usuario
+
+* **Condiciones**
+
+  * Sólo los usuarios autenticados podrán añadir un bar como su favorito.
+
+* **URL**
+
+  `/users/:user_id/favorites/:pub_id`
+
+* **Método:**
+
+  `POST`
+
+* **Parámetros en URL**
+
+  * **Obligatorios:**
+ 
+      * `user_id=[string]`
+      * `pub_id=[string]`
+
+* **Parámetros en datos**
+
+  Ninguno
+
+* **Ejemplo de respuesta con éxito:**
+
+  * **Code:** 200
+  * **Content:**
+
+    ```json
+    {
+      "result": "OK",
+      "data": {
+        "favorites": [
+          {
+            "id": 12,
+            "name": "Bar Casa Paco",
+            "latitude": "40.41665",
+            "longitude": "-3.70381",
+            "url": "http://www.barcasapaco.com",
+            "phone": "912345678",
+            "owner": 24
+          },
+          {
+            "id": 43,
+            "name": "Asador Madrid",
+            "latitude": "41.25765",
+            "longitude": "-3.64123",
+            "url": "http://www.asador-madrid.es",
+            "phone": "600123456",
+            "owner": 714
+          }
+        ]
+      }
+    }
+    ```
+
+* **Ejemplos de respuesta fallida:**
+
+  * **Code:** 400
+  * **Content:**
+
+    ```json
+      {
+        "result": "ERROR",
+        "data": {
+          "code": 400,
+          "description": "Bad request."
+        }
+      }
+    ```
+O
+
+* **Code:** 400
+  * **Content:**
+
+    ```json
+      {
+        "result": "ERROR",
+        "data": {
+          "code": 400,
+          "description": "Bad request (Pub id not found)."
+        }
+      }
+    ```
+
+O
+
+  * **Code:** 403
+  * **Content:**
+
+    ```json
+      {
+        "result": "ERROR",
+        "data": {
+          "code": 403,
+          "description": "Forbidden request."
+        }
+      }
+    ```
+O
+
+  * **Code:** 404
+  * **Content:**
+
+    ```json
+      {
+        "result": "ERROR",
+        "data": {
+          "code": 404,
+          "description": "Not found."
+        }
+      }
+    ```
 
 ### Api de bares
 
