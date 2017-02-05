@@ -5,6 +5,9 @@
 * [Descripción](#descripcion)
 * [Uso](#uso)
 * [Documentación de la API REST](#documentacion-de-la-api-rest)
+  * [Api de usuarios](#api-de-usuarios)
+  * [Api de bares](#api-de-bares)
+  * [Api de eventos](#api-de-eventos)
 
 ## Descripción
 
@@ -25,6 +28,7 @@ la versión Android.
   - [DELETE /users/<USER_ID>](#baja-de-usuario)
   - [POST /recover](#recuperacion-de-contrasena-de-usuario)
   - [POST /login](#login-de-usuario)
+  - [GET /users/<USER_ID>/favorites](#bares-favoritos-de-usuario)
 
 #### Detalle de usuario
 
@@ -37,3 +41,9 @@ la versión Android.
 #### Recuperacion de contraseña de usuario
 
 #### Login de usuario
+
+#### Bares favoritos de usuario
+
+### Api de bares
+
+### Api de eventos
