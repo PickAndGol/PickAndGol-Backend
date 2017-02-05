@@ -49,6 +49,12 @@ la versión Android.
 
 Devuelve los datos de un usuario.
 
+* **Condiciones**
+
+  * Solo los usuarios autenticados podrán acceder a la información de perfil de un usuario.
+  * Los datos sensibles (email) de un usuario solo pueden ser consultados por el propio usuario.
+
+
 * **URL**
 
   /users/:user_id
@@ -61,13 +67,11 @@ Devuelve los datos de un usuario.
 
    * **Obligatorios:**
  
-      `id=[integer]`
+      * `id=[string]`
 
 * **Parámetros en datos**
 
   Ninguno
-
-* **Códigos de respuesta:**
 
 * **Ejemplo de respuesta con éxito:**
 
@@ -94,11 +98,14 @@ Devuelve los datos de un usuario.
     ```json
       {
         "result": "ERROR",
-        "data": { "code": 400, "description": "Bad request." }
+        "data": {
+          "code": 400,
+          "description": "Bad request."
+        }
       }
     ```
 
-  O
+O
 
   * **Code:** 403
   * **Content:**
@@ -106,10 +113,13 @@ Devuelve los datos de un usuario.
     ```json
       {
         "result": "ERROR",
-        "data": { "code": 403, "description": "Forbidden request." }
+        "data": {
+          "code": 403,
+          "description": "Forbidden request."
+        }
       }
     ```
-    O
+O
 
   * **Code:** 404
   * **Content:**
@@ -117,13 +127,113 @@ Devuelve los datos de un usuario.
     ```json
       {
         "result": "ERROR",
-        "data": { "code": 404, "description": "Not found." }
+        "data": {
+          "code": 404,
+          "description": "Not found."
+        }
       }
     ```
 
 #### Alta de usuario
 
+Crea una nueva cuenta de usuario
+
+* **Condiciones**
+
+  * Solo los usuarios sin autenticar podrán crear un usuario.
+
+* **URL**
+
+  /users/
+
+* **Método:**
+
+  `POST`
+  
+* **Parámetros en URL**
+
+    Ninguno
+
+* **Parámetros en datos**
+
+  * **Obligatorios:**
+ 
+      * `email=[string]`
+      * `name=[string]`
+      * `password=[string]`
+
+* **Ejemplo de datos en la petición:**
+  ```json
+    {
+      "email": "pepe1234@gmail.com",
+      "name": "Pepito 1234",
+      "password": "pass"
+    }
+  ```
+
+* **Ejemplo de respuesta con éxito:**
+
+  * **Code:** 200
+  * **Content:**
+
+    ```json
+    {
+      "result": "OK",
+      "data": {
+        "id": 37,
+        "email": "pepe1234@gmail.com",
+        "name": "Pepito 1234"
+      }
+    }
+    ```
+ 
+* **Ejemplos de respuesta fallida:**
+
+  * **Code:** 400
+  * **Content:**
+
+    ```json
+      {
+        "result": "ERROR",
+        "data": {
+          "code": 400,
+          "description": "Bad request."
+        }
+      }
+    ```
+
+O
+
+  * **Code:** 409
+  * **Content:**
+
+    ```json
+      {
+        "result": "ERROR",
+        "data": {
+          "code": 409,
+          "description": "Conflict (email already exists)."
+        }
+      }
+    ```
+O
+
+  * **Code:** 409
+  * **Content:**
+
+    ```json
+      {
+        "result": "ERROR",
+        "data": {
+          "code": 409,
+          "description": "Conflict (username already exists)."
+        }
+      }
+    ```
+
 #### Actualización de usuario
+
+
 
 #### Baja de usuario
 
