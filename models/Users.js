@@ -3,12 +3,11 @@
  */
 
 'use strict';
-
 var mongoose = require('mongoose');
 let jwt = require('jsonwebtoken');
 let config = require('../local_config');
 
-var UserSchema = mongoose.Schema({
+var UserPickSchema = mongoose.Schema({
     name: {
         type: String,
         required: true,
@@ -26,28 +25,25 @@ var UserSchema = mongoose.Schema({
 
 // This function support callback or promise
 
-UserSchema.statics.saveNewUser = function(data, callback) {
+UserPickSchema.statics.saveNewUser = function(data, callback) {
 
     return new Promise(function(resolve,reject) {
 
-        var usuario = new Usuario();
+        var usuario = new userPick();
 
         usuario.name = data.name;
         usuario.email = data.email;
         usuario.password = data.password;
+        usuari.enabled = data.enabled;
 
         usuario.save(function (err, userSave) {
-
             if (err) {
-
                 if (callback) {
                     callback(err);
                     return;
                 }
-
                 reject(err)
                 return;
-
             }
 
             if(callback){
@@ -58,26 +54,66 @@ UserSchema.statics.saveNewUser = function(data, callback) {
             resolve(userSave);
             return;
 
-        })
+        });
+
+
 
     })
 
 }
 
-UserSchema.statics.login = function(email, password) {
+UserPickSchema.statics.existMail = function(email, callback) {
+
+    return new Promise(function (resolve, reject) {
+
+        var exist=false;
+        userPick.findOne({'email': email}, 'email', function (error, data) {
+
+
+            if (error) {
+                if (callback) {
+                    console.log(error);
+                    callback(error, null);
+                    return;
+                }
+
+                reject("NOK");
+                return;
+            }
+
+
+            if(data){
+                exist=true;
+            }
+            console.log("Resultado"+exist);
+
+            if (callback) {
+                callback(null, exist);
+                return
+            }
+
+            resolve(exist);
+            return;
+
+        });
+
+
+    });
+}
+
+UserPickSchema.statics.login = function(email, password) {
     return new Promise(function(resolve, reject) {
         if (email == null || password == null) {
             reject({ code: 400, description: "Email and password are required." });
             return;
         }
 
-        Usuario.findOne({ email: email }, function(err, user) {
-            console.log('En findone');
+        userPick.findOne({ email: email }, function(err, user) {
             if (err) {
                 reject({ code: 400, description: "Bad request." });
                 return;
             }
-            console.log('Encontrado ' + user.name);
+
             if (user.enabled === 'undefined' || !user.enabled) {
                 reject({ code: 403, description: "User account disabled." });
                 return;
@@ -99,5 +135,5 @@ UserSchema.statics.login = function(email, password) {
     });
 };
 
-var Usuario = mongoose.model('User',UserSchema);
+var userPick = mongoose.model('userPick',UserPickSchema);
 
