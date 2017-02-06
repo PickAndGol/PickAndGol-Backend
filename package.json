@@ -4,7 +4,8 @@
   "private": true,
   "description": "Backend for PickAndGol project",
   "scripts": {
-    "start": "node ./bin/www"
+    "start": "node ./bin/www",
+    "debug": "nodemon ./bin/www DEBUG=generated:*"
   },
   "repository": {
     "type": "git",
@@ -21,5 +22,8 @@
     "mongoose": "^4.8.1",
     "morgan": "~1.7.0",
     "serve-favicon": "~2.3.2"
+  },
+  "devDependencies": {
+    "nodemon": "^1.11.0"
   }
 }
