@@ -791,10 +791,244 @@ O
 
 #### Detalle de bar
 
+Mostrar los datos de un bar
+
+* **URL**
+
+  `/pubs/:pub_id`
+
+* **Método:**
+
+  `GET`
+
+  *  **Parámetros en URL**
+
+   * **Obligatorios:**
+ 
+      * `pub_id=[string]`
+
+* **Parámetros en datos**
+
+  Ninguno
+
+* **Ejemplo de respuesta con éxito:**
+
+  * **Code:** 200
+  * **Content:**
+
+    ```json
+    {
+      "result": "OK",
+      "data": {
+        "id": 59,
+        "name": "Bar Casa Paco",
+        "latitude": 40.41665,
+        "longitude": -3.70381,
+        "url": "http://www.barcasapaco.com",
+        "phone": "912345678",
+        "owner": 16
+        "events": [ 14, 417 ],
+        "photos": [
+            "https://images.pickandgol.s3.amazonaws.com/123e4567-e89b",
+            "https://images.pickandgol.s3.amazonaws.com/987a6543-f21c"
+        ]
+      }
+    }
+    ```
+
+* **Ejemplos de respuesta fallida:**
+
+* **Code:** 404
+  * **Content:**
+
+    ```json
+      {
+        "result": "ERROR",
+        "data": {
+          "code": 404,
+          "description": "Not found."
+        }
+      }
+    ```
+
 #### Nuevo bar
+
+Crea un nuevo bar.
+
+* **URL**
+
+  `/pubs/`
+
+* **Método:**
+
+  `POST`
+
+* **Parámetros en URL**
+
+    Ninguno
+
+* **Parámetros en datos**
+
+  * **Obligatorios:**
+ 
+      * `name=[string]`
+      * `latitude=[float]`
+      * `longitude=[float]`
+
+* **Opcionales:**
+ 
+      * `url=[string]`
+      * `phone=[string]`
+      * `photo_url=[string]`
+
+* **Ejemplo de datos en la petición:**
+  ```json
+    {
+      "name": "Bar Casa Paco",
+      "latitude": 40.41665,
+      "longitude": -3.70381,
+      "url": "http://www.barcasapaco.com",
+      "phone": "9183746520",
+      "photo_url": "https://images.pickandgol.s3.amazonaws.com/123e4567-e89b"
+    }
+  ```
+
+* **Ejemplo de respuesta con éxito:**
+
+  * **Code:** 200
+  * **Content:**
+
+    ```json
+    {
+      "result": "OK",
+      "data": {
+        "id": 59,
+        "name": "Bar Casa Paco",
+        "latitude": 40.41665,
+        "longitude": -3.70381,
+        "url": "http://www.barcasapaco.com",
+        "phone": "912345678",
+        "owner": 16,
+        "photos": [
+              "https://images.pickandgol.s3.amazonaws.com/123e4567-e89b",
+              "https://images.pickandgol.s3.amazonaws.com/987a6543-f21c"
+        ]
+      }
+    }
+    ```
+
+* **Ejemplos de respuesta fallida:**
+
+  * **Code:** 400
+  * **Content:**
+
+    ```json
+      {
+        "result": "ERROR",
+        "data": {
+          "code": 400,
+          "description": "Bad request."
+        }
+      }
+    ```
+
+O
+
+  * **Code:** 403
+  * **Content:**
+
+    ```json
+      {
+        "result": "ERROR",
+        "data": {
+          "code": 403,
+          "description": "Forbidden request."
+        }
+      }
+    ```
+
 
 #### Listado de bares
 
+Lista de bares. Permite filtrar los resultados
+
+* **URL**
+
+  `/pubs/`
+
+* **Método:**
+
+  `GET`
+
+*  **Parámetros en URL**
+
+   * **Opcionales:**
+ 
+      * `offset=[integer]` (si no se indica, por defecto será 0)
+      * `limit=[integer]` (si no se indica, por defecto será 20)
+      * `text=[string]`
+      * `category=[integer]`
+      * `latitude=[float]`
+      * `longitude=[float]`
+      * `radius=[integer]`
+
+* **Parámetros en datos**
+
+  Ninguno
+
+* **Ejemplo de respuesta con éxito:**
+
+  * **Code:** 200
+  * **Content:**
+
+    ```json
+    {
+      "result": "OK",
+      "data": {
+        "total": 2,
+        "items": [
+          {
+            "id": 59,
+            "name": "Bar Casa Paco",
+            "latitude": 40.41665,
+            "longitude": -3.70381,
+            "url": "http://www.barcasapaco.com",
+            "phone": "912345678",
+            "owner": 16,
+            "photos": [
+                "https://images.pickandgol.s3.amazonaws.com/123e4567-e89b",
+                "https://images.pickandgol.s3.amazonaws.com/987a6543-f21c"
+          ]
+          },
+          {
+            "id": 43,
+            "name": "Asador Madrid",
+            "latitude": "41.25765",
+            "longitude": "-3.64123",
+            "url": "http://www.asador-madrid.es",
+            "phone": "600123456",
+            "owner": 714,
+            "photos": []
+          }
+        ]
+      }
+    }
+    ```
+
+* **Ejemplos de respuesta fallida:**
+
+  * **Code:** 400
+  * **Content:**
+
+    ```json
+      {
+        "result": "ERROR",
+        "data": {
+          "code": 400,
+          "description": "Bad request."
+        }
+      }
+    ```
 
 ### Api de eventos
 
@@ -966,7 +1200,7 @@ O
 
 #### Lista de eventos
 
-Devuelve una lista de eventos futuros.
+Devuelve una lista de eventos futuros. Permite filtrar los resultados.
 
 * **URL**
 
