@@ -33,4 +33,20 @@ router.post('/', function(req, res, next) {
 
 });
 
+//GET/events list
+router.get('/', function(req, res) {
+
+    Events.list({},function(err,lista){
+
+        if(err) {
+            console.log(err);
+            return res.json({ok:true,error:err});
+        }
+
+        res.json({ok:true,data:lista});
+
+    });
+
+});
+
 module.exports = router;
