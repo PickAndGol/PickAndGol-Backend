@@ -17,6 +17,6 @@ router.post('/register', function(req,res){
     res.json({result:"ok", data:{"id":222}})
 
 
-}
+});
 
 module.exports = router;
