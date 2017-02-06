@@ -8,10 +8,13 @@ var bodyParser = require('body-parser');
 
 var index = require('./routes/index');
 var users = require('./routes/users');
+var events = require('./routes/api/v1/events');
+
+require('./models/Events');
 
 var app = express();
 
-//  Base de datos
+//Base de datos
 require('./lib/connectMongoose');
 
 
@@ -29,6 +32,14 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', index);
 app.use('/users', users);
+
+//models
+var Event = require('./models/Events');
+
+
+//routes
+app.use('/api/v1/events',require('./routes/api/v1/events'));
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
