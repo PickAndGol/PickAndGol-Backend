@@ -6,9 +6,11 @@
 var express = require('express');
 var router = express.Router();
 let jwtRouter = express.Router();
+
 require('../../../models/Users');
 var mongoose =require('mongoose');
 var User = mongoose.model('userPick');
+
 let jwtAuth = require('../../../lib/jwtAuth');
 
 jwtRouter.use(jwtAuth());

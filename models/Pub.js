@@ -47,4 +47,5 @@ pubSchema.statics.findPub = function (pubData, callback) {
         return callback(null, pub)
     })
 };
-var Pub = mongoose.model('Pub',articleSchema);
+
+var Pub = mongoose.model('Pub', pubSchema);

@@ -7,6 +7,7 @@
 let express = require("express");
 let router = express.Router();
 
+require('../../../models/Pub');
 let mongoose = require('mongoose');
 let Pub = mongoose.model('Pub');
 
