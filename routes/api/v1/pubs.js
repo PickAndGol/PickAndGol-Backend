@@ -8,6 +8,7 @@ let express = require("express");
 let router = express.Router();
 
 let mongoose = require('mongoose');
+require('../../../models/Pub');
 let Pub = mongoose.model('Pub');
 
 let jwtAuth = require('../../../lib/jwtAuth');
