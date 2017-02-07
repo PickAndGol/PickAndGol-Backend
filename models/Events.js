@@ -10,12 +10,20 @@ var mongoose = require('mongoose');
 //define event schema
 var eventSchema = mongoose.Schema({
 
-    name:String,
-    date: Date,
-    description:String,
-    photo_url:String,
-    category:[String],
-    pubs:[String]
+    name:   {type: String,
+            required: true,
+            index: true},
+    date:   {type: Date,
+            required: true,
+            index: true},
+    description: {type: String,
+                required: false},
+    photo_url:  {type: String,
+                required: false},
+    category: {type: [String],
+                required: true},
+    pubs:   {type: [String],
+            required: true}
 
 });
 
