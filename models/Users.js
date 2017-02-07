@@ -237,6 +237,24 @@ UserPickSchema.statics.delete = function(userId, idToDelete) {
     });
 };
 
+UserPickSchema.statics.getUser = function(idToGet, userId) {
+
+    let userPromise = new Promise(function(resolve, reject) {
+        userPick.findOne({ _id: idToGet }, function(err, user) {
+            if (err) {
+                // User not found
+                let error = { "code": 400, "description": err };
+                console.log(error);
+                return reject(error);
+            }
+
+            resolve(user);
+        });
+    });
+
+    return userPromise;
+}
+
 
 var userPick = mongoose.model('userPick',UserPickSchema);
 

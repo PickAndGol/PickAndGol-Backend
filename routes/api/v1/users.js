@@ -15,6 +15,33 @@ let jwtAuth = require('../../../lib/jwtAuth');
 
 jwtRouter.use(jwtAuth());
 
+
+
+
+// Routes
+
+router.get('/:id', function (req, res) {
+    
+    function sendOKResponse(data) {
+        return res.json({ result: "OK", data: data });
+    }
+
+    function sendErrorResponse(data) {
+        return res.json({ result: "ERROR", data: data });
+    }
+    
+    let idToGet = req.params.id;
+
+    if(req.decoded){
+        let userId = req.decoded.id;
+    }
+
+    User.getUser(idToGet, null)
+        .then(sendOKResponse)
+        .catch(sendErrorResponse);
+
+});
+
 router.post('/register', function(req,res) {
 
 
@@ -39,7 +66,7 @@ router.post('/register', function(req,res) {
                 res.json({
                         "result":"ERROR",
                         "data": {"code": 409, "description": "Conflict (username already exists)."}
-            }
+                    }
                 );
             }
 
