@@ -28,24 +28,19 @@ var eventSchema = mongoose.Schema({
 });
 
 //static method for model
-eventSchema.statics.list= function(criterios,cb){
+eventSchema.statics.list = function(criterios,cb){
 
     //use .find() sin el callback para que me de un objeto sin ejecutar
     var query = Event.find(criterios);
 
     //query.sort('name');
-
     query.exec(function (err,rows){
-
         if(err){
             return cb(err);
         }
-
         return cb(null,rows);
     });
-
 };
-
 
 //export model
 var Event = mongoose.model('Event',eventSchema);
