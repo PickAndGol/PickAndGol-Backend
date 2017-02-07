@@ -166,23 +166,28 @@ var filterByField = function(filter, callback){
 UserPickSchema.statics.login = function(email, password) {
     return new Promise(function(resolve, reject) {
         if (email == null || password == null) {
-            reject({ code: 400, description: "Email and password are required." });
+            reject({ "code": 400, "description": "Email and password are required." });
             return;
         }
 
         userPick.findOne({ email: email }, function(err, user) {
             if (err) {
-                reject({ code: 400, description: "Bad request." });
+                reject({ "code": 400, "description": "Bad request." });
+                return;
+            }
+
+            if (user === null) {
+                reject({ "code": 404, "description": "User not found." });
                 return;
             }
 
             if (user.enabled === 'undefined' || !user.enabled) {
-                reject({ code: 403, description: "User account disabled." });
+                reject({ "code": 403, "description": "User account disabled." });
                 return;
             }
 
             if (user.password !== password) {
-                reject({ code: 401, description: "Bad credentials." });
+                reject({ "code": 401, "description": "Bad credentials." });
                 return;
             }
 
