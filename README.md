@@ -7,11 +7,11 @@
 * [Documentación de la API REST](#documentacion-de-la-api-rest)
   * [Api de usuarios](#api-de-usuarios)
     - [GET /users/:user_id](#detalle-de-usuario)
-    - [POST /users/](#alta-de-usuario)
+    - [POST /users/register](#alta-de-usuario)
     - [PUT /users/:user_id](#actualizacion-de-usuario)
     - [DELETE /users/:user_id](#baja-de-usuario)
-    - [POST /recover](#recuperacion-de-contrasena-de-usuario)
-    - [POST /login](#login-de-usuario)
+    - [POST /users/recover](#recuperacion-de-contrasena-de-usuario)
+    - [POST /users/login](#login-de-usuario)
     - [GET /users/:user_id/favorites](#bares-favoritos-de-usuario)
     - [POST /users/:user_id/favorites/:pub_id](#anadir-bar-como-favorito-de-usuario)
   * [Api de bares](#api-de-bares)
@@ -55,11 +55,11 @@ Lanzar desde la raíz del proyecto:
 ### Api de usuarios
 
   - [GET /users/:user_id](#detalle-de-usuario)
-  - [POST /users/](#alta-de-usuario)
+  - [POST /users/register](#alta-de-usuario)
   - [PUT /users/:user_id](#actualizacion-de-usuario)
   - [DELETE /users/:user_id](#baja-de-usuario)
-  - [POST /recover](#recuperacion-de-contrasena-de-usuario)
-  - [POST /login](#login-de-usuario)
+  - [POST /users/recover](#recuperacion-de-contrasena-de-usuario)
+  - [POST /users/login](#login-de-usuario)
   - [GET /users/:user_id/favorites](#bares-favoritos-de-usuario)
   - [POST /users/:user_id/favorites/:pub_id](#anadir-bar-como-favorito-de-usuario)
 
@@ -162,7 +162,7 @@ Crea una nueva cuenta de usuario
 
 * **URL**
 
-  `/users/`
+  `/users/register`
 
 * **Método:**
 
@@ -435,7 +435,7 @@ enviándola por email al usuario (si es que el email indicado existe).
 
 * **URL**
 
-  `/recover/`
+  `/users/recover/`
 
 * **Método:**
 
@@ -495,7 +495,7 @@ usuario y contraseña.
 
 * **URL**
 
-  `/login/`
+  `/users/login/`
 
 * **Método:**
 
