@@ -36,7 +36,8 @@ app.use('/api/v1/users', users.router);
 app.use('/api/v1/users', users.jwtRouter);
 
 let pubs = require('./routes/api/v1/pubs');
-app.use('/api/v1/pubs', pubs);
+app.use('/api/v1/pubs', pubs.router);
+app.use('/api/v1/pubs', pubs.jwtRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

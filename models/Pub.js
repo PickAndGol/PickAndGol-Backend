@@ -48,4 +48,15 @@ pubSchema.statics.findPub = function (pubData, callback) {
     })
 };
 
+pubSchema.statics.findPubsList = function (filter, start, limit, sort, callback) {
+
+    let query = Pub.find(filter);
+
+    query.skip(start);
+    query.limit(limit);
+    query.sort(sort);
+
+    return query.exec(callback);
+};
+
 var Pub = mongoose.model('Pub', pubSchema);
