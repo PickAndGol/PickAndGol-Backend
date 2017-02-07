@@ -197,15 +197,42 @@ UserPickSchema.statics.login = function(email, password) {
     });
 };
 
-UserPickSchema.statics.delete = function(id) {
+UserPickSchema.statics.delete = function(userId, idToDelete) {
+    function validateUsers(callback) {
+        if (userId !== idToDelete) {
+            userPick.findOne({ _id: userId }, function(err, user) {
+                if (err) {
+                    callback({ "code": 400, "description": err });
+                    return;
+                }
+
+                if (user.name !== "admin") {
+                    callback({ "code": 403, "description": "Forbidden request." });
+                }
+
+                callback(null);
+            });
+        }
+
+        callback(null);
+    }
+
     return new Promise(function(resolve, reject) {
-        userPick.remove({ _id: id }, function(err) {
+        validateUsers(function(err) {
             if (err) {
-                reject({ code: 400, description: err });
+                reject(err);
                 return;
             }
 
-            resolve();
+            userPick.remove({ _id: idToDelete }, function(err) {
+
+                if (err) {
+                    reject({ "code": 404, "description": "Not found." });
+                    return;
+                }
+
+                resolve();
+            });
         });
     });
 };

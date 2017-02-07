@@ -5,7 +5,7 @@
 "use strict";
 
 let mongoose = require('mongoose');
-let async = require('async');
+// XXX let async = require('async');
 
 let pubSchema = mongoose.Schema({
     name: {
