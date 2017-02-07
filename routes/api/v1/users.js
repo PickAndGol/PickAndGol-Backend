@@ -6,9 +6,11 @@
 var express = require('express');
 var router = express.Router();
 let jwtRouter = express.Router();
+
 require('../../../models/Users');
 var mongoose =require('mongoose');
 var User = mongoose.model('userPick');
+
 let jwtAuth = require('../../../lib/jwtAuth');
 
 jwtRouter.use(jwtAuth());
@@ -72,7 +74,7 @@ router.post('/login', function(req, res) {
         .catch(sendErrorResponse);
 });
 
-jwtRouter.delete('/', function(req, res) {
+jwtRouter.delete('/:id', function(req, res) {
     function sendOKResponse() {
         return res.json({ result: "OK" });
     }
@@ -81,9 +83,10 @@ jwtRouter.delete('/', function(req, res) {
         return res.json({ result: "ERROR", data: data });
     }
 
-    let id = req.decoded.id || null;
+    let idToDelete = req.params.id;
+    let userId = req.decoded.id;
 
-    User.delete(id)
+    User.delete(userId, idToDelete)
         .then(sendOKResponse)
         .catch(sendErrorResponse);
 });

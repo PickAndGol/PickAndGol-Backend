@@ -5,7 +5,7 @@
 "use strict";
 
 let mongoose = require('mongoose');
-let async = require('async');
+// XXX let async = require('async');
 
 let pubSchema = mongoose.Schema({
     name: {
@@ -47,4 +47,5 @@ pubSchema.statics.findPub = function (pubData, callback) {
         return callback(null, pub)
     })
 };
-var Pub = mongoose.model('Pub',articleSchema);
+
+var Pub = mongoose.model('Pub', pubSchema);
