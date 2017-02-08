@@ -210,6 +210,64 @@ UserPickSchema.statics.delete = function(id) {
     });
 };
 
+UserPickSchema.statics.updateDataUser = function (jsonDataUser,recoverDataFromDb,callback) {
+
+    return new Promise(function(resolve, reject) {
+
+        var userUpdate = {}
+
+
+        if(typeof jsonDataUser.email == 'undefined' && typeof jsonDataUser.name == 'undefined' && typeof jsonDataUser.photo_url =='undefined' && typeof jsonDataUser.new_password == 'undefined' ){
+            reject({ result: "ERROR", data: { "code": 400, "description": "Bad request." } });
+            return;
+        }
+
+        if (jsonDataUser.email){
+            userUpdate['email']=jsonDataUser.email;
+        }
+
+        if(jsonDataUser.photo_url){
+            userUpdate['photo_url'] = jsonDataUser.photo_url
+        }
+
+        if(jsonDataUser.name){
+            userUpdate['name'] = jsonDataUser.name
+        }
+
+
+        if(jsonDataUser.new_password){
+            if(jsonDataUser.old_password != recoverDataFromDb.password){
+                reject({ result: "ERROR", data: { "code": 405, "description": "Password is not correct." } });
+            }else{
+                userUpdate['password']=jsonDataUser.new_password;
+            }
+        }
+
+        userPick.update({_id: jsonDataUser.id}, {$set :userUpdate}, function(err, newData){
+            resolve(newData);
+        })
+
+
+    })
+
+}
+
+UserPickSchema.statics.findUserById = function(id){
+    return new Promise(function(resolve, reject) {
+        userPick.findById(id, function (err, user) {
+
+            if(err){
+                reject({ result: "ERROR", data: { "code": 400, "description": "Bad request." } });
+                return;
+            }
+
+            resolve(user);
+
+        })
+    });
+}
+
+
 
 var userPick = mongoose.model('userPick',UserPickSchema);
 

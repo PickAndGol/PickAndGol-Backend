@@ -88,6 +88,32 @@ jwtRouter.delete('/', function(req, res) {
         .catch(sendErrorResponse);
 });
 
+jwtRouter.put('/:id',function(req, res) {
+
+    let userData={};
+    userData['email'] = req.body.email;
+    userData['name'] = req.body.name;
+    userData['photo_url'] = req.body.photo_url;
+    userData['old_password'] = req.body.old_password;
+    userData['new_password'] = req.body.new_password;
+    userData['id'] = req.params.id
+
+    User.findUserById(userData['id']).then(function(data){
+        User.updateDataUser(userData, data).then(function(data){
+
+            delete userData['old_password'];
+            delete userData['new_password'];
+
+            res.json({result: "OK", data: { data: userData}});
+
+        }).catch(function(err){
+            res.json({success:false, payload:err});
+        });
+    });
+
+
+});
+
 module.exports = {
     router: router,
     jwtRouter: jwtRouter
