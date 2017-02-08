@@ -16,11 +16,9 @@ let jwtAuth = require('../../../lib/jwtAuth');
 jwtRouter.use(jwtAuth());
 
 
-
-
 // Routes
 
-router.get('/:id', function (req, res) {
+jwtRouter.get('/:id', function (req, res) {
     
     function sendOKResponse(data) {
         return res.json({ result: "OK", data: data });
