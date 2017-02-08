@@ -5,6 +5,7 @@
   "description": "Backend for PickAndGol project",
   "scripts": {
     "start": "node ./bin/www",
+    "startdb": ". ./scripts/startDB.sh",
     "debug": "nodemon ./bin/www DEBUG=generated:*"
   },
   "repository": {

@@ -34,7 +34,9 @@ UserPickSchema.statics.saveNewUser = function(data, callback) {
         usuario.name = data.name;
         usuario.email = data.email;
         usuario.password = data.password;
-        usuario.enabled = data.enabled;
+        // For now, users are enabled at first
+        //usuario.enabled = data.enabled;
+        usuario.enabled = true;
 
         usuario.save(function (err, userSave) {
             if (err) {
@@ -166,23 +168,28 @@ var filterByField = function(filter, callback){
 UserPickSchema.statics.login = function(email, password) {
     return new Promise(function(resolve, reject) {
         if (email == null || password == null) {
-            reject({ code: 400, description: "Email and password are required." });
+            reject({ "code": 400, "description": "Email and password are required." });
             return;
         }
 
         userPick.findOne({ email: email }, function(err, user) {
             if (err) {
-                reject({ code: 400, description: "Bad request." });
+                reject({ "code": 400, "description": "Bad request." });
+                return;
+            }
+
+            if (user === null) {
+                reject({ "code": 404, "description": "User not found." });
                 return;
             }
 
             if (user.enabled === 'undefined' || !user.enabled) {
-                reject({ code: 403, description: "User account disabled." });
+                reject({ "code": 403, "description": "User account disabled." });
                 return;
             }
 
             if (user.password !== password) {
-                reject({ code: 401, description: "Bad credentials." });
+                reject({ "code": 401, "description": "Bad credentials." });
                 return;
             }
 
@@ -197,18 +204,46 @@ UserPickSchema.statics.login = function(email, password) {
     });
 };
 
-UserPickSchema.statics.delete = function(id) {
+UserPickSchema.statics.delete = function(userId, idToDelete) {
+    function validateUsers(callback) {
+        if (userId !== idToDelete) {
+            userPick.findOne({ _id: userId }, function(err, user) {
+                if (err) {
+                    callback({ "code": 400, "description": err });
+                    return;
+                }
+
+                if (user.name !== "admin") {
+                    callback({ "code": 403, "description": "Forbidden request." });
+                }
+
+                callback(null);
+            });
+        }
+
+        callback(null);
+    }
+
     return new Promise(function(resolve, reject) {
-        userPick.remove({ _id: id }, function(err) {
+        validateUsers(function(err) {
             if (err) {
-                reject({ code: 400, description: err });
+                reject(err);
                 return;
             }
 
-            resolve();
+            userPick.remove({ _id: idToDelete }, function(err) {
+
+                if (err) {
+                    reject({ "code": 404, "description": "Not found." });
+                    return;
+                }
+
+                resolve();
+            });
         });
     });
 };
+
 
 UserPickSchema.statics.updateDataUser = function (jsonDataUser,recoverDataFromDb,callback) {
 
@@ -265,6 +300,32 @@ UserPickSchema.statics.findUserById = function(id){
 
         })
     });
+}
+
+
+UserPickSchema.statics.getUser = function(idToGet, userId) {
+
+    let userPromise = new Promise(function(resolve, reject) {
+        userPick.findOne({ _id: idToGet }, function(err, user) {
+            if (err) {
+                // User not found
+                let error = { "code": 400, "description": err };
+                return reject(error);
+            }
+
+            // Cast user as Object to be able to use 'delete'
+            user = user.toObject();
+
+            // If user to get isn't the authenticathed one, don´t return email
+            if(idToGet !== userId){
+                delete user['email'];
+            }
+
+            resolve(user);
+        });
+    });
+
+    return userPromise;
 }
 
 

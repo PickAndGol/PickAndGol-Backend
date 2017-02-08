@@ -6,8 +6,10 @@
 
 let express = require("express");
 let router = express.Router();
-require('../../../models/Pub');
+
+
 let mongoose = require('mongoose');
+require('../../../models/Pub');
 let Pub = mongoose.model('Pub');
 
 let jwtAuth = require('../../../lib/jwtAuth');
@@ -15,12 +17,17 @@ router.use(jwtAuth());
 
 router.post("/bars", function (req, res) {
 
-    let pubName = req.name;
-    let pubLat = req.lat;
-    let pubLong = req.lon;
-    let pubUrl = req.url;
-    let pubPhoto = req.photo_url;
-    let pubOwner = req.decoded.id;
+    let pub = req.body;
+    let pubName = pub.name;
+    let pubLat = pub.lat;
+    let pubLong = pub.lon;
+    let pubUrl = pub.url;
+    let pubPhoto = pub.photo_url;
+
+    let pubOwner = pub.user_id;
+    if (pubOwner === 'undefined') {
+        pubOwner = pub.decoded.id;
+    }
 
     if (pubName === 'undefined' || pubLat === 'undefined'
         || pubLong === 'undefined' ){
