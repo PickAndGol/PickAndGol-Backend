@@ -34,7 +34,9 @@ UserPickSchema.statics.saveNewUser = function(data, callback) {
         usuario.name = data.name;
         usuario.email = data.email;
         usuario.password = data.password;
-        usuario.enabled = data.enabled;
+        // For now, users are enabled at first
+        //usuario.enabled = data.enabled;
+        usuario.enabled = true;
 
         usuario.save(function (err, userSave) {
             if (err) {
