@@ -29,12 +29,9 @@ jwtRouter.get('/:id', function (req, res) {
     }
     
     let idToGet = req.params.id;
+    let userId = req.decoded.id;
 
-    if(req.decoded){
-        let userId = req.decoded.id;
-    }
-
-    User.getUser(idToGet, null)
+    User.getUser(idToGet, userId)
         .then(sendOKResponse)
         .catch(sendErrorResponse);
 

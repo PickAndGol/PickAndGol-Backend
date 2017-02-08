@@ -246,8 +246,15 @@ UserPickSchema.statics.getUser = function(idToGet, userId) {
             if (err) {
                 // User not found
                 let error = { "code": 400, "description": err };
-                console.log(error);
                 return reject(error);
+            }
+
+            // Cast user as Object to be able to use 'delete'
+            user = user.toObject();
+
+            // If user to get isn't the authenticathed one, don´t return email
+            if(idToGet !== userId){
+                delete user['email'];
             }
 
             resolve(user);
