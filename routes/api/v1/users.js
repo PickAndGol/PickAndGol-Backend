@@ -36,14 +36,15 @@ jwtRouter.get('/:user_id', function (req, res) {
         return res.json({ result: "ERROR", data: data });
     }
     
-    let idToGet = req.params.id;
-    let userId = req.decoded.id;
+    let idToGet = req.params.user_id;
+    let requesterId = req.decoded.id;
 
-    User.getUser(idToGet, userId)
+    User.getUser(idToGet, requesterId)
         .then(sendOKResponse)
         .catch(sendErrorResponse);
 
 });
+
 
 router.post('/register', function(req,res) {
 
@@ -87,6 +88,7 @@ router.post('/register', function(req,res) {
     });
 });
 
+
 router.post('/login', function(req, res) {
     function sendOKResponse(data) {
         return res.json({ result: "OK", data: data });
@@ -104,22 +106,44 @@ router.post('/login', function(req, res) {
         .catch(sendErrorResponse);
 });
 
-jwtRouter.delete('/:id', function(req, res) {
-    function sendOKResponse() {
-        return res.json({ result: "OK" });
+/**
+ * POST /users/:user_id/favorites
+ * 
+ * Return user data
+ * 
+ * * Only authenticated users can request
+ * * Email will only be returned if authenticated user is the requester
+ */
+jwtRouter.post('/:user_id/favorites/:pub_id', function (req, res) {
+    
+    function sendOKResponse(data) {
+        return res.json({ result: "OK", data: data });
     }
 
     function sendErrorResponse(data) {
         return res.json({ result: "ERROR", data: data });
     }
+    
+    let userId = req.params.user_id;
+    let pubId = req.params.pub_id;
+    let requesterId = req.decoded.id;
 
-    let idToDelete = req.params.id;
-    let userId = req.decoded.id;
+    console.log('userId', userId);
+    console.log('pubId', pubId);
+    console.log('requesterId', requesterId);
 
-    User.delete(userId, idToDelete)
+    // Check if user is the authenticated one
+    if (userId !== requesterId) {
+        const errorData = { "code": 400, "description": "Bad request (User id must be the authenticated one)." };
+        return sendErrorResponse(errorData);
+    }
+
+    User.addFavoritePub(pubId, userId)
         .then(sendOKResponse)
         .catch(sendErrorResponse);
+
 });
+
 
 jwtRouter.put('/:id',function(req, res) {
 
@@ -143,8 +167,24 @@ jwtRouter.put('/:id',function(req, res) {
             res.json({success:false, payload:err});
         });
     });
+});
 
 
+jwtRouter.delete('/:id', function(req, res) {
+    function sendOKResponse() {
+        return res.json({ result: "OK" });
+    }
+
+    function sendErrorResponse(data) {
+        return res.json({ result: "ERROR", data: data });
+    }
+
+    let idToDelete = req.params.id;
+    let userId = req.decoded.id;
+
+    User.delete(userId, idToDelete)
+        .then(sendOKResponse)
+        .catch(sendErrorResponse);
 });
 
 module.exports = {

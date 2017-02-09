@@ -11,16 +11,19 @@ var UserPickSchema = mongoose.Schema({
     name: {
         type: String,
         required: true,
-        index:true
+        index: true
     },
     email: {
         type: String,
         required: true,
-        index:true
+        index: { unique: true } // email unique in database
     },
-    password:String,
+    password: String,
     photo_url: String,
-    enabled: Boolean
+    enabled: Boolean,
+    favorite_pubs: [{
+        type: String
+    }]
 });
 
 // This function support callback or promise
@@ -287,6 +290,7 @@ UserPickSchema.statics.updateDataUser = function (jsonDataUser,recoverDataFromDb
 
 }
 
+
 UserPickSchema.statics.findUserById = function(id){
     return new Promise(function(resolve, reject) {
         userPick.findById(id, function (err, user) {
@@ -335,6 +339,40 @@ UserPickSchema.statics.getUser = function(idToGet, userId) {
     });
 
     return userPromise;
+}
+
+/**
+ * Add pub as favorite
+ * 
+ * @param idToGet -> id of data requested user
+ * @param userId -> id of user requesting this data
+ * 
+ * When userId !== idToGet, email data won't be returned
+ */
+UserPickSchema.statics.addFavoritePub = function(pubId, userId) {
+
+    // TODO: Check if pub exists
+
+    // Update query configuration
+    const queryUser = { _id: userId };
+    const updatePub = { 
+        favorite_pubs: { '$addToSet': pubId } 
+    };
+
+    let addFavoritePromise = new Promise(function(resolve, reject) {
+        // Add pub to favorites set
+        userPick.update( { queryUser }, { updatePub }, function(err, updateResult) {
+            if (err) {
+                // User not found
+                let error = { "code": 400, "description": err };
+                return reject(error);
+            }
+
+            resolve(updateResult);
+        });
+    });
+
+    return addFavoritePromise;
 }
 
 
