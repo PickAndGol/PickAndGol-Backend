@@ -302,11 +302,20 @@ UserPickSchema.statics.findUserById = function(id){
     });
 }
 
-
+/**
+ * Get user
+ * 
+ * @param idToGet -> id of data requested user
+ * @param userId -> id of user requesting this data
+ * 
+ * When userId !== idToGet, email data won't be returned
+ */
 UserPickSchema.statics.getUser = function(idToGet, userId) {
 
+    const queryUser = { _id: idToGet };
+
     let userPromise = new Promise(function(resolve, reject) {
-        userPick.findOne({ _id: idToGet }, function(err, user) {
+        userPick.findOne(queryUser, function(err, user) {
             if (err) {
                 // User not found
                 let error = { "code": 400, "description": err };

@@ -18,7 +18,15 @@ jwtRouter.use(jwtAuth());
 
 // Routes
 
-jwtRouter.get('/:id', function (req, res) {
+/**
+ * GET /users/:user_id
+ * 
+ * Return user data
+ * 
+ * * Only authenticated users can request
+ * * Email will only be returned if authenticated user is the requester
+ */
+jwtRouter.get('/:user_id', function (req, res) {
     
     function sendOKResponse(data) {
         return res.json({ result: "OK", data: data });
