@@ -34,7 +34,9 @@ UserPickSchema.statics.saveNewUser = function(data, callback) {
         usuario.name = data.name;
         usuario.email = data.email;
         usuario.password = data.password;
-        usuario.enabled = data.enabled;
+        // For now, users are enabled at first
+        //usuario.enabled = data.enabled;
+        usuario.enabled = true;
 
         usuario.save(function (err, userSave) {
             if (err) {
@@ -241,6 +243,91 @@ UserPickSchema.statics.delete = function(userId, idToDelete) {
         });
     });
 };
+
+
+UserPickSchema.statics.updateDataUser = function (jsonDataUser,recoverDataFromDb,callback) {
+
+    return new Promise(function(resolve, reject) {
+
+        var userUpdate = {}
+
+
+        if(typeof jsonDataUser.email == 'undefined' && typeof jsonDataUser.name == 'undefined' && typeof jsonDataUser.photo_url =='undefined' && typeof jsonDataUser.new_password == 'undefined' ){
+            reject({ result: "ERROR", data: { "code": 400, "description": "Bad request." } });
+            return;
+        }
+
+        if (jsonDataUser.email){
+            userUpdate['email']=jsonDataUser.email;
+        }
+
+        if(jsonDataUser.photo_url){
+            userUpdate['photo_url'] = jsonDataUser.photo_url
+        }
+
+        if(jsonDataUser.name){
+            userUpdate['name'] = jsonDataUser.name
+        }
+
+
+        if(jsonDataUser.new_password){
+            if(jsonDataUser.old_password != recoverDataFromDb.password){
+                reject({ result: "ERROR", data: { "code": 405, "description": "Password is not correct." } });
+            }else{
+                userUpdate['password']=jsonDataUser.new_password;
+            }
+        }
+
+        userPick.update({_id: jsonDataUser.id}, {$set :userUpdate}, function(err, newData){
+            resolve(newData);
+        })
+
+
+    })
+
+}
+
+UserPickSchema.statics.findUserById = function(id){
+    return new Promise(function(resolve, reject) {
+        userPick.findById(id, function (err, user) {
+
+            if(err){
+                reject({ result: "ERROR", data: { "code": 400, "description": "Bad request." } });
+                return;
+            }
+
+            resolve(user);
+
+        })
+    });
+}
+
+
+UserPickSchema.statics.getUser = function(idToGet, userId) {
+
+    let userPromise = new Promise(function(resolve, reject) {
+        userPick.findOne({ _id: idToGet }, function(err, user) {
+            if (err) {
+                // User not found
+                let error = { "code": 400, "description": err };
+                return reject(error);
+            }
+
+            // Cast user as Object to be able to use 'delete'
+            user = user.toObject();
+
+            // If user to get isn't the authenticathed one, don´t return email
+            if(idToGet !== userId){
+                delete user['email'];
+            }
+
+            resolve(user);
+        });
+    });
+
+    return userPromise;
+}
+
 
 
 var userPick = mongoose.model('userPick',UserPickSchema);

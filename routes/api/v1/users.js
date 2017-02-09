@@ -15,6 +15,28 @@ let jwtAuth = require('../../../lib/jwtAuth');
 
 jwtRouter.use(jwtAuth());
 
+
+// Routes
+
+jwtRouter.get('/:id', function (req, res) {
+    
+    function sendOKResponse(data) {
+        return res.json({ result: "OK", data: data });
+    }
+
+    function sendErrorResponse(data) {
+        return res.json({ result: "ERROR", data: data });
+    }
+    
+    let idToGet = req.params.id;
+    let userId = req.decoded.id;
+
+    User.getUser(idToGet, userId)
+        .then(sendOKResponse)
+        .catch(sendErrorResponse);
+
+});
+
 router.post('/register', function(req,res) {
 
 
@@ -39,7 +61,7 @@ router.post('/register', function(req,res) {
                 res.json({
                         "result":"ERROR",
                         "data": {"code": 409, "description": "Conflict (username already exists)."}
-            }
+                    }
                 );
             }
 
@@ -89,6 +111,32 @@ jwtRouter.delete('/:id', function(req, res) {
     User.delete(userId, idToDelete)
         .then(sendOKResponse)
         .catch(sendErrorResponse);
+});
+
+jwtRouter.put('/:id',function(req, res) {
+
+    let userData={};
+    userData['email'] = req.body.email;
+    userData['name'] = req.body.name;
+    userData['photo_url'] = req.body.photo_url;
+    userData['old_password'] = req.body.old_password;
+    userData['new_password'] = req.body.new_password;
+    userData['id'] = req.params.id
+
+    User.findUserById(userData['id']).then(function(data){
+        User.updateDataUser(userData, data).then(function(data){
+
+            delete userData['old_password'];
+            delete userData['new_password'];
+
+            res.json({result: "OK", data: { data: userData}});
+
+        }).catch(function(err){
+            res.json({success:false, payload:err});
+        });
+    });
+
+
 });
 
 module.exports = {

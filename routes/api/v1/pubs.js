@@ -7,7 +7,6 @@
 let express = require("express");
 let jwtRouter = express.Router();
 let router = express.Router();
-require('../../../models/Pub');
 let mongoose = require('mongoose');
 require('../../../models/Pub');
 let Pub = mongoose.model('Pub');
@@ -80,7 +79,7 @@ jwtRouter.post("/bars", function (req, res) {
 
 router.get('/:id', function(req, res) {
     let id = req.params.id;
-    console.log('Buscando el id ' + id);
+
     function sendOKResponse(data) {
         return res.json({ "result": "OK", "data": data });
     }

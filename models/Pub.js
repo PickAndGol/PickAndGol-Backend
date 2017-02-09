@@ -54,7 +54,6 @@ pubSchema.statics.detailPub = function(id) {
                 return;
             }
 
-            console.log('contenido de pub: ' + pub);
             if (pub == null) {
                 reject({ "code": 404, "description": "Not found." });
                 return;
