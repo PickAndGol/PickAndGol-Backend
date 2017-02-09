@@ -22,7 +22,8 @@ var UserPickSchema = mongoose.Schema({
     photo_url: String,
     enabled: Boolean,
     favorite_pubs: [{
-        type: String
+        type: String,
+        "_id": false
     }]
 });
 
@@ -354,14 +355,13 @@ UserPickSchema.statics.addFavoritePub = function(pubId, userId) {
     // TODO: Check if pub exists
 
     // Update query configuration
-    const queryUser = { _id: userId };
     const updatePub = { 
-        favorite_pubs: { '$addToSet': pubId } 
+        $addToSet: { favorite_pubs: pubId }
     };
 
     let addFavoritePromise = new Promise(function(resolve, reject) {
         // Add pub to favorites set
-        userPick.update( { queryUser }, { updatePub }, function(err, updateResult) {
+        userPick.findByIdAndUpdate( userId, updatePub, function(err, updateResult) {
             if (err) {
                 // User not found
                 let error = { "code": 400, "description": err };
