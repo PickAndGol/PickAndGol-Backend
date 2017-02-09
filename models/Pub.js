@@ -5,7 +5,6 @@
 "use strict";
 
 let mongoose = require('mongoose');
-// XXX let async = require('async');
 
 let pubSchema = mongoose.Schema({
     name: {
@@ -19,7 +18,6 @@ let pubSchema = mongoose.Schema({
         type: Number,
         required: true},
     url: String,
-    photo_url: String,
     owner_id: {
         type: String,
         required: true,
@@ -46,6 +44,34 @@ pubSchema.statics.findPub = function (pubData, callback) {
         }
         return callback(null, pub)
     })
+};
+
+pubSchema.statics.detailPub = function(id) {
+    return new Promise(function(resolve, reject) {
+        Pub.findOne({ _id: id }, function(err, pub) {
+            if (err) {
+                reject({ "code": 400, "description": err });
+                return;
+            }
+
+            console.log('contenido de pub: ' + pub);
+            if (pub == null) {
+                reject({ "code": 404, "description": "Not found." });
+                return;
+            }
+
+            resolve({
+                "id": pub._id,
+                "name": pub.name,
+                "latitude": pub.latitude,
+                "longitude": pub.longitude,
+                "url": pub.url,
+                "owner": pub.owner_id,
+                "events": [],
+                "photos": []
+            });
+        });
+    });
 };
 
 var Pub = mongoose.model('Pub', pubSchema);
