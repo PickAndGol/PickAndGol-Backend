@@ -5,6 +5,8 @@
 "use strict";
 
 let mongoose = require('mongoose');
+require('./BarPicture');
+let barPicture = mongoose.model('barPicture');
 
 let pubSchema = mongoose.Schema({
     name: {
@@ -59,7 +61,23 @@ pubSchema.statics.detailPub = function(id) {
                 return;
             }
 
-            resolve(pub);
+            barPicture.list(pub._id, function(err, barPictures) {
+                if (err) {
+                    console.log('Error while retrieving pictures: ' + err);
+                    return;
+                }
+
+                resolve({
+                    "id": pub._id,
+                    "name": pub.name,
+                    "latitude": pub.latitude,
+                    "longitude": pub.longitude,
+                    "url": pub.url,
+                    "owner": pub.owner_id,
+                    "events": [],
+                    "photos": barPictures
+                });
+            });
         });
     })
 };
@@ -67,9 +85,7 @@ pubSchema.statics.detailPub = function(id) {
 pubSchema.statics.findPubsList = function (filter, start, limit, sort, callback) {
 
     let query = Pub.find(filter);
-
-    let count = Pub.count
-
+    
     query.skip(start);
     query.limit(limit);
     query.sort(sort);
@@ -77,4 +93,4 @@ pubSchema.statics.findPubsList = function (filter, start, limit, sort, callback)
     return query.exec(callback);
 };
 
-var Pub = mongoose.model('Pub', pubSchema);
+let Pub = mongoose.model('Pub', pubSchema);
