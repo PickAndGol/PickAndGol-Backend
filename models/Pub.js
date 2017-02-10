@@ -11,18 +11,18 @@ let pubSchema = mongoose.Schema({
         type:String,
         required: true,
         index: true},
-    longitude: {
-        type: Number,
-        required: true},
-    latitude: {
-        type: Number,
-        required: true},
+    location: {
+        type: {type: String},
+        coordinates: [Number]
+    },
     url: String,
     owner_id: {
         type: String,
         required: true,
         index: true}
 });
+
+pubSchema.index({location: '2dsphere'});
 
 pubSchema.statics.savePub = function (newPub, callback) {
 
@@ -47,30 +47,34 @@ pubSchema.statics.findPub = function (pubData, callback) {
 };
 
 pubSchema.statics.detailPub = function(id) {
-    return new Promise(function(resolve, reject) {
-        Pub.findOne({ _id: id }, function(err, pub) {
+    return new Promise(function (resolve, reject) {
+        Pub.findOne({_id: id}, function (err, pub) {
             if (err) {
-                reject({ "code": 400, "description": err });
+                reject({"code": 400, "description": err});
                 return;
             }
 
             if (pub == null) {
-                reject({ "code": 404, "description": "Not found." });
+                reject({"code": 404, "description": "Not found."});
                 return;
             }
 
-            resolve({
-                "id": pub._id,
-                "name": pub.name,
-                "latitude": pub.latitude,
-                "longitude": pub.longitude,
-                "url": pub.url,
-                "owner": pub.owner_id,
-                "events": [],
-                "photos": []
-            });
+            resolve(pub);
         });
-    });
+    })
+};
+
+pubSchema.statics.findPubsList = function (filter, start, limit, sort, callback) {
+
+    let query = Pub.find(filter);
+
+    let count = Pub.count
+
+    query.skip(start);
+    query.limit(limit);
+    query.sort(sort);
+
+    return query.exec(callback);
 };
 
 var Pub = mongoose.model('Pub', pubSchema);
