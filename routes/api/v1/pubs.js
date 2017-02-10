@@ -43,14 +43,13 @@ jwtRouter.post("/pubs", function (req, res) {
         });
     }
 
-    let pubData = new Pub({
-        name: pubName,
-        latitude: pubLat,
-        longitude: pubLong,
-        url: pubUrl,
-        photo_url:pubPhoto,
-        owner_id:pubOwner
-    });
+    let pubData = new Pub();
+    pubData.name = pubName;
+    pubData.location.coordinates = [pubLat, pubLong];
+    pubData.url = pubUrl;
+    pubData.photo_url = pubPhoto;
+    pubData.owner_id = pubOwner;
+
 
     // Check if already exists
     Pub.findPub(pubData, function (err, pub) {
@@ -83,7 +82,7 @@ router.get('/pubs', function (req, res) {
     let query = req.query;
     let latitude =  parseFloat(query.latitude);
     let longitude = parseFloat(query.longitude);
-    let radius = parseInt(query.radius) || 1; //1km por defecto
+    let radius = parseInt(query.radius) || 1000; //1km por defecto
     let name = query.text;
 
     let start = parseInt(query.offset) || 0;
@@ -93,12 +92,23 @@ router.get('/pubs', function (req, res) {
     let searchCriteria = {};
 
     if (typeof latitude !== 'undefined'
-    && longitude !== 'undefined'
-    && radius !== 'undefined') {
-        searchCriteria.latitude = latitude;
-        searchCriteria.longitude = longitude;
-        searchCriteria.radius = radius;
+        && longitude !== 'undefined'
+        && radius !== 'undefined') {
+
+        searchCriteria.location = {
+            location: {
+                $nearSphere: {
+                    $geometry: {
+                        type: 'Point',
+                        coordinates: [latitude, longitude]
+                    },
+                    $maxDistance: radius
+                }
+            }
+        };
+
     }
+
     if (typeof name !== 'undefined'){
         searchCriteria.name = new RegExp('^' + name, 'i');
     }

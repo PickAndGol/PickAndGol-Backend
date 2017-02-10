@@ -12,6 +12,10 @@ let pubSchema = mongoose.Schema({
         type:String,
         required: true,
         index: true},
+    location: {
+        type: {type: String},
+        coordinates: [Number]
+    },
     longitude: {
         type: Number,
         required: true},
@@ -25,6 +29,8 @@ let pubSchema = mongoose.Schema({
         required: true,
         index: true}
 });
+
+pubSchema.index({location: '2dsphere'});
 
 pubSchema.statics.savePub = function (newPub, callback) {
 
