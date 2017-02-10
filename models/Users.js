@@ -353,6 +353,7 @@ UserPickSchema.statics.getUser = function(idToGet, userId) {
 UserPickSchema.statics.addFavoritePub = function(pubId, userId) {
 
     // TODO: Check if pub exists
+    
 
     // Update query configuration
     const updatePub = { 

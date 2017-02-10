@@ -128,10 +128,6 @@ jwtRouter.post('/:user_id/favorites/:pub_id', function (req, res) {
     let pubId = req.params.pub_id;
     let requesterId = req.decoded.id;
 
-    console.log('userId', userId);
-    console.log('pubId', pubId);
-    console.log('requesterId', requesterId);
-
     // Check if user is the authenticated one
     if (userId !== requesterId) {
         const errorData = { "code": 400, "description": "Bad request (User id must be the authenticated one)." };
