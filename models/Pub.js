@@ -70,8 +70,7 @@ pubSchema.statics.detailPub = function(id) {
                 resolve({
                     "id": pub._id,
                     "name": pub.name,
-                    "latitude": pub.latitude,
-                    "longitude": pub.longitude,
+                    "location": pub.location,
                     "url": pub.url,
                     "owner": pub.owner_id,
                     "events": [],
