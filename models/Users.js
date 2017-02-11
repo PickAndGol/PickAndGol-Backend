@@ -6,6 +6,7 @@
 var mongoose = require('mongoose');
 let jwt = require('jsonwebtoken');
 let config = require('../local_config');
+let crypto = require('crypto');
 
 var UserPickSchema = mongoose.Schema({
     name: {
@@ -20,7 +21,13 @@ var UserPickSchema = mongoose.Schema({
     },
     password:String,
     photo_url: String,
-    enabled: Boolean
+    enabled: Boolean,
+    resetPasswordToken: String,
+    resetPasswordExpires: Date,
+    favorite_pubs: [{
+        type: String,
+        "_id": false
+    }]
 });
 
 // This function support callback or promise
@@ -39,6 +46,7 @@ UserPickSchema.statics.saveNewUser = function(data, callback) {
         usuario.enabled = true;
 
         usuario.save(function (err, userSave) {
+
             if (err) {
                 if (callback) {
                     callback(err);
@@ -52,7 +60,6 @@ UserPickSchema.statics.saveNewUser = function(data, callback) {
                 callback(null, userSave);
                 return;
             }
-
             resolve(userSave);
             return;
 
@@ -64,68 +71,42 @@ UserPickSchema.statics.saveNewUser = function(data, callback) {
 
 }
 
-UserPickSchema.statics.existMail = function(email, callback) {
+UserPickSchema.statics.existMailNotInsert = function(user, callback) {
 
     return new Promise(function (resolve, reject) {
 
-        var field = {}
-        field['email'] = email;
-        filterByField(field,null).then(function(data, err){
+        if(user){
+            reject({
+                "result": "ERROR",
+                "data": { "code": 409, "description": "Conflict (email already exists)." }
+            })
+        }else{
+           resolve(user);
+        }
 
-            if(err){
-                if (callback) {
-                    console.log(err);
-                    callback(err, null);
-                    return;
-                }
-
-                reject("NOK");
-                return;
-            }
-            if (callback) {
-                callback(null, data);
-                return
-            }
-            resolve(data);
-            return;
-
-        });
 
     });
 }
 
-UserPickSchema.statics.existName = function(nameUser, callback) {
+UserPickSchema.statics.existNameNotInsert = function(user, callback) {
 
     return new Promise(function (resolve, reject) {
 
-        var field = {}
-        field['name'] = nameUser;
-        filterByField(field,null).then(function(data, err){
+        if(user){
+            reject({
+                "result": "ERROR",
+                "data": {"code": 409, "description": "Conflict (username already exists)."}
+            })
+        }else{
+            resolve(user);
+        }
 
-            if(err){
-                if (callback) {
-                    console.log(err);
-                    callback(err, null);
-                    return;
-                }
-
-                reject("NOK");
-                return;
-            }
-            if (callback) {
-                callback(null, data);
-                return
-            }
-            resolve(data);
-            return;
-
-        });
 
     });
 }
 
 
-var filterByField = function(filter, callback){
+UserPickSchema.statics.filterByField = function(filter, callback){
 
     return new Promise(function(resolve, reject){
 
@@ -149,14 +130,14 @@ var filterByField = function(filter, callback){
             if(data){
                 exist=true;
             }
-            console.log("Resultado"+exist);
+
 
             if (callback) {
                 callback(null, exist);
                 return
             }
 
-            resolve(exist);
+            resolve(data);
             return;
 
         });
@@ -271,14 +252,18 @@ UserPickSchema.statics.updateDataUser = function (jsonDataUser,recoverDataFromDb
 
 
         if(jsonDataUser.new_password){
+
             if(jsonDataUser.old_password != recoverDataFromDb.password){
+
                 reject({ result: "ERROR", data: { "code": 405, "description": "Password is not correct." } });
             }else{
                 userUpdate['password']=jsonDataUser.new_password;
             }
+
         }
 
         userPick.update({_id: jsonDataUser.id}, {$set :userUpdate}, function(err, newData){
+
             resolve(newData);
         })
 
@@ -296,8 +281,11 @@ UserPickSchema.statics.findUserById = function(id){
                 return;
             }
 
-            resolve(user);
-
+            if(user){
+                resolve(user);
+            }else{
+                reject({ "code": 404, "description": "Not found." });
+            }
         })
     });
 }
@@ -328,6 +316,101 @@ UserPickSchema.statics.getUser = function(idToGet, userId) {
     return userPromise;
 }
 
+
+UserPickSchema.statics.recoverPassword = function(user){
+    return new Promise(function(resolve, reject){
+        let buf = crypto.randomBytes(20);
+        user.resetPasswordToken =buf.toString('hex');
+        user.resetPasswordExpires = Date.now() + 36000000; // 1 hour
+        user.save(function (err, userSave) {
+
+            if(err){
+                reject({ result: "ERROR", data: { "code": 400, "description": "Bad request." } });
+            }
+            resolve(user);
+
+        })
+
+    });
+}
+
+UserPickSchema.statics.resetPasswordWithToken = function(user, newpass){
+    return new Promise(function(resolve, reject){
+
+        user.password=newpass;
+        user.save(function (err, userSave) {
+
+
+            if(err){
+                reject({ result: "ERROR", data: { "code": 400, "description": "Bad request." } });
+            }
+            resolve(user);
+
+        })
+
+    });
+}
+
+
+/**
+ * Add pub as favorite
+ * 
+ * @param idToGet -> id of data requested user
+ * @param requesterId -> id of user requesting this data
+ * 
+ * When userId !== idToGet, email data won't be returned
+ * It assumes pubId is already checked
+ */
+UserPickSchema.statics.addFavoritePub = function(pubId, requesterId) {
+
+    // Update query configuration
+    const updatePub = { 
+        $addToSet: { favorite_pubs: pubId }
+    };
+
+    let addFavoritePromise = new Promise(function(resolve, reject) {
+        // Add pub to favorites set
+        userPick.findByIdAndUpdate( 
+            requesterId, 
+            updatePub,
+            {new: true}, // Return updated object
+            function(err, updateResult) {
+            if (err) {
+                // User not found
+                let error = { "code": 400, "description": err };
+                return reject(error);
+            }
+
+            resolve(updateResult);
+            
+        });
+    });
+
+    return addFavoritePromise;
+}
+
+/**
+ * Get user favorites
+ * 
+ * @param userId -> id of user data
+ */
+UserPickSchema.statics.getFavoritePubs = function(userId) {
+
+    let getFavoritesPromise = new Promise(function(resolve, reject) {
+        // Get user favorites
+        userPick.findById( userId, 'favorite_pubs', function(err, favorites) {
+            if (err) {
+                // User not found
+                let error = { "code": 400, "description": err };
+                return reject(error);
+            }
+
+            resolve(favorites);
+        });
+    });
+
+    return getFavoritesPromise;
+}
 
 
 var userPick = mongoose.model('userPick',UserPickSchema);
