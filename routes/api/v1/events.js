@@ -12,15 +12,15 @@ var mongoose = require('mongoose');
 var Event = mongoose.model('Event');
 
 //require model
-require('../../../models/Events');
-//var Events = require('../../../models/Events');
+//require('../../../models/Events');
+var Events = require('../../../models/Events');
 
 let jwtAuth = require('../../../lib/jwtAuth');
 
 jwtRouter.use(jwtAuth());
 
 //POST create new event
-jwtRouter.post('/', function(req, res, next) {
+router.post('/', function(req, res, next) {
 
     var newEvent = req.body;
 
@@ -43,12 +43,12 @@ jwtRouter.post('/', function(req, res, next) {
 //GET/events list
 router.get('/', function(req, res) {
 
-    var pub = req.query.pub;
+    var pub = req.query.pub;// asignarle el valor que devuelve de la lista de bares
     var today = new Date().getDate();
     var name = req.query.name;
     var date = req.query.date;
     var description = req.query.description;
-    var start = parseInt(req.query.start) || today;
+    var start = parseInt(req.query.limit) || today;
     var limit = parseInt(req.query.limit) || 20;
     var sort = req.query.sort || null;
 
@@ -68,7 +68,7 @@ router.get('/', function(req, res) {
 
     if (typeof date < today){
 
-        criteria.start = date.start;
+        criteria.date= today.start;
     }
 
 
@@ -89,5 +89,6 @@ router.get('/', function(req, res) {
 });
 
 
-module.exports = { router : router,
+module.exports = {
+    router : router,
     jwtRouter: jwtRouter}
