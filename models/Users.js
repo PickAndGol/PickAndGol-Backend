@@ -6,21 +6,24 @@
 var mongoose = require('mongoose');
 let jwt = require('jsonwebtoken');
 let config = require('../local_config');
+let crypto = require('crypto');
 
 var UserPickSchema = mongoose.Schema({
     name: {
         type: String,
         required: true,
-        index: true
+        index:true
     },
     email: {
         type: String,
         required: true,
-        index: { unique: true } // email unique in database
+        index:true
     },
-    password: String,
+    password:String,
     photo_url: String,
     enabled: Boolean,
+    resetPasswordToken: String,
+    resetPasswordExpires: Date,
     favorite_pubs: [{
         type: String,
         "_id": false
@@ -74,7 +77,7 @@ UserPickSchema.statics.existMail = function(email, callback) {
 
         var field = {}
         field['email'] = email;
-        filterByField(field,null).then(function(data, err){
+        userPick.filterByField(field,null).then(function(data, err){
 
             if(err){
                 if (callback) {
@@ -104,7 +107,7 @@ UserPickSchema.statics.existName = function(nameUser, callback) {
 
         var field = {}
         field['name'] = nameUser;
-        filterByField(field,null).then(function(data, err){
+        userPick.filterByField(field,null).then(function(data, err){
 
             if(err){
                 if (callback) {
@@ -129,7 +132,7 @@ UserPickSchema.statics.existName = function(nameUser, callback) {
 }
 
 
-var filterByField = function(filter, callback){
+UserPickSchema.statics.filterByField = function(filter, callback){
 
     return new Promise(function(resolve, reject){
 
@@ -153,14 +156,14 @@ var filterByField = function(filter, callback){
             if(data){
                 exist=true;
             }
-            console.log("Resultado"+exist);
+
 
             if (callback) {
                 callback(null, exist);
                 return
             }
 
-            resolve(exist);
+            resolve(data);
             return;
 
         });
@@ -291,7 +294,6 @@ UserPickSchema.statics.updateDataUser = function (jsonDataUser,recoverDataFromDb
 
 }
 
-
 UserPickSchema.statics.findUserById = function(id){
     return new Promise(function(resolve, reject) {
         userPick.findById(id, function (err, user) {
@@ -307,20 +309,11 @@ UserPickSchema.statics.findUserById = function(id){
     });
 }
 
-/**
- * Get user
- * 
- * @param idToGet -> id of data requested user
- * @param userId -> id of user requesting this data
- * 
- * When userId !== idToGet, email data won't be returned
- */
+
 UserPickSchema.statics.getUser = function(idToGet, userId) {
 
-    const queryUser = { _id: idToGet };
-
     let userPromise = new Promise(function(resolve, reject) {
-        userPick.findOne(queryUser, function(err, user) {
+        userPick.findOne({ _id: idToGet }, function(err, user) {
             if (err) {
                 // User not found
                 let error = { "code": 400, "description": err };
@@ -341,6 +334,43 @@ UserPickSchema.statics.getUser = function(idToGet, userId) {
 
     return userPromise;
 }
+
+
+UserPickSchema.statics.recoverPassword = function(user){
+    return new Promise(function(resolve, reject){
+        let buf = crypto.randomBytes(20);
+        user.resetPasswordToken =buf.toString('hex');
+        user.resetPasswordExpires = Date.now() + 36000000; // 1 hour
+        user.save(function (err, userSave) {
+
+
+            if(err){
+                reject({ result: "ERROR", data: { "code": 400, "description": "Bad request." } });
+            }
+            resolve(user);
+
+        })
+
+    });
+}
+
+UserPickSchema.statics.resetPasswordWithToken = function(user, newpass){
+    return new Promise(function(resolve, reject){
+
+        user.password=newpass;
+        user.save(function (err, userSave) {
+
+
+            if(err){
+                reject({ result: "ERROR", data: { "code": 400, "description": "Bad request." } });
+            }
+            resolve(user);
+
+        })
+
+    });
+}
+
 
 /**
  * Add pub as favorite
@@ -401,7 +431,6 @@ UserPickSchema.statics.getFavoritePubs = function(userId) {
 
     return getFavoritesPromise;
 }
-
 
 
 var userPick = mongoose.model('userPick',UserPickSchema);

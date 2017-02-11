@@ -13,6 +13,9 @@ var User = mongoose.model('userPick');
 
 let jwtAuth = require('../../../lib/jwtAuth');
 
+let mail = require('../../../lib/mail/senderMail');
+let htmlMessenger = require('../../../lib/mail/htmlMessage');
+
 jwtRouter.use(jwtAuth());
 
 
@@ -66,7 +69,7 @@ router.post('/register', function(req,res) {
         User.existName(req.body.name).then(function(data,err) {
 
             if(data){
-                console.log("El usuario Existe");
+                
                 res.json({
                         "result":"ERROR",
                         "data": {"code": 409, "description": "Conflict (username already exists)."}
@@ -126,7 +129,7 @@ jwtRouter.put('/:id',function(req, res) {
             res.json({result: "OK", data: { data: userData}});
 
         }).catch(function(err){
-            res.json({success:false, payload:err});
+            res.json({success:false, data:err});
         });
     });
 });
@@ -209,6 +212,37 @@ jwtRouter.get('/:user_id/favorites', function (req, res) {
         .catch(sendErrorResponse);
 
 });
+
+
+router.post('/recover', function(req, res){
+
+    let filter={};
+    filter['email'] = req.body.email;
+    console.log(filter);
+
+    User.filterByField(filter).then(User.recoverPassword).then(htmlMessenger.recoverPasswordHtml).then(function(data){
+        mail.sendMail(req.body.email,"Recover your pass",data);
+        res.json({result: "OK", data: data});
+    })
+});
+
+router.post('/forgotpass', function(req, res){
+
+    let filter={};
+    filter['resetPasswordToken'] = req.body.token;
+    if (req.body.newpass1 != req.body.newpass){
+        res.json({result:"ERROR", "data": {"code": 410, "description": "Pass are different"}})
+        return
+    }
+
+    User.filterByField(filter).then(function(data){
+        User.resetPasswordWithToken(data,req.body.newpass).then(function(data){
+            res.json({result:"OK" ,data:data});
+        })
+    })
+
+})
+
 
 module.exports = {
     router: router,

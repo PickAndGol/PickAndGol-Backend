@@ -5,17 +5,16 @@
 "use strict";
 
 let express = require("express");
+let jwtRouter = express.Router();
 let router = express.Router();
-
-
 let mongoose = require('mongoose');
 require('../../../models/Pub');
 let Pub = mongoose.model('Pub');
 
 let jwtAuth = require('../../../lib/jwtAuth');
-router.use(jwtAuth());
+jwtRouter.use(jwtAuth());
 
-router.post("/bars", function (req, res) {
+jwtRouter.post("/pubs", function (req, res) {
 
     let pub = req.body;
     let pubName = pub.name;
@@ -43,14 +42,13 @@ router.post("/bars", function (req, res) {
         });
     }
 
-    let pubData = new Pub({
-        name: pubName,
-        latitude: pubLat,
-        longitude: pubLong,
-        url: pubUrl,
-        photo_url:pubPhoto,
-        owner_id:pubOwner
-    });
+    let pubData = new Pub();
+    pubData.name = pubName;
+    pubData.location.coordinates = [pubLat, pubLong];
+    pubData.url = pubUrl;
+    pubData.photo_url = pubPhoto;
+    pubData.owner_id = pubOwner;
+
 
     // Check if already exists
     Pub.findPub(pubData, function (err, pub) {
@@ -78,4 +76,77 @@ router.post("/bars", function (req, res) {
 
 });
 
-module.exports = router;
+router.get('/:id', function(req, res) {
+    let id = req.params.id;
+
+    function sendOKResponse(data) {
+        return res.json({ "result": "OK", "data": data });
+    }
+
+    function sendErrorResponse(data) {
+        return res.json({ "result": "ERROR", "data": data });
+    }
+
+    Pub.detailPub(id)
+        .then(sendOKResponse)
+        .catch(sendErrorResponse);
+});
+
+router.get('/pubs', function (req, res) {
+
+    let query = req.query;
+    let latitude =  parseFloat(query.latitude);
+    let longitude = parseFloat(query.longitude);
+    let radius = parseInt(query.radius) || 1000; //1km por defecto
+    let name = query.text;
+
+    let start = parseInt(query.offset) || 0;
+    let limit = parseInt(query.limit) || 20;
+    let sort = query.sort || query.name;
+
+    let searchCriteria = {};
+
+    if (typeof latitude !== 'undefined'
+        && longitude !== 'undefined'
+        && radius !== 'undefined') {
+
+        searchCriteria.location = {
+            location: {
+                $nearSphere: {
+                    $geometry: {
+                        type: 'Point',
+                        coordinates: [latitude, longitude]
+                    },
+                    $maxDistance: radius
+                }
+            }
+        };
+
+    }
+
+    if (typeof name !== 'undefined'){
+        searchCriteria.name = new RegExp('^' + name, 'i');
+    }
+
+    return Pub.findPubsList(searchCriteria, start, limit, sort, function (err, pubs) {
+        if (err){
+            return res.json({
+                "result": "ERROR",
+                "data": {
+                    "code": 400,
+                    "description": "Bad request" }
+            });
+        }
+        return res.json({
+            "result":"OK",
+            "data":{
+                "numberOfPubs":pubs.length,
+                "items": pubs }
+        });
+    })
+});
+
+module.exports = {
+    router: router,
+    jwtRouter: jwtRouter
+};
