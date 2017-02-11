@@ -7,9 +7,11 @@ var express = require('express');
 var router = express.Router();
 let jwtRouter = express.Router();
 
-require('../../../models/Users');
 var mongoose =require('mongoose');
+require('../../../models/Users');
 var User = mongoose.model('userPick');
+require('../../../models/Pub');
+let Pub = mongoose.model('Pub');
 
 let jwtAuth = require('../../../lib/jwtAuth');
 
@@ -51,7 +53,6 @@ jwtRouter.get('/:user_id', function (req, res) {
 
 router.post('/register', function(req,res) {
 
-
     let filterEmail ={};
     let filterNameUser={};
 
@@ -72,7 +73,7 @@ router.post('/register', function(req,res) {
 
         console.log(err);
         res.json(err);
-    })  ;
+    });
 
 });
 
@@ -164,15 +165,22 @@ jwtRouter.post('/:user_id/favorites/:pub_id', function (req, res) {
     let pubId = req.params.pub_id;
     let requesterId = req.decoded.id;
 
-    // Check if user is the authenticated one
-    if (userId !== requesterId) {
-        const errorData = { "code": 400, "description": "Bad request (User id must be the authenticated one)." };
-        return sendErrorResponse(errorData);
-    }
-
-    User.addFavoritePub(pubId, userId)
-        .then(sendOKResponse)
+    Pub.detailPub(pubId)
+        .then(addFavorite)
         .catch(sendErrorResponse);
+
+    function addFavorite(pubData){
+        // Check if user is the authenticated one
+        if (userId !== requesterId) {
+            const errorData = { "code": 400, "description": "Bad request (User id must be the authenticated one)." };
+            return sendErrorResponse(errorData);
+        }
+
+        User.addFavoritePub(pubId, userId)
+            .then(sendOKResponse)
+            .catch(sendErrorResponse);
+
+    }
 
 });
 

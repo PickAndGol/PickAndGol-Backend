@@ -286,9 +286,6 @@ UserPickSchema.statics.findUserById = function(id){
             }else{
                 reject({ "code": 404, "description": "Not found." });
             }
-
-
-
         })
     });
 }
