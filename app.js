@@ -40,6 +40,7 @@ var Event = require('./models/Events');
 //routes
 let events = require('./routes/api/v1/events');
 app.use('/api/v1/events', events);
+app.use('/api/v1/events', events.jwtRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
