@@ -2,11 +2,12 @@
  * Created by Edu on 5/2/17.
  */
 
-"use strict";
+'use strict';
 
-let express = require("express");
+let express = require('express');
 let jwtRouter = express.Router();
 let router = express.Router();
+
 let mongoose = require('mongoose');
 require('../../../models/Pub');
 let Pub = mongoose.model('Pub');
@@ -14,7 +15,7 @@ let Pub = mongoose.model('Pub');
 let jwtAuth = require('../../../lib/jwtAuth');
 jwtRouter.use(jwtAuth());
 
-jwtRouter.post("/pubs", function (req, res) {
+jwtRouter.post("", function (req, res) {
 
     let pub = req.body;
     let pubName = pub.name;
@@ -23,10 +24,7 @@ jwtRouter.post("/pubs", function (req, res) {
     let pubUrl = pub.url;
     let pubPhoto = pub.photo_url;
 
-    let pubOwner = pub.user_id;
-    if (pubOwner === 'undefined') {
-        pubOwner = pub.decoded.id;
-    }
+    let pubOwner = pub.user_id || req.decoded.id;
 
     if (pubName === 'undefined' || pubLat === 'undefined'
         || pubLong === 'undefined' ){
@@ -66,7 +64,7 @@ jwtRouter.post("/pubs", function (req, res) {
         // If not exist we will create
         Pub.savePub(pubData, function (err, pub) {
             if (err){
-                return res.json({"result": "ERROR", "data": { "code": 500 }});
+                return res.json({"result": "ERROR", "data": { "code": 500, "data": err }});
             }
             console.log('Bar guardado', pub);
             return res.json({"result":"OK", "data":pub});
