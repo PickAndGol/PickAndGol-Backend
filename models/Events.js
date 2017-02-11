@@ -22,25 +22,32 @@ var eventSchema = mongoose.Schema({
                 required: false},
     category: {type: [String],
                 required: true},
-    pubs:   {type: [String],
+    pub:   {type: [String],
             required: true}
 
 });
 
 //static method for model
-eventSchema.statics.list = function(criterios,cb){
+eventSchema.statics.list = function(filters, start, limit, sort, cb){
+     var query = Event.find(filters);
+     query.skip(start);
+     query.limit(limit);
+     query.sort(sort);
+     console.log(filters);
 
-    //use .find() sin el callback para que me de un objeto sin ejecutar
-    var query = Event.find(criterios);
+    return query.exec(cb);
+};
 
-    //query.sort('name');
-    query.exec(function (err,rows){
-        if(err){
+eventSchema.statics.findEvent = function (eventData, cb) {
+    Event.findOne({name:eventData.name}).exec(function (err, event) {
+        if (err){
             return cb(err);
         }
-        return cb(null,rows);
-    });
+        return event(null, event)
+    })
 };
+
+
 
 //export model
 var Event = mongoose.model('Event',eventSchema);
