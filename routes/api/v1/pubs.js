@@ -42,6 +42,7 @@ jwtRouter.post("", function (req, res) {
 
     let pubData = new Pub();
     pubData.name = pubName;
+    pubData.location.type = "Point";
     pubData.location.coordinates = [pubLat, pubLong];
     pubData.url = pubUrl;
     pubData.photo_url = pubPhoto;
