@@ -346,14 +346,12 @@ UserPickSchema.statics.getUser = function(idToGet, userId) {
  * Add pub as favorite
  * 
  * @param idToGet -> id of data requested user
- * @param userId -> id of user requesting this data
+ * @param requesterId -> id of user requesting this data
  * 
  * When userId !== idToGet, email data won't be returned
+ * It assumes pubId is already checked
  */
-UserPickSchema.statics.addFavoritePub = function(pubId, userId) {
-
-    // TODO: Check if pub exists
-    
+UserPickSchema.statics.addFavoritePub = function(pubId, requesterId) {
 
     // Update query configuration
     const updatePub = { 
@@ -362,7 +360,11 @@ UserPickSchema.statics.addFavoritePub = function(pubId, userId) {
 
     let addFavoritePromise = new Promise(function(resolve, reject) {
         // Add pub to favorites set
-        userPick.findByIdAndUpdate( userId, updatePub, function(err, updateResult) {
+        userPick.findByIdAndUpdate( 
+            requesterId, 
+            updatePub,
+            {new: true}, // Return updated object
+            function(err, updateResult) {
             if (err) {
                 // User not found
                 let error = { "code": 400, "description": err };
@@ -370,10 +372,34 @@ UserPickSchema.statics.addFavoritePub = function(pubId, userId) {
             }
 
             resolve(updateResult);
+            
         });
     });
 
     return addFavoritePromise;
+}
+
+/**
+ * Get user favorites
+ * 
+ * @param userId -> id of user data
+ */
+UserPickSchema.statics.getFavoritePubs = function(userId) {
+
+    let getFavoritesPromise = new Promise(function(resolve, reject) {
+        // Get user favorites
+        userPick.findById( userId, 'favorite_pubs', function(err, favorites) {
+            if (err) {
+                // User not found
+                let error = { "code": 400, "description": err };
+                return reject(error);
+            }
+
+            resolve(favorites);
+        });
+    });
+
+    return getFavoritesPromise;
 }
 
 

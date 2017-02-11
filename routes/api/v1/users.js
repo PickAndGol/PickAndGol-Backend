@@ -106,40 +106,6 @@ router.post('/login', function(req, res) {
         .catch(sendErrorResponse);
 });
 
-/**
- * POST /users/:user_id/favorites
- * 
- * Return user data
- * 
- * * Only authenticated users can request
- * * Email will only be returned if authenticated user is the requester
- */
-jwtRouter.post('/:user_id/favorites/:pub_id', function (req, res) {
-    
-    function sendOKResponse(data) {
-        return res.json({ result: "OK", data: data });
-    }
-
-    function sendErrorResponse(data) {
-        return res.json({ result: "ERROR", data: data });
-    }
-    
-    let userId = req.params.user_id;
-    let pubId = req.params.pub_id;
-    let requesterId = req.decoded.id;
-
-    // Check if user is the authenticated one
-    if (userId !== requesterId) {
-        const errorData = { "code": 400, "description": "Bad request (User id must be the authenticated one)." };
-        return sendErrorResponse(errorData);
-    }
-
-    User.addFavoritePub(pubId, userId)
-        .then(sendOKResponse)
-        .catch(sendErrorResponse);
-
-});
-
 
 jwtRouter.put('/:id',function(req, res) {
 
@@ -181,6 +147,67 @@ jwtRouter.delete('/:id', function(req, res) {
     User.delete(userId, idToDelete)
         .then(sendOKResponse)
         .catch(sendErrorResponse);
+});
+
+
+/**
+ * POST /users/:user_id/favorites
+ * 
+ * Return user data
+ * 
+ * * Only authenticated users can request
+ * * Email will only be returned if authenticated user is the requester
+ */
+jwtRouter.post('/:user_id/favorites/:pub_id', function (req, res) {
+    
+    function sendOKResponse(data) {
+        return res.json({ result: "OK", data: data });
+    }
+
+    function sendErrorResponse(data) {
+        return res.json({ result: "ERROR", data: data });
+    }
+    
+    let userId = req.params.user_id;
+    let pubId = req.params.pub_id;
+    let requesterId = req.decoded.id;
+
+    // Check if user is the authenticated one
+    if (userId !== requesterId) {
+        const errorData = { "code": 400, "description": "Bad request (User id must be the authenticated one)." };
+        return sendErrorResponse(errorData);
+    }
+
+    User.addFavoritePub(pubId, userId)
+        .then(sendOKResponse)
+        .catch(sendErrorResponse);
+
+});
+
+
+/**
+ * GET /users/:user_id/favorites
+ * 
+ * Return user favorites
+ * 
+ * * Only authenticated users can request
+ */
+jwtRouter.get('/:user_id/favorites', function (req, res) {
+    
+    function sendOKResponse(data) {
+        return res.json({ result: "OK", data: data });
+    }
+
+    function sendErrorResponse(data) {
+        return res.json({ result: "ERROR", data: data });
+    }
+    
+    let userId = req.params.user_id;
+
+    User.getFavoritePubs(userId)
+        .then(sendOKResponse)
+        .catch(sendErrorResponse);
+
 });
 
 module.exports = {
