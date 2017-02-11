@@ -28,15 +28,17 @@ var eventSchema = mongoose.Schema({
 });
 
 //static method for model
-eventSchema.statics.list = function(filters, start, limit, sort, cb){
-     var query = Event.find(filters);
+eventSchema.statics.list = function(filter, start, limit, sort, cb){
+     var query = Event.find(filter);
+     query.sort({date: -1});//desc date
+     query.select('name description date category pub photo_url');
      query.skip(start);
      query.limit(limit);
      query.sort(sort);
-     console.log(filters);
-
-    return query.exec(cb);
+     console.log(filter);
+     return query.exec(cb);
 };
+
 
 eventSchema.statics.findEvent = function (eventData, cb) {
     Event.findOne({name:eventData.name}).exec(function (err, event) {
@@ -46,8 +48,6 @@ eventSchema.statics.findEvent = function (eventData, cb) {
         return event(null, event)
     })
 };
-
-
 
 //export model
 var Event = mongoose.model('Event',eventSchema);

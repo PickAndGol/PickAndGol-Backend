@@ -11,8 +11,6 @@ var mongoose = require('mongoose');
 
 var Event = mongoose.model('Event');
 
-//require model
-//require('../../../models/Events');
 var Events = require('../../../models/Events');
 
 let jwtAuth = require('../../../lib/jwtAuth');
@@ -20,14 +18,14 @@ let jwtAuth = require('../../../lib/jwtAuth');
 jwtRouter.use(jwtAuth());
 
 //POST create new event
-router.post('/', function(req, res, next) {
+router.post('/', function(req, res) {
 
     var newEvent = req.body;
 
     var event = new Events(newEvent);
 
 
-    event.save(function(err,create){
+    event.save(function(err,created){
         if(err){
             console.log(err);
             return res.json({
@@ -35,7 +33,7 @@ router.post('/', function(req, res, next) {
                 "data": { "code": 403, "description": "Forbidden request." }
             });
         }
-        res.json({ok:true,event:create});
+        res.json({ok:true,event:created});
     });
 
 });
@@ -44,13 +42,15 @@ router.post('/', function(req, res, next) {
 router.get('/', function(req, res) {
 
     var pub = req.query.pub;// asignarle el valor que devuelve de la lista de bares
-    var today = new Date().getDate();
+    //var today = new Date().getDate();
     var name = req.query.name;
     var date = req.query.date;
     var description = req.query.description;
-    var start = parseInt(req.query.limit) || today;
-    var limit = parseInt(req.query.limit) || 20;
+    var start = req.query.start;
+    var limit = parseInt(req.query.limit) || 6;
     var sort = req.query.sort || null;
+
+
 
     var criteria = {};
 
@@ -65,30 +65,23 @@ router.get('/', function(req, res) {
     if (typeof description !== 'undefined'){
         criteria.description = description;
     }
-
-    if (typeof date < today){
-
-        criteria.date= today.start;
+    if (typeof date !== 'undefined'){
+        criteria.date = date;
     }
 
-
-    Events.list(criteria, start, limit, sort, function (err, list) {
-
-        if (err) {
-
+    Events.list(criteria,start,limit,sort, function(err,rows){
+        if(err){
             console.log(err);
-
             return res.json({
                 "result": "error",
                 "data": {"code": 400, "description": "Bad request."}
             });
         }
-        res.json({ok: true, data: list});
+        res.json({ok: true, data: rows});
     });
-
 });
 
 
 module.exports = {
     router : router,
-    jwtRouter: jwtRouter}
+    jwtRouter: jwtRouter};
