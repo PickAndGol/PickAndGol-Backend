@@ -42,6 +42,7 @@ UserPickSchema.statics.saveNewUser = function(data, callback) {
         usuario.enabled = true;
 
         usuario.save(function (err, userSave) {
+
             if (err) {
                 if (callback) {
                     callback(err);
@@ -55,7 +56,6 @@ UserPickSchema.statics.saveNewUser = function(data, callback) {
                 callback(null, userSave);
                 return;
             }
-
             resolve(userSave);
             return;
 
@@ -67,62 +67,36 @@ UserPickSchema.statics.saveNewUser = function(data, callback) {
 
 }
 
-UserPickSchema.statics.existMail = function(email, callback) {
+UserPickSchema.statics.existMailNotInsert = function(user, callback) {
 
     return new Promise(function (resolve, reject) {
 
-        var field = {}
-        field['email'] = email;
-        userPick.filterByField(field,null).then(function(data, err){
+        if(user){
+            reject({
+                "result": "ERROR",
+                "data": { "code": 409, "description": "Conflict (email already exists)." }
+            })
+        }else{
+           resolve(user);
+        }
 
-            if(err){
-                if (callback) {
-                    console.log(err);
-                    callback(err, null);
-                    return;
-                }
-
-                reject("NOK");
-                return;
-            }
-            if (callback) {
-                callback(null, data);
-                return
-            }
-            resolve(data);
-            return;
-
-        });
 
     });
 }
 
-UserPickSchema.statics.existName = function(nameUser, callback) {
+UserPickSchema.statics.existNameNotInsert = function(user, callback) {
 
     return new Promise(function (resolve, reject) {
 
-        var field = {}
-        field['name'] = nameUser;
-        userPick.filterByField(field,null).then(function(data, err){
+        if(user){
+            reject({
+                "result": "ERROR",
+                "data": {"code": 409, "description": "Conflict (username already exists)."}
+            })
+        }else{
+            resolve(user);
+        }
 
-            if(err){
-                if (callback) {
-                    console.log(err);
-                    callback(err, null);
-                    return;
-                }
-
-                reject("NOK");
-                return;
-            }
-            if (callback) {
-                callback(null, data);
-                return
-            }
-            resolve(data);
-            return;
-
-        });
 
     });
 }
@@ -274,14 +248,18 @@ UserPickSchema.statics.updateDataUser = function (jsonDataUser,recoverDataFromDb
 
 
         if(jsonDataUser.new_password){
+
             if(jsonDataUser.old_password != recoverDataFromDb.password){
+
                 reject({ result: "ERROR", data: { "code": 405, "description": "Password is not correct." } });
             }else{
                 userUpdate['password']=jsonDataUser.new_password;
             }
+
         }
 
         userPick.update({_id: jsonDataUser.id}, {$set :userUpdate}, function(err, newData){
+
             resolve(newData);
         })
 
@@ -299,7 +277,13 @@ UserPickSchema.statics.findUserById = function(id){
                 return;
             }
 
-            resolve(user);
+            if(user){
+                resolve(user);
+            }else{
+                reject({ "code": 404, "description": "Not found." });
+            }
+
+
 
         })
     });
@@ -338,7 +322,6 @@ UserPickSchema.statics.recoverPassword = function(user){
         user.resetPasswordToken =buf.toString('hex');
         user.resetPasswordExpires = Date.now() + 36000000; // 1 hour
         user.save(function (err, userSave) {
-
 
             if(err){
                 reject({ result: "ERROR", data: { "code": 400, "description": "Bad request." } });

@@ -43,43 +43,28 @@ jwtRouter.get('/:id', function (req, res) {
 router.post('/register', function(req,res) {
 
 
-    User.existMail(req.body.email).then(function (data, err) {
+    let filterEmail ={};
+    let filterNameUser={};
 
-        console.log(data);
-        if(data){
-            console.log("El email existe");
-            res.json({
-                    "result": "ERROR",
-                    "data": { "code": 409, "description": "Conflict (email already exists)." }
-                }
-            );
-        }else{
-            console.log("No existe");
-        }
+    filterEmail['email']= req.body.email;
+    filterNameUser['name'] = req.body.name;
 
-        User.existName(req.body.name).then(function(data,err) {
-
-            if(data){
-                
-                res.json({
-                        "result":"ERROR",
-                        "data": {"code": 409, "description": "Conflict (username already exists)."}
-                    }
-                );
-            }
-
+    User.filterByField(filterEmail).then(User.existMailNotInsert).then(function(data){
+        User.filterByField(filterNameUser).then(User.existNameNotInsert).then(function(data){
+            User.saveNewUser(req.body).then(function(data){
+                res.json({result: "OK", data: data});
+            }).catch(function(err){
+                res.json(err);
+            })
+        }).catch(function(err){
+            res.json(err);
         })
+    }).catch(function(err){
 
-        User.saveNewUser(req.body).then(function (data, err) {
-            console.log(req.body);
+        console.log(err);
+        res.json(err);
+    })  ;
 
-            if (err) {
-                res.json({result: "ERROR", data: req.body});
-            }
-        res.json({result: "OK", data: data});
-
-        });
-    });
 });
 
 router.post('/login', function(req, res) {
@@ -126,6 +111,7 @@ jwtRouter.put('/:id',function(req, res) {
     userData['new_password'] = req.body.new_password;
     userData['id'] = req.params.id
 
+
     User.findUserById(userData['id']).then(function(data){
         User.updateDataUser(userData, data).then(function(data){
 
@@ -137,6 +123,9 @@ jwtRouter.put('/:id',function(req, res) {
         }).catch(function(err){
             res.json({success:false, data:err});
         });
+    }).catch(function(err){
+
+        res.json(err);
     });
 
 
