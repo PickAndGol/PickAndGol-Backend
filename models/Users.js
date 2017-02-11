@@ -52,7 +52,7 @@ UserPickSchema.statics.saveNewUser = function(data, callback) {
                     callback(err);
                     return;
                 }
-                reject(err)
+                reject(err);
                 return;
             }
 
@@ -64,12 +64,8 @@ UserPickSchema.statics.saveNewUser = function(data, callback) {
             return;
 
         });
-
-
-
-    })
-
-}
+    });
+};
 
 UserPickSchema.statics.existMailNotInsert = function(user, callback) {
 
@@ -79,14 +75,12 @@ UserPickSchema.statics.existMailNotInsert = function(user, callback) {
             reject({
                 "result": "ERROR",
                 "data": { "code": 409, "description": "Conflict (email already exists)." }
-            })
+            });
         }else{
-           resolve(user);
+            resolve(user);
         }
-
-
     });
-}
+};
 
 UserPickSchema.statics.existNameNotInsert = function(user, callback) {
 
@@ -96,14 +90,12 @@ UserPickSchema.statics.existNameNotInsert = function(user, callback) {
             reject({
                 "result": "ERROR",
                 "data": {"code": 409, "description": "Conflict (username already exists)."}
-            })
+            });
         }else{
             resolve(user);
         }
-
-
     });
-}
+};
 
 
 UserPickSchema.statics.filterByField = function(filter, callback){
@@ -134,7 +126,7 @@ UserPickSchema.statics.filterByField = function(filter, callback){
 
             if (callback) {
                 callback(null, exist);
-                return
+                return;
             }
 
             resolve(data);
@@ -143,7 +135,7 @@ UserPickSchema.statics.filterByField = function(filter, callback){
         });
 
     });
-}
+};
 
 
 UserPickSchema.statics.login = function(email, password) {
@@ -230,7 +222,7 @@ UserPickSchema.statics.updateDataUser = function (jsonDataUser,recoverDataFromDb
 
     return new Promise(function(resolve, reject) {
 
-        var userUpdate = {}
+        var userUpdate = {};
 
 
         if(typeof jsonDataUser.email == 'undefined' && typeof jsonDataUser.name == 'undefined' && typeof jsonDataUser.photo_url =='undefined' && typeof jsonDataUser.new_password == 'undefined' ){
@@ -243,11 +235,11 @@ UserPickSchema.statics.updateDataUser = function (jsonDataUser,recoverDataFromDb
         }
 
         if(jsonDataUser.photo_url){
-            userUpdate['photo_url'] = jsonDataUser.photo_url
+            userUpdate['photo_url'] = jsonDataUser.photo_url;
         }
 
         if(jsonDataUser.name){
-            userUpdate['name'] = jsonDataUser.name
+            userUpdate['name'] = jsonDataUser.name;
         }
 
 
@@ -265,12 +257,9 @@ UserPickSchema.statics.updateDataUser = function (jsonDataUser,recoverDataFromDb
         userPick.update({_id: jsonDataUser.id}, {$set :userUpdate}, function(err, newData){
 
             resolve(newData);
-        })
-
-
-    })
-
-}
+        });
+    });
+};
 
 UserPickSchema.statics.findUserById = function(id){
     return new Promise(function(resolve, reject) {
@@ -286,9 +275,9 @@ UserPickSchema.statics.findUserById = function(id){
             }else{
                 reject({ "code": 404, "description": "Not found." });
             }
-        })
+        });
     });
-}
+};
 
 
 UserPickSchema.statics.getUser = function(idToGet, userId) {
@@ -314,7 +303,7 @@ UserPickSchema.statics.getUser = function(idToGet, userId) {
     });
 
     return userPromise;
-}
+};
 
 
 UserPickSchema.statics.recoverPassword = function(user){
@@ -329,10 +318,9 @@ UserPickSchema.statics.recoverPassword = function(user){
             }
             resolve(user);
 
-        })
-
+        });
     });
-}
+};
 
 UserPickSchema.statics.resetPasswordWithToken = function(user, newpass){
     return new Promise(function(resolve, reject){
@@ -346,52 +334,50 @@ UserPickSchema.statics.resetPasswordWithToken = function(user, newpass){
             }
             resolve(user);
 
-        })
-
+        });
     });
-}
+};
 
 
 /**
  * Add pub as favorite
- * 
+ *
  * @param idToGet -> id of data requested user
  * @param requesterId -> id of user requesting this data
- * 
+ *
  * When userId !== idToGet, email data won't be returned
  * It assumes pubId is already checked
  */
 UserPickSchema.statics.addFavoritePub = function(pubId, requesterId) {
 
     // Update query configuration
-    const updatePub = { 
+    const updatePub = {
         $addToSet: { favorite_pubs: pubId }
     };
 
     let addFavoritePromise = new Promise(function(resolve, reject) {
         // Add pub to favorites set
-        userPick.findByIdAndUpdate( 
-            requesterId, 
+        userPick.findByIdAndUpdate(
+            requesterId,
             updatePub,
             {new: true}, // Return updated object
             function(err, updateResult) {
-            if (err) {
-                // User not found
-                let error = { "code": 400, "description": err };
-                return reject(error);
-            }
+                if (err) {
+                    // User not found
+                    let error = { "code": 400, "description": err };
+                    return reject(error);
+                }
 
-            resolve(updateResult);
-            
-        });
+                resolve(updateResult);
+            });
     });
 
     return addFavoritePromise;
-}
+};
 
 /**
  * Get user favorites
- * 
+ *
  * @param userId -> id of user data
  */
 UserPickSchema.statics.getFavoritePubs = function(userId) {
@@ -410,7 +396,7 @@ UserPickSchema.statics.getFavoritePubs = function(userId) {
     });
 
     return getFavoritesPromise;
-}
+};
 
 
 var userPick = mongoose.model('userPick',UserPickSchema);

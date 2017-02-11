@@ -1,5 +1,6 @@
 {
     "env": {
+        "node": true,
         "browser": true,
         "es6": true
     },
@@ -8,7 +9,6 @@
         "sourceType": "module"
     },
     "globals": {
-        "require": false,
         "ko": false
     },
     "rules": {
@@ -23,7 +23,14 @@
         ],
         "semi": [
             "error",
-            "always"
-        ]
+            "always",
+            { "omitLastInOneLineBlock": true }
+        ],
+        "space-before-function-paren": ["warn", {
+            "anonymous": "always",
+            "named": "always",
+            "asyncArrow": "ignore"
+        }],
+        "no-unused-vars": ["warn", { "vars": "all", "args": "after-used", "ignoreRestSiblings": false }]
     }
 }

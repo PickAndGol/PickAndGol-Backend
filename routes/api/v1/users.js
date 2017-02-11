@@ -25,14 +25,14 @@ jwtRouter.use(jwtAuth());
 
 /**
  * GET /users/:user_id
- * 
+ *
  * Return user data
- * 
+ *
  * * Only authenticated users can request
  * * Email will only be returned if authenticated user is the requester
  */
 jwtRouter.get('/:user_id', function (req, res) {
-    
+
     function sendOKResponse(data) {
         return res.json({ result: "OK", data: data });
     }
@@ -40,7 +40,7 @@ jwtRouter.get('/:user_id', function (req, res) {
     function sendErrorResponse(data) {
         return res.json({ result: "ERROR", data: data });
     }
-    
+
     let idToGet = req.params.user_id;
     let requesterId = req.decoded.id;
 
@@ -65,10 +65,10 @@ router.post('/register', function(req,res) {
                 res.json({result: "OK", data: data});
             }).catch(function(err){
                 res.json(err);
-            })
+            });
         }).catch(function(err){
             res.json(err);
-        })
+        });
     }).catch(function(err){
 
         console.log(err);
@@ -104,7 +104,7 @@ jwtRouter.put('/:id',function(req, res) {
     userData['photo_url'] = req.body.photo_url;
     userData['old_password'] = req.body.old_password;
     userData['new_password'] = req.body.new_password;
-    userData['id'] = req.params.id
+    userData['id'] = req.params.id;
 
 
     User.findUserById(userData['id']).then(function(data){
@@ -145,14 +145,14 @@ jwtRouter.delete('/:id', function(req, res) {
 
 /**
  * POST /users/:user_id/favorites
- * 
+ *
  * Return user data
- * 
+ *
  * * Only authenticated users can request
  * * Email will only be returned if authenticated user is the requester
  */
 jwtRouter.post('/:user_id/favorites/:pub_id', function (req, res) {
-    
+
     function sendOKResponse(data) {
         return res.json({ result: "OK", data: data });
     }
@@ -160,7 +160,7 @@ jwtRouter.post('/:user_id/favorites/:pub_id', function (req, res) {
     function sendErrorResponse(data) {
         return res.json({ result: "ERROR", data: data });
     }
-    
+
     let userId = req.params.user_id;
     let pubId = req.params.pub_id;
     let requesterId = req.decoded.id;
@@ -187,13 +187,13 @@ jwtRouter.post('/:user_id/favorites/:pub_id', function (req, res) {
 
 /**
  * GET /users/:user_id/favorites
- * 
+ *
  * Return user favorites
- * 
+ *
  * * Only authenticated users can request
  */
 jwtRouter.get('/:user_id/favorites', function (req, res) {
-    
+
     function sendOKResponse(data) {
         return res.json({ result: "OK", data: data });
     }
@@ -201,7 +201,7 @@ jwtRouter.get('/:user_id/favorites', function (req, res) {
     function sendErrorResponse(data) {
         return res.json({ result: "ERROR", data: data });
     }
-    
+
     let userId = req.params.user_id;
 
     User.getFavoritePubs(userId)
@@ -220,7 +220,7 @@ router.post('/recover', function(req, res){
     User.filterByField(filter).then(User.recoverPassword).then(htmlMessenger.recoverPasswordHtml).then(function(data){
         mail.sendMail(req.body.email,"Recover your pass",data);
         res.json({result: "OK", data: data});
-    })
+    });
 });
 
 router.post('/forgotpass', function(req, res){
@@ -229,16 +229,15 @@ router.post('/forgotpass', function(req, res){
     filter['resetPasswordToken'] = req.body.token;
     if (req.body.newpass1 != req.body.newpass){
         res.json({result:"ERROR", "data": {"code": 410, "description": "Pass are different"}})
-        return
+        return;
     }
 
     User.filterByField(filter).then(function(data){
         User.resetPasswordWithToken(data,req.body.newpass).then(function(data){
             res.json({result:"OK" ,data:data});
-        })
-    })
-
-})
+        });
+    });
+});
 
 
 module.exports = {

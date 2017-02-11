@@ -35,7 +35,7 @@ pubSchema.statics.savePub = function (newPub, callback) {
             return callback(err);
         }
         return callback(err, pub);
-    })
+    });
 };
 
 pubSchema.statics.findPub = function (pubData, callback) {
@@ -44,8 +44,8 @@ pubSchema.statics.findPub = function (pubData, callback) {
         if (err){
             return callback(err);
         }
-        return callback(null, pub)
-    })
+        return callback(null, pub);
+    });
 };
 
 pubSchema.statics.detailPub = function(id) {
@@ -78,7 +78,7 @@ pubSchema.statics.detailPub = function(id) {
                 });
             });
         });
-    })
+    });
 };
 
 pubSchema.statics.findPubsList = function (filter, start, limit, sort, callback) {

@@ -57,10 +57,9 @@ jwtRouter.post("", function (req, res) {
         if (pub){
             console.log(pub);
             return res.json({
-                    "result": "ERROR",
-                    "data": { "code": 409, "description": "Pub already exists" }
-                }
-            );
+                "result": "ERROR",
+                "data": { "code": 409, "description": "Pub already exists" }
+            });
         }
         // If not exist we will create
         Pub.savePub(pubData, function (err, pub) {
@@ -70,9 +69,7 @@ jwtRouter.post("", function (req, res) {
             console.log('Bar guardado', pub);
             return res.json({"result":"OK", "data":pub});
         });
-
-    })
-
+    });
 });
 
 router.get('/:id', function(req, res) {
@@ -142,7 +139,7 @@ router.get('/pubs', function (req, res) {
                 "numberOfPubs":pubs.length,
                 "items": pubs }
         });
-    })
+    });
 });
 
 module.exports = {
