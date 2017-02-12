@@ -1,0 +1,36 @@
+{
+    "env": {
+        "node": true,
+        "browser": true,
+        "es6": true
+    },
+    "extends": "eslint:recommended",
+    "parserOptions": {
+        "sourceType": "module"
+    },
+    "globals": {
+        "ko": false
+    },
+    "rules": {
+        "no-console":0,
+        "indent": [
+            "error",
+            4
+        ],
+        "quotes": [
+            "warn",
+            "single"
+        ],
+        "semi": [
+            "error",
+            "always",
+            { "omitLastInOneLineBlock": true }
+        ],
+        "space-before-function-paren": ["warn", {
+            "anonymous": "always",
+            "named": "always",
+            "asyncArrow": "ignore"
+        }],
+        "no-unused-vars": ["warn", { "vars": "all", "args": "after-used", "ignoreRestSiblings": false }]
+    }
+}

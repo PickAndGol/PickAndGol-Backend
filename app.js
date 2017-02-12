@@ -7,7 +7,6 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
 var index = require('./routes/index');
-var users = require('./routes/users');
 
 
 require('./models/Events');
@@ -31,7 +30,15 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', index);
-app.use('/users', users);
+
+//Routes
+let users = require('./routes/api/v1/users');
+app.use('/api/v1/users', users.router);
+app.use('/api/v1/users', users.jwtRouter);
+
+let pubs = require('./routes/api/v1/pubs');
+app.use('/api/v1/pubs', pubs.router);
+app.use('/api/v1/pubs', pubs.jwtRouter);
 
 //models
 var Event = require('./models/Events');

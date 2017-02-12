@@ -1,18 +1,31 @@
 {
   "name": "pickandgol-backend",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "private": true,
+  "description": "Backend for PickAndGol project",
   "scripts": {
-    "start": "node ./bin/www"
+    "start": "node ./bin/www",
+    "startdb": ". ./scripts/startDB.sh",
+    "debug": "nodemon ./bin/www DEBUG=generated:*"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://gitlab.com/pickandgolteam/pickandgol-backend.git"
+  },
+  "author": "PickAndGol Team",
   "dependencies": {
     "body-parser": "~1.16.0",
     "cookie-parser": "~1.4.3",
     "debug": "~2.6.0",
     "ejs": "~2.5.5",
     "express": "~4.14.1",
+    "jsonwebtoken": "^7.2.1",
     "mongoose": "^4.8.1",
     "morgan": "~1.7.0",
+    "nodemailer": "^3.0.2",
     "serve-favicon": "~2.3.2"
+  },
+  "devDependencies": {
+    "nodemon": "^1.11.0"
   }
 }
