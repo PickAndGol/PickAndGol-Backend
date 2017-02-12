@@ -9,22 +9,28 @@ var mongoose = require('mongoose');
 
 //define event schema
 var eventSchema = mongoose.Schema({
-
-    name:   {type: String,
-            required: true,
-            index: true},
-    date:   {type: Date,
-            required: true,
-            index: true},
-    description: {type: String,
-                required: false},
-    photo_url:  {type: String,
-                required: false},
-    category: {type: [Number],
-                required: true},
-    pub:   {type: [String],
-            required: true}
-
+    name: {
+        type: String,
+        required: true,
+        index: true
+    },
+    date: {
+        type: Date,
+        required: true,
+        index: true
+    },
+    description: {
+        type: String,
+            required: false
+    },
+    photo_url: {
+        type: String,
+        required: false
+    },
+    category: {
+        type: [Number],
+        required: true
+    }
 });
 
 //static method for model
