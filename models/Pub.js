@@ -7,6 +7,8 @@
 let mongoose = require('mongoose');
 require('./BarPicture');
 let barPicture = mongoose.model('barPicture');
+require('./Events');
+let Event = mongoose.model('Event');
 
 let pubSchema = mongoose.Schema({
     name: {
@@ -50,6 +52,29 @@ pubSchema.statics.findPub = function (pubData, callback) {
 };
 
 pubSchema.statics.detailPub = function(id) {
+    function listEvents(idPub, callback) {
+        Event.list({ pub: idPub }, null, null, null, function(err, rows) {
+            if (err) {
+                callback(err);
+                return;
+            }
+
+            if (rows == null) {
+                callback(null, []);
+                return;
+            }
+
+            let events = [];
+            for (let index in rows) {
+                if (rows.hasOwnProperty(index)) {
+                    events[index] = rows[index]._id;
+                }
+            }
+
+            callback(null, events);
+        });
+    }
+
     return new Promise(function (resolve, reject) {
         Pub.findOne({_id: id}, function (err, pub) {
             if (err) {
@@ -64,18 +89,25 @@ pubSchema.statics.detailPub = function(id) {
 
             barPicture.list(pub._id, function(err, barPictures) {
                 if (err) {
-                    console.log('Error while retrieving pictures: ' + err);
+                    reject({ "code": 400, "description": err });
                     return;
                 }
 
-                resolve({
-                    "id": pub._id,
-                    "name": pub.name,
-                    "location": pub.location,
-                    "url": pub.url,
-                    "owner": pub.owner_id,
-                    "events": [],
-                    "photos": barPictures
+                listEvents(pub._id, function(err, events) {
+                    if (err) {
+                        reject({ "code": 400, "description": err });
+                        return;
+                    }
+
+                    resolve({
+                        "id": pub._id,
+                        "name": pub.name,
+                        "location": pub.location,
+                        "url": pub.url,
+                        "owner": pub.owner_id,
+                        "events": events,
+                        "photos": barPictures
+                    });
                 });
             });
         });
