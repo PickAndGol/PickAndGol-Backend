@@ -44,10 +44,11 @@ router.get('/', function(req, res) {
     var pub = req.query.pub;// asignarle el valor que devuelve de la lista de bares
     //var today = new Date().getDate();
     var name = req.query.name;
+    var category = req.query.category;
     var date = req.query.date;
     var description = req.query.description;
     var start = req.query.start;
-    var limit = parseInt(req.query.limit) || 6;
+    var limit = parseInt(req.query.limit) || 20;
     var sort = req.query.sort || null;
 
 
@@ -64,6 +65,9 @@ router.get('/', function(req, res) {
 
     if (typeof description !== 'undefined'){
         criteria.description = description;
+    }
+    if (typeof category !== 'undefined'){
+        criteria.category = category;
     }
     if (typeof date !== 'undefined'){
         criteria.date = date;

@@ -20,9 +20,9 @@ var eventSchema = mongoose.Schema({
                 required: false},
     photo_url:  {type: String,
                 required: false},
-    category: {type: [String],
+    category: {type: [Number],
                 required: true},
-    pub:   {type: [String],
+    pub:   {type: [Number],
             required: true}
 
 });
