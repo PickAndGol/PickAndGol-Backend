@@ -19,8 +19,8 @@ jwtRouter.post("/", function (req, res) {
 
     let pub = req.body;
     let pubName = pub.name;
-    let pubLat = pub.lat;
-    let pubLong = pub.lon;
+    let pubLat = pub.latitude;
+    let pubLong = pub.longitude;
     let pubUrl = pub.url;
     let pubPhoto = pub.photo_url;
 

@@ -62,10 +62,16 @@ eventSchema.statics.findEvent = function (eventData, cb) {
     });
 };
 
-
+/**
+ * Get event by id
+ *
+ * @param eventId -> event id
+ *
+ * @return event data or mongo error if rejected
+ */
 eventSchema.statics.getEventById = function (eventId) {
 
-    let userPromise = new Promise(function (resolve, reject) {
+    let eventPromise = new Promise(function (resolve, reject) {
         Event.findOne({ _id: eventId }, function (err, event) {
             if (err) {
                 // Event not found
@@ -77,7 +83,42 @@ eventSchema.statics.getEventById = function (eventId) {
         });
     });
 
-    return userPromise;
+    return eventPromise;
+};
+
+/**
+ * Add pub to event
+ *
+ * @param eventId -> pub id
+ * @param pubId -> pub id
+ *
+ * @return event data or mongo error if rejected
+ */
+eventSchema.statics.addPub = function (eventId, pubId) {
+
+    // Update query configuration
+    const updatePubs = {
+        $addToSet: { pubs: pubId }
+    };
+
+    let addPubPromise = new Promise(function(resolve, reject) {
+        // Add pub to favorites set
+        Event.findByIdAndUpdate(
+            eventId,
+            updatePubs,
+            {new: true}, // Return updated object
+            function (err, updateResult) {
+                if (err) {
+                    // Event not found
+                    let error = { "code": 400, "description": err };
+                    return reject(error);
+                }
+
+                resolve(updateResult);
+            });
+    });
+
+    return addPubPromise;
 };
 
 //export model

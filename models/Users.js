@@ -348,6 +348,8 @@ UserPickSchema.statics.resetPasswordWithToken = function(user, newpass){
  *
  * When userId !== idToGet, email data won't be returned
  * It assumes pubId is already checked
+ *
+ * @return user data with favorites included, or mongo error if rejected
  */
 UserPickSchema.statics.addFavoritePub = function(pubId, requesterId) {
 
@@ -380,6 +382,8 @@ UserPickSchema.statics.addFavoritePub = function(pubId, requesterId) {
  * Get user favorites
  *
  * @param userId -> id of user data
+ *
+ * @return user data with favorites included, or mongo error if rejected
  */
 UserPickSchema.statics.getFavoritePubs = function(userId) {
 
@@ -400,5 +404,5 @@ UserPickSchema.statics.getFavoritePubs = function(userId) {
 };
 
 
-var userPick = mongoose.model('userPick',UserPickSchema);
+var userPick = mongoose.model('userPick', UserPickSchema);
 

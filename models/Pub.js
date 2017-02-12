@@ -131,4 +131,40 @@ pubSchema.statics.findPubsList = function (filter, start, limit, sort, callback)
     return query.exec(callback);
 };
 
+/**
+ * Add event to pub
+ *
+ * @param pubId -> pub id
+ * @param eventId -> pub id
+ *
+ * @return pub data or mongo error if rejected
+ */
+pubSchema.statics.addPub = function (pubId, eventId) {
+
+    // Update query configuration
+    const updateEvents = {
+        $addToSet: { events: eventId }
+    };
+
+    let addEventPromise = new Promise(function (resolve, reject) {
+        // Add pub to favorites set
+        Event.findByIdAndUpdate(
+            pubId,
+            updateEvents,
+            {new: true}, // Return updated object
+            function (err, updateResult) {
+                if (err) {
+                    // Event not found
+                    let error = { "code": 400, "description": err };
+                    return reject(error);
+                }
+
+                resolve(updateResult);
+            });
+    });
+
+    return addEventPromise;
+};
+
+
 let Pub = mongoose.model('Pub', pubSchema);

@@ -159,7 +159,15 @@ router.get('/:id', function(req, res) {
     });
 });
 
+/**
+ * PUT /events//:event_id/pubs/:pub_id
+ *
+ * Add relation between event and pub
+ *
+ * * Only authenticated users can add
+ */
 jwtRouter.put('/:event_id/pubs/:pub_id', function (req, res) {
+
     function sendOKResponse (data) {
         return res.json({ result: "OK", data: data });
     }
@@ -184,8 +192,8 @@ jwtRouter.put('/:event_id/pubs/:pub_id', function (req, res) {
         const pub = dataResponses[0];
         const event = dataResponses[1];
 
-        const pubPromise = Pub.addEvent(pub._id);
-        const eventPromise = EventModel.addPub(event._id);
+        const pubPromise = Pub.addEvent(pub._id, event._id);
+        const eventPromise = EventModel.addPub(event._id, pub._id);
 
         const addResponses = [pubPromise, eventPromise];
 
@@ -197,4 +205,5 @@ jwtRouter.put('/:event_id/pubs/:pub_id', function (req, res) {
 
 module.exports = {
     router : router,
-    jwtRouter: jwtRouter};
+    jwtRouter: jwtRouter
+};
