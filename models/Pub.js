@@ -2,7 +2,7 @@
  * Created by Edu on 5/2/17.
  */
 
-"use strict";
+'use strict';
 
 let mongoose = require('mongoose');
 require('./BarPicture');
@@ -21,7 +21,8 @@ let pubSchema = mongoose.Schema({
     owner_id: {
         type: String,
         required: true,
-        index: true}
+        index: true
+    }
 });
 
 pubSchema.index({location: '2dsphere'});
@@ -84,7 +85,7 @@ pubSchema.statics.detailPub = function(id) {
 pubSchema.statics.findPubsList = function (filter, start, limit, sort, callback) {
 
     let query = Pub.find(filter);
-    
+
     query.skip(start);
     query.limit(limit);
     query.sort(sort);

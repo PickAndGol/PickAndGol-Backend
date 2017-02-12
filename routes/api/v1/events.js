@@ -25,7 +25,7 @@ router.post('/', function(req, res) {
     var event = new Events(newEvent);
 
 
-    event.save(function(err,created){
+    event.save(function (err,created){
         if(err){
             console.log(err);
             return res.json({
