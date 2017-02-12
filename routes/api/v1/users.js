@@ -33,11 +33,11 @@ jwtRouter.use(jwtAuth());
  */
 jwtRouter.get('/:user_id', function (req, res) {
 
-    function sendOKResponse(data) {
+    function sendOKResponse (data) {
         return res.json({ result: "OK", data: data });
     }
 
-    function sendErrorResponse(data) {
+    function sendErrorResponse (data) {
         return res.json({ result: "ERROR", data: data });
     }
 
@@ -169,7 +169,7 @@ jwtRouter.post('/:user_id/favorites/:pub_id', function (req, res) {
         .then(addFavorite)
         .catch(sendErrorResponse);
 
-    function addFavorite(pubData){
+    function addFavorite (pubData){
         // Check if user is the authenticated one
         if (userId !== requesterId) {
             const errorData = { "code": 400, "description": "Bad request (User id must be the authenticated one)." };
@@ -179,9 +179,7 @@ jwtRouter.post('/:user_id/favorites/:pub_id', function (req, res) {
         User.addFavoritePub(pubId, userId)
             .then(sendOKResponse)
             .catch(sendErrorResponse);
-
     }
-
 });
 
 
@@ -228,13 +226,13 @@ router.post('/forgotpass', function(req, res){
     let filter={};
     filter['resetPasswordToken'] = req.body.token;
     if (req.body.newpass1 != req.body.newpass){
-        res.json({result:"ERROR", "data": {"code": 410, "description": "Pass are different"}})
+        res.json({result:"ERROR", "data": {"code": 410, "description": "Pass are different"}});
         return;
     }
 
-    User.filterByField(filter).then(function(data){
+    User.filterByField(filter).then(function (data){
         User.resetPasswordWithToken(data,req.body.newpass).then(function(data){
-            res.json({result:"OK" ,data:data});
+            res.json({result: "OK" ,data:data});
         });
     });
 });

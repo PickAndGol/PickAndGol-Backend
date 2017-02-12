@@ -1,7 +1,7 @@
 /**
  * Created by balate on 4/2/17.
  */
-"use strict";
+'use strict';
 
 var express = require('express');
 var router = express.Router();
@@ -9,60 +9,85 @@ let jwtRouter = express.Router();
 
 var mongoose = require('mongoose');
 
-var Event = mongoose.model('Event');
-
 var Events = require('../../../models/Events');
+var EventModel = mongoose.model('Event');
+
 require('../../../models/BarEvent');
 let BarEvent = mongoose.model('BarEvent');
+
+require('../../../models/Pub');
+let Pub = mongoose.model('Pub');
 
 let jwtAuth = require('../../../lib/jwtAuth');
 
 jwtRouter.use(jwtAuth());
 
 //POST create new event
-router.post('/', function(req, res) {
-    let newEvent = {
-        name: req.body.name,
-        date: req.body.date,
-        category: req.body.category,
-        description: req.body.description || "",
-        photo_url: req.body.photo_url || ""
-    };
+jwtRouter.post('/', function (req, res) {
 
-    var event = new Events(newEvent);
+    function sendOKResponse (data) {
+        return res.json({ result: "OK", data: data });
+    }
 
-    event.save(function(err,created){
-        if(err){
-            console.log(err);
-            return res.json({
-                "result" : "ERROR",
-                "data": { "code": 403, "description": "Forbidden request." }
-            });
-        }
+    function sendErrorResponse (data) {
+        return res.json({ result: "ERROR", data: data });
+    }
 
-        let newBarEvent = new BarEvent({
-            bar_id: req.body.pub,
-            event_id: created._id
-        });
+    // Check if pub exists before creating event
+    const pubId = req.body.pub;
 
-        newBarEvent.save(function(err, barEvent) {
-            if (err) {
-                return res.json({
-                    "result": "ERROR",
-                    "data": { "code": 400, "description": err }
-                });
+    Pub.detailPub(pubId)
+        .then(createEvent)
+        .catch(sendErrorResponse);
+
+    function createEvent (pubDetail){
+        var newEvent = {
+            name: req.body.name,
+            date: req.body.date,
+            category: req.body.category,
+            description: req.body.description || '',
+            photo_url: req.body.photo_url || '',
+            pubs: [ pubDetail._id ]
+        };
+
+        var event = new Events(newEvent);
+
+        EventModel.save(function (err, created){
+            if (err){
+                const errorData = { "code": 403, "description": "Forbidden request." };
+                return sendErrorResponse(errorData);
             }
 
-            res.json({ok:true,event:created});
+            return sendOKResponse(created);
+    //////////////////////////////
+    /*
+            let newBarEvent = new BarEvent({
+                bar_id: req.body.pub,
+                event_id: created._id
+            });
+            newBarEvent.save(function (err, barEvent) {
+                if (err) {
+                    return res.json({
+                        "result": "ERROR",
+                        "data": { "code": 400, "description": err }
+                    });
+                }
+
+                res.json({ok:true,event:created});
+            });
+        */
+    ////////////////////////////
         });
-    });
+
+    }
+
 
 });
 
-//GET/events list
+// GET events list
 router.get('/', function(req, res) {
 
-    var pub = req.query.pub;// asignarle el valor que devuelve de la lista de bares
+    var pub = req.query.pub;// assign value returned by pubs list
     //var today = new Date().getDate();
     var name = req.query.name;
     var category = req.query.category;
@@ -71,8 +96,6 @@ router.get('/', function(req, res) {
     var start = req.query.start;
     var limit = parseInt(req.query.limit) || 20;
     var sort = req.query.sort || null;
-
-
 
     var criteria = {};
 
@@ -95,7 +118,7 @@ router.get('/', function(req, res) {
     }
 
     Events.list(criteria,start,limit,sort, function(err,rows){
-        if(err){
+        if (err){
             console.log(err);
             return res.json({
                 "result": "error",
@@ -109,7 +132,7 @@ router.get('/', function(req, res) {
 router.get('/:id', function(req, res) {
     let id = req.params.id;
 
-    Event.findOne({ _id: id }, function(err, event) {
+    EventModel.findOne({ _id: id }, function(err, event) {
         if (err) {
             return res.json({ "result": "ERROR", "data": { "code": 400, "description": err } });
         }
@@ -134,6 +157,42 @@ router.get('/:id', function(req, res) {
             } });
         });
     });
+});
+
+jwtRouter.put('/:event_id/pubs/:pub_id', function (req, res) {
+    function sendOKResponse (data) {
+        return res.json({ result: "OK", data: data });
+    }
+
+    function sendErrorResponse (data) {
+        return res.json({ result: "ERROR", data: data });
+    }
+
+    let eventId = req.params.event_id;
+    let pubId = req.params.pub_id;
+
+    const pubDataPromise = Pub.detailPub(pubId);
+    const eventDataPromise = EventModel.getEventById(eventId);
+
+    const dataPromises = [pubDataPromise, eventDataPromise];
+
+    Promise.all(dataPromises)
+        .then(addPubToEvent)
+        .catch(sendErrorResponse);
+
+    function addPubToEvent (dataResponses){
+        const pub = dataResponses[0];
+        const event = dataResponses[1];
+
+        const pubPromise = Pub.addEvent(pub._id);
+        const eventPromise = EventModel.addPub(event._id);
+
+        const addResponses = [pubPromise, eventPromise];
+
+        Promise.all(addResponses)
+            .then(sendOKResponse)
+            .catch(sendErrorResponse);
+    }
 });
 
 module.exports = {

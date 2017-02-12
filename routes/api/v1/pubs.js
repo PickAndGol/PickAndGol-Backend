@@ -15,7 +15,7 @@ let Pub = mongoose.model('Pub');
 let jwtAuth = require('../../../lib/jwtAuth');
 jwtRouter.use(jwtAuth());
 
-jwtRouter.post("", function (req, res) {
+jwtRouter.post("/", function (req, res) {
 
     let pub = req.body;
     let pubName = pub.name;

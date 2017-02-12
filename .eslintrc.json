@@ -26,11 +26,21 @@
             "always",
             { "omitLastInOneLineBlock": true }
         ],
-        "space-before-function-paren": ["warn", {
-            "anonymous": "always",
-            "named": "always",
-            "asyncArrow": "ignore"
-        }],
+        "space-before-function-paren": [
+            "warn",
+            {
+                "anonymous": "always",
+                "named": "always",
+                "asyncArrow": "ignore"
+            }
+        ],
+        "keyword-spacing": [
+            "error",
+            {
+                "before": true,
+                "after": true
+            }
+        ],
         "no-unused-vars": ["warn", { "vars": "all", "args": "after-used", "ignoreRestSiblings": false }]
     }
 }

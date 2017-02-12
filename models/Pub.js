@@ -14,17 +14,23 @@ let pubSchema = mongoose.Schema({
     name: {
         type:String,
         required: true,
-        index: true},
+        index: true
+    },
     location: {
         type: {type: String},
         coordinates: [Number]
     },
     url: String,
     owner_id: {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
         required: true,
         index: true
-    }
+    },
+    events: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Event'
+    }]
 });
 
 pubSchema.index({location: '2dsphere'});
@@ -51,9 +57,9 @@ pubSchema.statics.findPub = function (pubData, callback) {
     });
 };
 
-pubSchema.statics.detailPub = function(id) {
-    function listEvents(idPub, callback) {
-        Event.list({ pub: idPub }, null, null, null, function(err, rows) {
+pubSchema.statics.detailPub = function (id) {
+    function listEvents (idPub, callback) {
+        Event.list({ pub: idPub }, null, null, null, function (err, rows) {
             if (err) {
                 callback(err);
                 return;

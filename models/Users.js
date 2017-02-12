@@ -26,7 +26,7 @@ var UserPickSchema = mongoose.Schema({
     resetPasswordExpires: Date,
     favorite_pubs: [{
         type: String,
-        "_id": false
+        '_id': false
     }]
 });
 
@@ -34,7 +34,7 @@ var UserPickSchema = mongoose.Schema({
 
 UserPickSchema.statics.saveNewUser = function(data, callback) {
 
-    return new Promise(function(resolve,reject) {
+    return new Promise(function (resolve,reject) {
 
         var usuario = new userPick();
 
@@ -56,7 +56,7 @@ UserPickSchema.statics.saveNewUser = function(data, callback) {
                 return;
             }
 
-            if(callback){
+            if (callback){
                 callback(null, userSave);
                 return;
             }
@@ -71,12 +71,12 @@ UserPickSchema.statics.existMailNotInsert = function(user, callback) {
 
     return new Promise(function (resolve, reject) {
 
-        if(user){
+        if (user){
             reject({
                 "result": "ERROR",
                 "data": { "code": 409, "description": "Conflict (email already exists)." }
             });
-        }else{
+        } else {
             resolve(user);
         }
     });
@@ -86,12 +86,12 @@ UserPickSchema.statics.existNameNotInsert = function(user, callback) {
 
     return new Promise(function (resolve, reject) {
 
-        if(user){
+        if (user){
             reject({
                 "result": "ERROR",
                 "data": {"code": 409, "description": "Conflict (username already exists)."}
             });
-        }else{
+        } else {
             resolve(user);
         }
     });
@@ -104,9 +104,7 @@ UserPickSchema.statics.filterByField = function(filter, callback){
 
         var exist=false;
 
-
         userPick.findOne(filter, function (error, data) {
-
 
             if (error) {
                 if (callback) {
@@ -119,7 +117,7 @@ UserPickSchema.statics.filterByField = function(filter, callback){
                 return;
             }
 
-            if(data){
+            if (data){
                 exist=true;
             }
 
@@ -133,7 +131,6 @@ UserPickSchema.statics.filterByField = function(filter, callback){
             return;
 
         });
-
     });
 };
 
@@ -225,7 +222,11 @@ UserPickSchema.statics.updateDataUser = function (jsonDataUser,recoverDataFromDb
         var userUpdate = {};
 
 
-        if(typeof jsonDataUser.email == 'undefined' && typeof jsonDataUser.name == 'undefined' && typeof jsonDataUser.photo_url =='undefined' && typeof jsonDataUser.new_password == 'undefined' ){
+        if (typeof jsonDataUser.email == 'undefined'
+            && typeof jsonDataUser.name == 'undefined'
+            && typeof jsonDataUser.photo_url =='undefined'
+            && typeof jsonDataUser.new_password == 'undefined' ){
+
             reject({ result: "ERROR", data: { "code": 400, "description": "Bad request." } });
             return;
         }
@@ -234,21 +235,21 @@ UserPickSchema.statics.updateDataUser = function (jsonDataUser,recoverDataFromDb
             userUpdate['email']=jsonDataUser.email;
         }
 
-        if(jsonDataUser.photo_url){
+        if (jsonDataUser.photo_url){
             userUpdate['photo_url'] = jsonDataUser.photo_url;
         }
 
-        if(jsonDataUser.name){
+        if (jsonDataUser.name){
             userUpdate['name'] = jsonDataUser.name;
         }
 
 
-        if(jsonDataUser.new_password){
+        if (jsonDataUser.new_password){
 
-            if(jsonDataUser.old_password != recoverDataFromDb.password){
+            if (jsonDataUser.old_password != recoverDataFromDb.password){
 
                 reject({ result: "ERROR", data: { "code": 405, "description": "Password is not correct." } });
-            }else{
+            } else {
                 userUpdate['password']=jsonDataUser.new_password;
             }
 
@@ -265,14 +266,14 @@ UserPickSchema.statics.findUserById = function(id){
     return new Promise(function(resolve, reject) {
         userPick.findById(id, function (err, user) {
 
-            if(err){
+            if (err){
                 reject({ result: "ERROR", data: { "code": 400, "description": "Bad request." } });
                 return;
             }
 
-            if(user){
+            if (user){
                 resolve(user);
-            }else{
+            } else {
                 reject({ "code": 404, "description": "Not found." });
             }
         });
@@ -280,10 +281,10 @@ UserPickSchema.statics.findUserById = function(id){
 };
 
 
-UserPickSchema.statics.getUser = function(idToGet, userId) {
+UserPickSchema.statics.getUser = function (idToGet, userId) {
 
-    let userPromise = new Promise(function(resolve, reject) {
-        userPick.findOne({ _id: idToGet }, function(err, user) {
+    let userPromise = new Promise(function (resolve, reject) {
+        userPick.findOne({ _id: idToGet }, function (err, user) {
             if (err) {
                 // User not found
                 let error = { "code": 400, "description": err };
@@ -294,7 +295,7 @@ UserPickSchema.statics.getUser = function(idToGet, userId) {
             user = user.toObject();
 
             // If user to get isn't the authenticathed one, don´t return email
-            if(idToGet !== userId){
+            if (idToGet !== userId){
                 delete user['email'];
             }
 
@@ -313,7 +314,7 @@ UserPickSchema.statics.recoverPassword = function(user){
         user.resetPasswordExpires = Date.now() + 36000000; // 1 hour
         user.save(function (err, userSave) {
 
-            if(err){
+            if (err){
                 reject({ result: "ERROR", data: { "code": 400, "description": "Bad request." } });
             }
             resolve(user);
@@ -329,7 +330,7 @@ UserPickSchema.statics.resetPasswordWithToken = function(user, newpass){
         user.save(function (err, userSave) {
 
 
-            if(err){
+            if (err){
                 reject({ result: "ERROR", data: { "code": 400, "description": "Bad request." } });
             }
             resolve(user);
@@ -361,7 +362,7 @@ UserPickSchema.statics.addFavoritePub = function(pubId, requesterId) {
             requesterId,
             updatePub,
             {new: true}, // Return updated object
-            function(err, updateResult) {
+            function (err, updateResult) {
                 if (err) {
                     // User not found
                     let error = { "code": 400, "description": err };
