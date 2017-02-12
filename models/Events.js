@@ -22,7 +22,7 @@ var eventSchema = mongoose.Schema({
                 required: false},
     category: {type: [Number],
                 required: true},
-    pub:   {type: [Number],
+    pub:   {type: [String],
             required: true}
 
 });
