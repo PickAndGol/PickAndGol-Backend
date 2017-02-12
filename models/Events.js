@@ -6,6 +6,8 @@
 
 //import mongoose
 var mongoose = require('mongoose');
+require('./BarEvent');
+let BarEvent = mongoose.model('BarEvent');
 
 //define event schema
 var eventSchema = mongoose.Schema({
@@ -28,7 +30,7 @@ var eventSchema = mongoose.Schema({
         required: false
     },
     category: {
-        type: [Number],
+        type: [String],
         required: true
     }
 });
@@ -56,6 +58,4 @@ eventSchema.statics.findEvent = function (eventData, cb) {
 };
 
 //export model
-var Event = mongoose.model('Event',eventSchema);
-
-module.exports = Event;
+let Event = mongoose.model('Event', eventSchema);
