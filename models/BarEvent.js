@@ -13,16 +13,21 @@ let BarEventSchema = mongoose.Schema({
     }
 });
 
-let BarEvent = mongoose.model('BarEvent', BarEventSchema);
-
-BarEventSchema.statics.saveBarEvent = function(newBarEvent, callback) {
-    let barEvent = new BarEvent(newBarEvent);
-
-    barEvent.save(function(err, barEvent) {
+BarEventSchema.statics.listPubsForEvent = function(eventId, callback) {
+    BarEvent.find({ event_id: eventId }, function(err, barEvent) {
         if (err) {
             return callback(err);
         }
 
-        return callback(null, barEvent);
+        let pubs = [];
+        for (let index in barEvent) {
+            if (barEvent.hasOwnProperty(index)) {
+                pubs[index] = barEvent[index].bar_id;
+            }
+        }
+
+        return callback(null, pubs);
     });
 };
+
+let BarEvent = mongoose.model('BarEvent', BarEventSchema);

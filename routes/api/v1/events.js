@@ -107,9 +107,34 @@ router.get('/', function(req, res) {
 });
 
 router.get('/:id', function(req, res) {
+    let id = req.params.id;
 
+    Event.findOne({ _id: id }, function(err, event) {
+        if (err) {
+            return res.json({ "result": "ERROR", "data": { "code": 400, "description": err } });
+        }
+
+        if (event == null) {
+            return res.json({ "result": "ERROR", "data": { "code": 404, "description": "Not found." } });
+        }
+
+        BarEvent.listPubsForEvent(id, function(err, pubs) {
+            if (err) {
+                return res.json({ "result": "ERROR", "data": { "code": 400, "description": err } });
+            }
+
+            return res.json({ "result:": "OK", "data": {
+                "id": event._id,
+                "name": event.name,
+                "date": event.date,
+                "description": event.description,
+                "photo_url": event.photo_url,
+                "category_id": event.category,
+                "pubs": pubs
+            } });
+        });
+    });
 });
-
 
 module.exports = {
     router : router,
