@@ -1,4 +1,4 @@
-'use strict'
+'use strict';
 var express = require('express');
 var path = require('path');
 var favicon = require('serve-favicon');
@@ -8,9 +8,12 @@ var bodyParser = require('body-parser');
 
 var index = require('./routes/index');
 
+
+require('./models/Events');
+
 var app = express();
 
-//  Base de datos
+//Base de datos
 require('./lib/connectMongoose');
 
 
@@ -36,6 +39,15 @@ app.use('/api/v1/users', users.jwtRouter);
 let pubs = require('./routes/api/v1/pubs');
 app.use('/api/v1/pubs', pubs.router);
 app.use('/api/v1/pubs', pubs.jwtRouter);
+
+//models
+var Event = require('./models/Events');
+
+
+//routes
+let events = require('./routes/api/v1/events');
+app.use('/api/v1/events', events.router);
+app.use('/api/v1/events', events.jwtRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
