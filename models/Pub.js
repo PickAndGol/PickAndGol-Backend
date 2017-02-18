@@ -89,7 +89,7 @@ pubSchema.statics.detailPub = function (id) {
             }
 
             if (pub == null) {
-                reject({"code": 404, "description": "Not found."});
+                reject({"code": 404, "description": "Pub not found."});
                 return;
             }
 
