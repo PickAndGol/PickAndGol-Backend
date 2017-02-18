@@ -177,7 +177,7 @@ UserPickSchema.statics.login = function(email, password) {
 
             resolve({
                 "token": token,
-                "id": user._id,
+                "_id": user._id,
                 "name": user.name,
                 "email": user.email,
                 "photo_url": user.photo_url,
