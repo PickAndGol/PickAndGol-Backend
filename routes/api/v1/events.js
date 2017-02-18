@@ -29,7 +29,7 @@ router.post('/', function(req, res) {
         photo_url: req.body.photo_url || ""
     };
 
-    var event = new Events(newEvent);
+    var event = new Event(newEvent);
 
     event.save(function(err,created){
         if(err){
@@ -94,7 +94,7 @@ router.get('/', function(req, res) {
         criteria.date = date;
     }
 
-    Events.list(criteria,start,limit,sort, function(err,rows){
+    Event.list(criteria,start,limit,sort, function(err,rows){
         if(err){
             console.log(err);
             return res.json({
