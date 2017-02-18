@@ -108,6 +108,7 @@ router.get('/', function(req, res) {
     });
 });
 
+
 router.get('/:id', function(req, res) {
     let id = req.params.id;
 
@@ -120,20 +121,11 @@ router.get('/:id', function(req, res) {
             return res.json({ "result": "ERROR", "data": { "code": 404, "description": "Not found." } });
         }
 
-        BarEvent.listPubsForEvent(id, function(err, pubs) {
-            if (err) {
-                return res.json({ "result": "ERROR", "data": { "code": 400, "description": err } });
+        return res.json({
+            "result:": "OK",
+            "data": {
+                "event": event
             }
-
-            return res.json({ "result:": "OK", "data": {
-                "id": event._id,
-                "name": event.name,
-                "date": event.date,
-                "description": event.description,
-                "photo_url": event.photo_url,
-                "category_id": event.category,
-                "pubs": pubs
-            } });
         });
     });
 });
