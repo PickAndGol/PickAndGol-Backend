@@ -131,7 +131,7 @@ router.get('/:id', function(req, res) {
 });
 
 /**
- * PUT /events//:event_id/pubs/:pub_id
+ * PUT /events/:event_id/pubs/:pub_id
  *
  * Add relation between event and pub
  *
@@ -169,6 +169,51 @@ jwtRouter.put('/:event_id/pubs/:pub_id', function (req, res) {
         const addResponses = [pubPromise, eventPromise];
 
         Promise.all(addResponses)
+            .then(sendOKResponse)
+            .catch(sendErrorResponse);
+    }
+});
+
+
+/**
+ * DELETE /events/:event_id/pubs/:pub_id
+ *
+ * Delete relation between event and pub
+ *
+ * * Only authenticated users can delete
+ */
+jwtRouter.delete('/:event_id/pubs/:pub_id', function (req, res) {
+
+    function sendOKResponse (data) {
+        return res.json({ result: "OK", data: data });
+    }
+
+    function sendErrorResponse (data) {
+        return res.json({ result: "ERROR", data: data });
+    }
+
+    let eventId = req.params.event_id;
+    let pubId = req.params.pub_id;
+
+    const pubDataPromise = Pub.detailPub(pubId);
+    const eventDataPromise = Event.getEventById(eventId);
+
+    const dataPromises = [pubDataPromise, eventDataPromise];
+
+    Promise.all(dataPromises)
+        .then(deletePubFromEvent)
+        .catch(sendErrorResponse);
+
+    function deletePubFromEvent (dataResponses){
+        const pub = dataResponses[0];
+        const event = dataResponses[1];
+
+        const pubPromise = Pub.deleteEvent(pub._id, event._id);
+        const eventPromise = Event.deletePub(event._id, pub._id);
+
+        const deleteResponses = [pubPromise, eventPromise];
+
+        Promise.all(deleteResponses)
             .then(sendOKResponse)
             .catch(sendErrorResponse);
     }
