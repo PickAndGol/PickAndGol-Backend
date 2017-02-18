@@ -134,7 +134,13 @@ UserPickSchema.statics.filterByField = function(filter, callback){
     });
 };
 
-
+/**
+ * Allows a user to be authenticated in the system.
+ *
+ * @param email
+ * @param password
+ * @returns {Promise}
+ */
 UserPickSchema.statics.login = function(email, password) {
     return new Promise(function(resolve, reject) {
         if (email == null || password == null) {
@@ -169,7 +175,15 @@ UserPickSchema.statics.login = function(email, password) {
                 expiresIn: TIME_TO_EXPIRE
             });
 
-            resolve({ token: token });
+            resolve({
+                "token": token,
+                "id": user._id,
+                "name": user.name,
+                "email": user.email,
+                "photo_url": user.photo_url,
+                "enabled": user.enabled,
+                "favorite_pubs": user.favorite_pubs
+            });
         });
     });
 };
