@@ -12,9 +12,6 @@ var mongoose = require('mongoose');
 var Events = require('../../../models/Events');
 var EventModel = mongoose.model('Event');
 
-require('../../../models/BarEvent');
-let BarEvent = mongoose.model('BarEvent');
-
 require('../../../models/Pub');
 let Pub = mongoose.model('Pub');
 
@@ -44,39 +41,21 @@ jwtRouter.post('/', function (req, res) {
         var newEvent = {
             name: req.body.name,
             date: req.body.date,
-            category: req.body.category,
+            category: [req.body.category],
             description: req.body.description || '',
             photo_url: req.body.photo_url || '',
             pubs: [ pubDetail._id ]
         };
 
-        var event = new Events(newEvent);
+        var event = new EventModel(newEvent);
 
-        EventModel.save(function (err, created){
+        event.save(function (err, created){
             if (err){
                 const errorData = { "code": 403, "description": "Forbidden request." };
                 return sendErrorResponse(errorData);
             }
 
             return sendOKResponse(created);
-    //////////////////////////////
-    /*
-            let newBarEvent = new BarEvent({
-                bar_id: req.body.pub,
-                event_id: created._id
-            });
-            newBarEvent.save(function (err, barEvent) {
-                if (err) {
-                    return res.json({
-                        "result": "ERROR",
-                        "data": { "code": 400, "description": err }
-                    });
-                }
-
-                res.json({ok:true,event:created});
-            });
-        */
-    ////////////////////////////
         });
 
     }

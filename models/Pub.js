@@ -106,7 +106,7 @@ pubSchema.statics.detailPub = function (id) {
                     }
 
                     resolve({
-                        "id": pub._id,
+                        "_id": pub._id,
                         "name": pub.name,
                         "location": pub.location,
                         "url": pub.url,
@@ -139,8 +139,7 @@ pubSchema.statics.findPubsList = function (filter, start, limit, sort, callback)
  *
  * @return pub data or mongo error if rejected
  */
-pubSchema.statics.addPub = function (pubId, eventId) {
-
+pubSchema.statics.addEvent = function (pubId, eventId) {
     // Update query configuration
     const updateEvents = {
         $addToSet: { events: eventId }
@@ -148,7 +147,7 @@ pubSchema.statics.addPub = function (pubId, eventId) {
 
     let addEventPromise = new Promise(function (resolve, reject) {
         // Add pub to favorites set
-        Event.findByIdAndUpdate(
+        Pub.findByIdAndUpdate(
             pubId,
             updateEvents,
             {new: true}, // Return updated object
@@ -159,7 +158,11 @@ pubSchema.statics.addPub = function (pubId, eventId) {
                     return reject(error);
                 }
 
-                resolve(updateResult);
+                const resolveData = {
+                    "pub": updateResult
+                };
+
+                resolve(resolveData);
             });
     });
 

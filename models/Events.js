@@ -71,6 +71,8 @@ eventSchema.statics.findEvent = function (eventData, cb) {
  */
 eventSchema.statics.getEventById = function (eventId) {
 
+    console.log('getEventById');
+
     let eventPromise = new Promise(function (resolve, reject) {
         Event.findOne({ _id: eventId }, function (err, event) {
             if (err) {
@@ -114,7 +116,11 @@ eventSchema.statics.addPub = function (eventId, pubId) {
                     return reject(error);
                 }
 
-                resolve(updateResult);
+                const resolveData = {
+                    "event": updateResult
+                };
+
+                resolve(resolveData);
             });
     });
 
