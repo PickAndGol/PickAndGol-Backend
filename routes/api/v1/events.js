@@ -10,7 +10,7 @@ let jwtRouter = express.Router();
 var mongoose = require('mongoose');
 
 var Events = require('../../../models/Events');
-var EventModel = mongoose.model('Event');
+var Event = mongoose.model('Event');
 
 require('../../../models/Pub');
 let Pub = mongoose.model('Pub');
@@ -47,7 +47,7 @@ jwtRouter.post('/', function (req, res) {
             pubs: [ pubDetail._id ]
         };
 
-        var event = new EventModel(newEvent);
+        var event = new Event(newEvent);
 
         event.save(function (err, created){
             if (err){
@@ -111,7 +111,7 @@ router.get('/', function(req, res) {
 router.get('/:id', function(req, res) {
     let id = req.params.id;
 
-    EventModel.findOne({ _id: id }, function(err, event) {
+    Event.findOne({ _id: id }, function(err, event) {
         if (err) {
             return res.json({ "result": "ERROR", "data": { "code": 400, "description": err } });
         }
@@ -159,7 +159,7 @@ jwtRouter.put('/:event_id/pubs/:pub_id', function (req, res) {
     let pubId = req.params.pub_id;
 
     const pubDataPromise = Pub.detailPub(pubId);
-    const eventDataPromise = EventModel.getEventById(eventId);
+    const eventDataPromise = Event.getEventById(eventId);
 
     const dataPromises = [pubDataPromise, eventDataPromise];
 
@@ -172,7 +172,7 @@ jwtRouter.put('/:event_id/pubs/:pub_id', function (req, res) {
         const event = dataResponses[1];
 
         const pubPromise = Pub.addEvent(pub._id, event._id);
-        const eventPromise = EventModel.addPub(event._id, pub._id);
+        const eventPromise = Event.addPub(event._id, pub._id);
 
         const addResponses = [pubPromise, eventPromise];
 
