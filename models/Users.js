@@ -177,7 +177,11 @@ UserPickSchema.statics.login = function(email, password) {
 
             resolve({
                 "token": token,
-                "user": user
+                "id": user._id,
+                "email": user.email,
+                "name": user.name,
+                "photo_url": user.photo_url,
+                "favorite_pubs": user.favorite_pubs
             });
         });
     });
