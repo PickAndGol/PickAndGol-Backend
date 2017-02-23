@@ -7,7 +7,9 @@ var express = require('express');
 var router = express.Router();
 let jwtRouter = express.Router();
 
-var mongoose =require('mongoose');
+var hash = require('hash.js');
+
+var mongoose = require('mongoose');
 require('../../../models/Users');
 var User = mongoose.model('userPick');
 require('../../../models/Pub');
@@ -59,6 +61,8 @@ router.post('/register', function(req,res) {
     filterEmail['email']= req.body.email;
     filterNameUser['name'] = req.body.name;
 
+    req.body.password =  hash.sha256().update(req.body.password).digest('hex');
+
     User.filterByField(filterEmail).then(User.existMailNotInsert).then(function(data){
         User.filterByField(filterNameUser).then(User.existNameNotInsert).then(function(data){
             User.saveNewUser(req.body).then(function(data){
@@ -90,7 +94,9 @@ router.post('/login', function(req, res) {
     let email = req.body.email || null;
     let password = req.body.password || null;
 
-    User.login(email, password)
+    const encodedPassword = hash.sha256().update(password).digest('hex');
+
+    User.login(email, encodedPassword)
         .then(sendOKResponse)
         .catch(sendErrorResponse);
 });
@@ -102,8 +108,8 @@ jwtRouter.put('/:id',function(req, res) {
     userData['email'] = req.body.email;
     userData['name'] = req.body.name;
     userData['photo_url'] = req.body.photo_url;
-    userData['old_password'] = req.body.old_password;
-    userData['new_password'] = req.body.new_password;
+    userData['old_password'] = hash.sha256().update(req.body.old_password).digest('hex');
+    userData['new_password'] = hash.sha256().update(req.body.new_password).digest('hex');
     userData['id'] = req.params.id;
 
 
@@ -215,25 +221,29 @@ router.post('/recover', function(req, res){
     filter['email'] = req.body.email;
     console.log(filter);
 
-    User.filterByField(filter).then(User.recoverPassword).then(htmlMessenger.recoverPasswordHtml).then(function(data){
-        mail.sendMail(req.body.email,"Recover your pass",data);
-        res.json({result: "OK", data: data});
-    });
+    User.filterByField(filter)
+        .then(User.recoverPassword)
+        .then(htmlMessenger.recoverPasswordHtml)
+        .then(function(data){
+            mail.sendMail(req.body.email,"Recover your pass",data);
+            res.json({result: "OK", data: data});
+        });
 });
 
 router.post('/forgotpass', function(req, res){
 
     let filter={};
     filter['resetPasswordToken'] = req.body.token;
-    if (req.body.newpass1 != req.body.newpass){
+    if (req.body.newpass1 !== req.body.newpass){
         res.json({result:"ERROR", "data": {"code": 410, "description": "Pass are different"}});
         return;
     }
 
     User.filterByField(filter).then(function (data){
-        User.resetPasswordWithToken(data,req.body.newpass).then(function(data){
-            res.json({result: "OK" ,data:data});
-        });
+        User.resetPasswordWithToken(data,req.body.newpass)
+            .then(function(data){
+                res.json({result: "OK" ,data:data});
+            });
     });
 });
 

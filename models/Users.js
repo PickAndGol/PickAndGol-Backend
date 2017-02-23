@@ -323,7 +323,7 @@ UserPickSchema.statics.getUser = function (idToGet, userId) {
 UserPickSchema.statics.recoverPassword = function(user){
     return new Promise(function(resolve, reject){
         let buf = crypto.randomBytes(20);
-        user.resetPasswordToken =buf.toString('hex');
+        user.resetPasswordToken = buf.toString('hex');
         user.resetPasswordExpires = Date.now() + 36000000; // 1 hour
         user.save(function (err, userSave) {
 
