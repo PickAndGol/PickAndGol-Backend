@@ -313,7 +313,11 @@ UserPickSchema.statics.getUser = function (idToGet, userId) {
                 delete user['email'];
             }
 
-            resolve(user);
+            resolve({ "id": user._id,
+                "name": user.name,
+                "email": user.email,
+                "photo_url": user.photo_url,
+                "favorite_pubs": user.favorite_pubs });
         });
     });
 

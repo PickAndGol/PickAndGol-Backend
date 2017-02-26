@@ -17,6 +17,7 @@ let jwtAuth = require('../../../lib/jwtAuth');
 
 let mail = require('../../../lib/mail/senderMail');
 let htmlMessenger = require('../../../lib/mail/htmlMessage');
+let hash = require('hash.js');
 
 jwtRouter.use(jwtAuth());
 
