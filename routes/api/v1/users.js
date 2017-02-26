@@ -7,8 +7,6 @@ var express = require('express');
 var router = express.Router();
 let jwtRouter = express.Router();
 
-var hash = require('hash.js');
-
 var mongoose = require('mongoose');
 require('../../../models/Users');
 var User = mongoose.model('userPick');
@@ -54,6 +52,9 @@ jwtRouter.get('/:user_id', function (req, res) {
 
 
 router.post('/register', function(req,res) {
+    if (req.body.password == null || req.body.name == null || req.body.email == null) {
+        return res.json({ "result": "ERROR", "data": { "code": 400, "description": "Bad request." } });
+    }
 
     let filterEmail ={};
     let filterNameUser={};
@@ -61,14 +62,12 @@ router.post('/register', function(req,res) {
     filterEmail['email']= req.body.email;
     filterNameUser['name'] = req.body.name;
 
-    req.body.password =  hash.sha256().update(req.body.password).digest('hex');
-
     User.filterByField(filterEmail).then(User.existMailNotInsert).then(function(data){
         User.filterByField(filterNameUser).then(User.existNameNotInsert).then(function(data){
             User.saveNewUser(req.body).then(function(data){
                 res.json({result: "OK", data: data});
             }).catch(function(err){
-                res.json(err);
+                res.json({ "result": "ERROR", "data": err });
             });
         }).catch(function(err){
             res.json(err);

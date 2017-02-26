@@ -7,6 +7,7 @@ var mongoose = require('mongoose');
 let jwt = require('jsonwebtoken');
 let config = require('../local_config');
 let crypto = require('crypto');
+let hash = require('hash.js');
 
 var UserPickSchema = mongoose.Schema({
     name: {
@@ -35,12 +36,11 @@ var UserPickSchema = mongoose.Schema({
 UserPickSchema.statics.saveNewUser = function(data, callback) {
 
     return new Promise(function (resolve,reject) {
-
         var usuario = new userPick();
 
         usuario.name = data.name;
         usuario.email = data.email;
-        usuario.password = data.password;
+        usuario.password = hash.sha256().update(data.password).digest('hex');
         // For now, users are enabled at first
         //usuario.enabled = data.enabled;
         usuario.enabled = true;
@@ -52,17 +52,16 @@ UserPickSchema.statics.saveNewUser = function(data, callback) {
                     callback(err);
                     return;
                 }
-                reject(err);
-                return;
+
+                return reject({ "code": 400, "description": err });
             }
 
             if (callback){
                 callback(null, userSave);
                 return;
             }
-            resolve(userSave);
-            return;
 
+            resolve({ "id": userSave._id, "email": userSave.email, "name": userSave.name });
         });
     });
 };
