@@ -147,6 +147,8 @@ UserPickSchema.statics.login = function(email, password) {
             return;
         }
 
+        const encodedPassword = hash.sha256().update(password).digest('hex');
+
         userPick.findOne({ email: email }, function(err, user) {
             if (err) {
                 reject({ "code": 400, "description": "Bad request." });
@@ -163,7 +165,7 @@ UserPickSchema.statics.login = function(email, password) {
                 return;
             }
 
-            if (user.password !== password) {
+            if (user.password !== encodedPassword) {
                 reject({ "code": 401, "description": "Bad credentials." });
                 return;
             }

@@ -93,9 +93,7 @@ router.post('/login', function(req, res) {
     let email = req.body.email || null;
     let password = req.body.password || null;
 
-    const encodedPassword = hash.sha256().update(password).digest('hex');
-
-    User.login(email, encodedPassword)
+    User.login(email, password)
         .then(sendOKResponse)
         .catch(sendErrorResponse);
 });
