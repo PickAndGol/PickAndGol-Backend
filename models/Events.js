@@ -40,12 +40,12 @@ var eventSchema = mongoose.Schema({
 // static method for model
 eventSchema.statics.list = function (filter, start, limit, sort, cb){
     var query = Event.find(filter);
-    query.sort({date: -1}); // desc date
-    query.select('name description date category pub photo_url pubs');
-    query.skip(start);
-    query.limit(limit);
-    query.sort(sort);
-    console.log(filter);
+    query.sort({date: -1}) // desc date
+        .select('name description date category pub photo_url pubs')
+        .skip(start)
+        .limit(limit)
+        .sort(sort);
+
     return query.exec(cb);
 };
 
