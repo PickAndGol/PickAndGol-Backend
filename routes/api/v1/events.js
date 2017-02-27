@@ -96,7 +96,7 @@ router.get('/', function(req, res) {
         criteria.date = date;
     }
 
-    Events.list(criteria,start,limit,sort, function(err,rows){
+    Event.list(criteria,start,limit,sort, function(err,rows){
         if (err){
             console.log(err);
             return res.json({
