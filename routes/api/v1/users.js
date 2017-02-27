@@ -106,10 +106,15 @@ jwtRouter.put('/:id',function(req, res) {
     userData['email'] = req.body.email;
     userData['name'] = req.body.name;
     userData['photo_url'] = req.body.photo_url;
-    userData['old_password'] = hash.sha256().update(req.body.old_password).digest('hex');
-    userData['new_password'] = hash.sha256().update(req.body.new_password).digest('hex');
     userData['id'] = req.params.id;
 
+    if (req.body.old_password != null) {
+        userData['old_password'] = hash.sha256().update(req.body.old_password).digest('hex');
+    }
+
+    if (req.body.new_password != null) {
+        userData['new_password'] = hash.sha256().update(req.body.new_password).digest('hex');
+    }
 
     User.findUserById(userData['id']).then(function(data){
         User.updateDataUser(userData, data).then(function(data){
@@ -120,11 +125,11 @@ jwtRouter.put('/:id',function(req, res) {
             res.json({result: "OK", data: { data: userData}});
 
         }).catch(function(err){
-            res.json({success:false, data:err});
+            res.json({ "result": "ERROR", "data": err });
         });
     }).catch(function(err){
 
-        res.json(err);
+        res.json({ "result": "ERROR", "data": err });
     });
 });
 

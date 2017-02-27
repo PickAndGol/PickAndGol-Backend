@@ -241,8 +241,13 @@ UserPickSchema.statics.updateDataUser = function (jsonDataUser,recoverDataFromDb
             && typeof jsonDataUser.photo_url =='undefined'
             && typeof jsonDataUser.new_password == 'undefined' ){
 
-            reject({ result: "ERROR", data: { "code": 400, "description": "Bad request." } });
+            reject({ "code": 400, "description": "Bad request." });
             return;
+        }
+
+        if ((jsonDataUser.old_password != null && jsonDataUser.new_password == null) ||
+            (jsonDataUser.new_password != null && jsonDataUser.old_password == null)) {
+            return reject({ "code": 400, "description": "You have to provide both old password and new password." });
         }
 
         if (jsonDataUser.email){
@@ -258,11 +263,10 @@ UserPickSchema.statics.updateDataUser = function (jsonDataUser,recoverDataFromDb
         }
 
 
-        if (jsonDataUser.new_password){
-
+        if (jsonDataUser.new_password != null) {
             if (jsonDataUser.old_password != recoverDataFromDb.password){
 
-                reject({ result: "ERROR", data: { "code": 405, "description": "Password is not correct." } });
+                reject({ "code": 405, "description": "Password is not correct." });
             } else {
                 userUpdate['password']=jsonDataUser.new_password;
             }
@@ -281,7 +285,7 @@ UserPickSchema.statics.findUserById = function(id){
         userPick.findById(id, function (err, user) {
 
             if (err){
-                reject({ result: "ERROR", data: { "code": 400, "description": "Bad request." } });
+                reject({ "code": 400, "description": "Bad request." });
                 return;
             }
 
