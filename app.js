@@ -5,6 +5,7 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var cors = require('cors');
 
 var index = require('./routes/index');
 
@@ -12,6 +13,16 @@ var index = require('./routes/index');
 require('./models/Events');
 
 var app = express();
+
+// Cross domain avoid
+app.options('*', cors());
+
+app.use(function(req, res, next) { //allow cross origin requests
+    //res.setHeader("Access-Control-Allow-Methods", "POST, PUT, OPTIONS, DELETE, GET");
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+    next();
+});
 
 //Base de datos
 require('./lib/connectMongoose');
