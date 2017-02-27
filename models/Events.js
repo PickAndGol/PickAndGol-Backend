@@ -7,9 +7,6 @@
 //import mongoose
 let mongoose = require('mongoose');
 
-//require('./BarEvent');
-//let BarEvent = mongoose.model('BarEvent');
-
 //define event schema
 var eventSchema = mongoose.Schema({
     name: {
@@ -44,7 +41,7 @@ var eventSchema = mongoose.Schema({
 eventSchema.statics.list = function (filter, start, limit, sort, cb){
     var query = Event.find(filter);
     query.sort({date: -1}); // desc date
-    query.select('name description date category pub photo_url');
+    query.select('name description date category pub photo_url pubs');
     query.skip(start);
     query.limit(limit);
     query.sort(sort);
