@@ -88,7 +88,7 @@ router.get('/:id', function(req, res) {
         .catch(sendErrorResponse);
 });
 
-router.get('/pubs', function (req, res) {
+router.get('/', function (req, res) {
 
     let query = req.query;
     let latitude =  parseFloat(query.latitude);
