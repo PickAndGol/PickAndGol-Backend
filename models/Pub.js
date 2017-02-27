@@ -58,6 +58,7 @@ pubSchema.statics.findPub = function (pubData, callback) {
 };
 
 pubSchema.statics.detailPub = function (id) {
+    /*
     function listEvents (idPub, callback) {
         Event.list({ pub: idPub }, null, null, null, function (err, rows) {
             if (err) {
@@ -80,7 +81,7 @@ pubSchema.statics.detailPub = function (id) {
             callback(null, events);
         });
     }
-
+*/
     return new Promise(function (resolve, reject) {
         Pub.findOne({_id: id}, function (err, pub) {
             if (err) {
@@ -98,24 +99,24 @@ pubSchema.statics.detailPub = function (id) {
                     reject({ "code": 400, "description": err });
                     return;
                 }
-
+/*
                 listEvents(pub._id, function(err, events) {
                     if (err) {
                         reject({ "code": 400, "description": err });
                         return;
                     }
-
+*/
                     resolve({
                         "_id": pub._id,
                         "name": pub.name,
                         "location": pub.location,
                         "url": pub.url,
                         "owner": pub.owner_id,
-                        "events": events,
+                        "events": pub.events,
                         "photos": barPictures
                     });
                 });
-            });
+            //});
         });
     });
 };
