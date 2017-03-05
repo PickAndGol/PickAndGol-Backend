@@ -71,12 +71,11 @@ router.post('/register', function(req,res) {
                 res.json({ "result": "ERROR", "data": err });
             });
         }).catch(function(err){
-            res.json(err);
+            res.json({ "result": "ERROR", "data": err });
         });
     }).catch(function(err){
-
         console.log(err);
-        res.json(err);
+        res.json({ "result": "ERROR", "data": err });
     });
 
 });
@@ -230,6 +229,9 @@ router.post('/recover', function(req, res){
         .then(function(data){
             mail.sendMail(req.body.email,"Recover your pass",data);
             res.json({result: "OK", data: data});
+        })
+        .catch(function(err) {
+            res.json({ "result": "ERROR", "data": err });
         });
 });
 
@@ -242,12 +244,16 @@ router.post('/forgotpass', function(req, res){
         return;
     }
 
-    User.filterByField(filter).then(function (data){
-        User.resetPasswordWithToken(data,req.body.newpass)
-            .then(function(data){
-                res.json({result: "OK" ,data:data});
-            });
-    });
+    User.filterByField(filter).
+        then(function (data){
+            User.resetPasswordWithToken(data,req.body.newpass)
+                .then(function(data){
+                    res.json({result: "OK" ,data:data});
+                });
+        })
+        .catch(function(err) {
+            res.json({ "result": "ERROR", "data": err });
+        });
 });
 
 
