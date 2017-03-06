@@ -44,7 +44,7 @@ jwtRouter.post('/', function (req, res) {
             category: [req.body.category],
             description: req.body.description || '',
             photo_url: req.body.photo_url || '',
-            pubs: [ pubDetail.id ]
+            pubs: [ pubDetail._id ]
         };
 
         var event = new Event(newEvent);
@@ -121,11 +121,6 @@ router.get('/:id', function(req, res) {
             return res.json({ "result": "ERROR", "data": { "code": 404, "description": "Not found." } });
         }
 
-        // Cast event as Object to be able to use 'delete'
-        event = event.toObject();
-        event.id = event._id;
-        delete event._id;
-
         return res.json({
             "result:": "OK",
             "data": {
@@ -168,8 +163,8 @@ jwtRouter.put('/:event_id/pubs/:pub_id', function (req, res) {
         const pub = dataResponses[0];
         const event = dataResponses[1];
 
-        const pubPromise = Pub.addEvent(pub.id, event._id);
-        const eventPromise = Event.addPub(event._id, pub.id);
+        const pubPromise = Pub.addEvent(pub._id, event._id);
+        const eventPromise = Event.addPub(event._id, pub._id);
 
         const addResponses = [pubPromise, eventPromise];
 
@@ -213,8 +208,8 @@ jwtRouter.delete('/:event_id/pubs/:pub_id', function (req, res) {
         const pub = dataResponses[0];
         const event = dataResponses[1];
 
-        const pubPromise = Pub.deleteEvent(pub.id, event._id);
-        const eventPromise = Event.deletePub(event._id, pub.id);
+        const pubPromise = Pub.deleteEvent(pub._id, event._id);
+        const eventPromise = Event.deletePub(event._id, pub._id);
 
         const deleteResponses = [pubPromise, eventPromise];
 

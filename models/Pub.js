@@ -78,7 +78,7 @@ pubSchema.statics.detailPub = function (id) {
                 }
 
                 resolve({
-                    "id": pub._id,
+                    "_id": pub._id,
                     "name": pub.name,
                     "location": pub.location,
                     "url": pub.url,
