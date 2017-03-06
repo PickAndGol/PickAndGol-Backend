@@ -28,8 +28,8 @@
 ## Descripción
 
 Software que se ejecutará en el servidor dando servicio a una app (API) de
-gestión de eventos deportivos que se puedan ver en determinados bares. 
-Con esta API se comunicará tanto la aplicación web, la versión iOS y 
+gestión de eventos deportivos que se puedan ver en determinados bares.
+Con esta API se comunicará tanto la aplicación web, la versión iOS y
 la versión Android.
 
 ## Uso
@@ -80,11 +80,11 @@ Devuelve los datos de un usuario.
 * **Método:**
 
   `GET`
-  
+
 *  **Parámetros en URL**
 
    * **Obligatorios:**
- 
+
       * `user_id=[string]`
 
 * **Parámetros en datos**
@@ -107,7 +107,7 @@ Devuelve los datos de un usuario.
       }
     }
     ```
- 
+
 * **Ejemplos de respuesta fallida:**
 
   * **Code:** 400
@@ -167,7 +167,7 @@ Crea una nueva cuenta de usuario
 * **Método:**
 
   `POST`
-  
+
 * **Parámetros en URL**
 
     Ninguno
@@ -175,7 +175,7 @@ Crea una nueva cuenta de usuario
 * **Parámetros en datos**
 
   * **Obligatorios:**
- 
+
       * `email=[string]`
       * `name=[string]`
       * `password=[string]`
@@ -198,13 +198,13 @@ Crea una nueva cuenta de usuario
     {
       "result": "OK",
       "data": {
-        "id": 37,
+        "_id": 37,
         "email": "pepe1234@gmail.com",
         "name": "Pepito 1234"
       }
     }
     ```
- 
+
 * **Ejemplos de respuesta fallida:**
 
   * **Code:** 400
@@ -258,7 +258,7 @@ Permite a un usuario modificar sus datos de perfil y su contraseña.
   * Un usuario autenticado sólo puede actualizar su propio perfil.
 
 * **URL**
-  
+
   `/users/:user_id`
 
 * **Método:**
@@ -272,7 +272,7 @@ Permite a un usuario modificar sus datos de perfil y su contraseña.
 * **Parámetros en datos**
 
   * **Opcionales:**
- 
+
       * `email=[string]`
       * `name=[string]`
       * `old_password=[string]`
@@ -299,7 +299,7 @@ Permite a un usuario modificar sus datos de perfil y su contraseña.
     {
       "result": "OK",
       "data": {
-        "id": 37,
+        "_id": 37,
         "email": "pepe12345@hotmail.com",
         "name": "Pepito Pérez",
         "photo_url": "https://images.pickandgol.s3.amazonaws.com/007e4567e89b"
@@ -354,9 +354,9 @@ O
 
 #### Baja de usuario
 
-Permite a un usuario darse de baja, eliminando su cuenta. 
-Se eliminará el listado de favoritos del usuario y sus reviews. 
-Si era dueño de algún bar, este pasará a ser propiedad del usuario del 
+Permite a un usuario darse de baja, eliminando su cuenta.
+Se eliminará el listado de favoritos del usuario y sus reviews.
+Si era dueño de algún bar, este pasará a ser propiedad del usuario del
 sistema PICKANDGOL.
 
 * **Condiciones**
@@ -376,7 +376,7 @@ sistema PICKANDGOL.
 *  **Parámetros en URL**
 
    * **Obligatorios:**
- 
+
       * `user_id=[string]`
 
 * **Parámetros en datos**
@@ -425,7 +425,7 @@ O
 
 #### Recuperacion de contraseña de usuario
 
-Permite a un usuario recuperar su contraseña generando una nueva y 
+Permite a un usuario recuperar su contraseña generando una nueva y
 enviándola por email al usuario (si es que el email indicado existe).
 
 * **Condiciones**
@@ -448,7 +448,7 @@ enviándola por email al usuario (si es que el email indicado existe).
 * **Parámetros en datos**
 
   * **Obligatorios:**
- 
+
       * `email=[string]`
 
 * **Ejemplo de datos en la petición:**
@@ -486,7 +486,7 @@ enviándola por email al usuario (si es que el email indicado existe).
 
 #### Login de usuario
 
-Permite a un usuario autenticarse en el sistema indicando su nombre de 
+Permite a un usuario autenticarse en el sistema indicando su nombre de
 usuario y contraseña.
 
 * **Condiciones**
@@ -508,7 +508,7 @@ usuario y contraseña.
 * **Parámetros en datos**
 
   * **Obligatorios:**
- 
+
       * `email=[string]`
       * `password=[string]`
 
@@ -593,11 +593,11 @@ Devuelve una lista de los bares favoritos de un usuario.
 * **Método:**
 
   `GET`
-  
+
 *  **Parámetros en URL**
 
    * **Obligatorios:**
- 
+
       * `user_id=[string]`
 
 * **Parámetros en datos**
@@ -615,7 +615,7 @@ Devuelve una lista de los bares favoritos de un usuario.
       "data": {
         "favorites": [
           {
-            "id": 12,
+            "_id": 12,
             "name": "Bar Casa Paco",
             "latitude": "40.41665",
             "longitude": "-3.70381",
@@ -624,7 +624,7 @@ Devuelve una lista de los bares favoritos de un usuario.
             "owner": 24
           },
           {
-            "id": 43,
+            "_id": 43,
             "name": "Asador Madrid",
             "latitude": "41.25765",
             "longitude": "-3.64123",
@@ -700,7 +700,7 @@ Añade un bar como favorito de un usuario
 * **Parámetros en URL**
 
   * **Obligatorios:**
- 
+
       * `user_id=[string]`
       * `pub_id=[string]`
 
@@ -719,7 +719,7 @@ Añade un bar como favorito de un usuario
       "data": {
         "favorites": [
           {
-            "id": 12,
+            "_id": 12,
             "name": "Bar Casa Paco",
             "latitude": "40.41665",
             "longitude": "-3.70381",
@@ -728,7 +728,7 @@ Añade un bar como favorito de un usuario
             "owner": 24
           },
           {
-            "id": 43,
+            "_id": 43,
             "name": "Asador Madrid",
             "latitude": "41.25765",
             "longitude": "-3.64123",
@@ -820,7 +820,7 @@ Mostrar los datos de un bar
   *  **Parámetros en URL**
 
    * **Obligatorios:**
- 
+
       * `pub_id=[string]`
 
 * **Parámetros en datos**
@@ -836,7 +836,7 @@ Mostrar los datos de un bar
     {
       "result": "OK",
       "data": {
-        "id": 59,
+        "_id": 59,
         "name": "Bar Casa Paco",
         "latitude": 40.41665,
         "longitude": -3.70381,
@@ -886,13 +886,13 @@ Crea un nuevo bar.
 * **Parámetros en datos**
 
   * **Obligatorios:**
- 
+
       * `name=[string]`
       * `latitude=[float]`
       * `longitude=[float]`
 
 * **Opcionales:**
- 
+
       * `url=[string]`
       * `phone=[string]`
       * `photo_url=[string]`
@@ -918,7 +918,7 @@ Crea un nuevo bar.
     {
       "result": "OK",
       "data": {
-        "id": 59,
+        "_id": 59,
         "name": "Bar Casa Paco",
         "latitude": 40.41665,
         "longitude": -3.70381,
@@ -979,7 +979,7 @@ Lista de bares. Permite filtrar los resultados
 *  **Parámetros en URL**
 
    * **Opcionales:**
- 
+
       * `offset=[integer]` (si no se indica, por defecto será 0)
       * `limit=[integer]` (si no se indica, por defecto será 20)
       * `text=[string]`
@@ -1004,7 +1004,7 @@ Lista de bares. Permite filtrar los resultados
         "total": 2,
         "items": [
           {
-            "id": 59,
+            "_id": 59,
             "name": "Bar Casa Paco",
             "latitude": 40.41665,
             "longitude": -3.70381,
@@ -1017,7 +1017,7 @@ Lista de bares. Permite filtrar los resultados
           ]
           },
           {
-            "id": 43,
+            "_id": 43,
             "name": "Asador Madrid",
             "latitude": "41.25765",
             "longitude": "-3.64123",
@@ -1069,7 +1069,7 @@ Devuelve los detalles de un evento.
 *  **Parámetros en URL**
 
    * **Obligatorios:**
- 
+
       * `event_id=[string]`
 
 * **Parámetros en datos**
@@ -1085,7 +1085,7 @@ Devuelve los detalles de un evento.
     {
       "result": "OK",
       "data": {
-        "id": 14,
+        "_id": 14,
         "name": "Liga 2016/17: Real Madrid - Barcelona",
         "date": "2017-04-22T20:30:00.000Z",
         "description": "Partido correspondiente a la J.33 de liga",
@@ -1135,7 +1135,7 @@ Crea un nuevo evento, siempre asociado a un bar existente
 * **Parámetros en datos**
 
   * **Obligatorios:**
- 
+
       * `name=[string]`
       * `date=[string]`
       * `pub=[string]`
@@ -1167,7 +1167,7 @@ Crea un nuevo evento, siempre asociado a un bar existente
     {
       "result": "OK",
       "data": {
-        "id": 14,
+        "_id": 14,
         "name": "Liga 2016/17: Real Madrid - Barcelona",
         "date": "2017-04-22T20:30:00.000Z",
         "description": "Partido correspondiente a la J.33 de liga",
@@ -1229,7 +1229,7 @@ Devuelve una lista de eventos futuros. Permite filtrar los resultados.
 *  **Parámetros en URL**
 
    * **Opcionales:**
- 
+
       * `offset=[integer]` (si no se indica, por defecto será 0)
       * `limit=[integer]` (si no se indica, por defecto será 20)
       * `pub=[string]`
@@ -1255,7 +1255,7 @@ Devuelve una lista de eventos futuros. Permite filtrar los resultados.
         "total": 2,
         "items": [
           {
-            "id": 14,
+            "_id": 14,
             "name": "Liga 2016/17: Real Madrid - Barcelona",
             "date": "2017-04-22T20:30:00.000Z",
             "description": "Partido correspondiente a la J.33 de Liga",
@@ -1264,7 +1264,7 @@ Devuelve una lista de eventos futuros. Permite filtrar los resultados.
             "pubs": [ "572934f2b56205e4135132a4", "572934f2b56205e4135132a3", "572d1ccddb794a84154a16d9" ]
           },
           {
-            "id": 417,
+            "_id": 417,
             "name": "G.P. Mónaco",
             "date": "2017-05-28T14:00:00.000Z",
             "description": "6ª prueba del mundial de F1",
