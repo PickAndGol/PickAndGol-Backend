@@ -123,9 +123,7 @@ router.get('/:id', function(req, res) {
 
         return res.json({
             "result:": "OK",
-            "data": {
-                "event": event
-            }
+            "data": event
         });
     });
 });
