@@ -105,7 +105,7 @@ router.get('/', function(req, res) {
             });
         }
         res.json({
-            "result:": "OK",
+            "result": "OK",
             "data": {
                 "total": events.length,
                 "items": events
