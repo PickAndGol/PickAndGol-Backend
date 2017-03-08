@@ -136,7 +136,7 @@ router.get('/', function (req, res) {
         return res.json({
             "result":"OK",
             "data":{
-                "numberOfPubs":pubs.length,
+                "total": pubs.length,
                 "items": pubs }
         });
     });
