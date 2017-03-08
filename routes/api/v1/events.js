@@ -72,7 +72,7 @@ router.get('/', function(req, res) {
     var category = req.query.category;
     var date = req.query.date;
     var description = req.query.description;
-    var start = req.query.start;
+    var start = parseInt(req.query.start) || 0;
     var limit = parseInt(req.query.limit) || 20;
     var sort = req.query.sort || null;
 
@@ -83,7 +83,7 @@ router.get('/', function(req, res) {
     }
 
     if (typeof name !== 'undefined'){
-        criteria.name = name;
+        criteria.name = new RegExp('^' + name, 'i');
     }
 
     if (typeof description !== 'undefined'){

@@ -38,8 +38,8 @@ var eventSchema = mongoose.Schema({
 });
 
 // static method for model
-eventSchema.statics.list = function (filter, start, limit, sort, cb){
-    var query = Event.find(filter);
+eventSchema.statics.list = function (filters, start, limit, sort, cb){
+    var query = Event.find(filters);
     query.sort({date: -1}) // desc date
         .select('name description date category pub photo_url pubs')
         .skip(start)
