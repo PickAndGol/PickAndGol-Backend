@@ -100,13 +100,13 @@ router.get('/', function(req, res) {
         if (err){
             console.log(err);
             return res.json({
-                "result": "error",
+                "result": "ERROR",
                 "data": {"code": 400, "description": "Bad request."}
             });
         }
         res.json({
-            ok: true,
-            data: {
+            "result:": "OK",
+            "data": {
                 "total": events.length,
                 "items": events
             }
