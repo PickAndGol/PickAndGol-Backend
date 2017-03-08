@@ -96,7 +96,7 @@ router.get('/', function(req, res) {
         criteria.date = date;
     }
 
-    Event.list(criteria,start,limit,sort, function(err,rows){
+    Event.list(criteria,start,limit,sort, function(err, events){
         if (err){
             console.log(err);
             return res.json({
@@ -104,7 +104,13 @@ router.get('/', function(req, res) {
                 "data": {"code": 400, "description": "Bad request."}
             });
         }
-        res.json({ok: true, data: rows});
+        res.json({
+            ok: true,
+            data: {
+                "total": events.length,
+                "items": events
+            }
+        });
     });
 });
 
