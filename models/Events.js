@@ -50,6 +50,12 @@ eventSchema.statics.list = function (filters, start, limit, sort, cb){
 };
 
 
+eventSchema.statics.total = function (filters, callback) {
+    var query = Event.find(filters); // without .exec(), still  not executed
+    return query.count().exec(callback); // exec will return a promise
+};
+
+
 eventSchema.statics.findEvent = function (eventData, cb) {
     Event.findOne({name:eventData.name}).exec(function (err, event) {
         if (err){

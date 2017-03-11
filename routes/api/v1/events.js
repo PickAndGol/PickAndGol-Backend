@@ -96,22 +96,26 @@ router.get('/', function(req, res) {
         criteria.date = date;
     }
 
-    Event.list(criteria,start,limit,sort, function(err, events){
-        if (err){
-            console.log(err);
+    const listPromise = Event.list(criteria,start,limit,sort);
+    const totalPromise = Event.total(criteria);
+    const promises = [listPromise, totalPromise];
+
+    Promise.all(promises)
+        .then(([events, total]) => {
+            res.json({
+                "result": "OK",
+                "data": {
+                    "total": total,
+                    "items": events
+                }
+            });
+        })
+        .catch((error) => {
             return res.json({
                 "result": "ERROR",
                 "data": {"code": 400, "description": "Bad request."}
             });
-        }
-        res.json({
-            "result": "OK",
-            "data": {
-                "total": events.length,
-                "items": events
-            }
         });
-    });
 });
 
 
