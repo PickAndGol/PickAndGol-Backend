@@ -96,15 +96,21 @@ router.get('/', function(req, res) {
         criteria.date = date;
     }
 
-    Event.list(criteria,start,limit,sort, function(err,rows){
+    Event.list(criteria,start,limit,sort, function(err, events){
         if (err){
             console.log(err);
             return res.json({
-                "result": "error",
+                "result": "ERROR",
                 "data": {"code": 400, "description": "Bad request."}
             });
         }
-        res.json({ok: true, data: rows});
+        res.json({
+            "result": "OK",
+            "data": {
+                "total": events.length,
+                "items": events
+            }
+        });
     });
 });
 
@@ -123,9 +129,7 @@ router.get('/:id', function(req, res) {
 
         return res.json({
             "result:": "OK",
-            "data": {
-                "event": event
-            }
+            "data": event
         });
     });
 });
