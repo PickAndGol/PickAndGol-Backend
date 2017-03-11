@@ -102,6 +102,11 @@ pubSchema.statics.findPubsList = function (filter, start, limit, sort, callback)
     return query.exec(callback);
 };
 
+pubSchema.statics.total = function (filters, callback) {
+    var query = Pub.find(filters); // without .exec(), still  not executed
+    return query.count().exec(callback); // exec will return a promise
+};
+
 /**
  * Add event to pub
  *

@@ -102,9 +102,7 @@ router.get('/', function (req, res) {
 
     let searchCriteria = {};
 
-    if (typeof latitude !== 'undefined'
-        && longitude !== 'undefined'
-        && radius !== 'undefined') {
+    if (latitude && longitude && radius) {
 
         searchCriteria.location = {
             location: {
@@ -124,22 +122,28 @@ router.get('/', function (req, res) {
         searchCriteria.name = new RegExp('^' + name, 'i');
     }
 
-    return Pub.findPubsList(searchCriteria, start, limit, sort, function (err, pubs) {
-        if (err){
+    const listPromise = Pub.findPubsList(searchCriteria,start,limit,sort);
+    const totalPromise = Pub.total(searchCriteria);
+    const promises = [listPromise, totalPromise];
+
+    Promise.all(promises)
+        .then(([pubs, total]) => {
+            return res.json({
+                "result":"OK",
+                "data":{
+                    "total": total,
+                    "items": pubs }
+            });
+        })
+        .catch((error) => {
             return res.json({
                 "result": "ERROR",
                 "data": {
                     "code": 400,
-                    "description": "Bad request" }
+                    "description": "Bad request."
+                }
             });
-        }
-        return res.json({
-            "result":"OK",
-            "data":{
-                "total": pubs.length,
-                "items": pubs }
         });
-    });
 });
 
 module.exports = {

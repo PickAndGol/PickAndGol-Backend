@@ -102,7 +102,7 @@ router.get('/', function(req, res) {
 
     Promise.all(promises)
         .then(([events, total]) => {
-            res.json({
+            return res.json({
                 "result": "OK",
                 "data": {
                     "total": total,
@@ -113,7 +113,10 @@ router.get('/', function(req, res) {
         .catch((error) => {
             return res.json({
                 "result": "ERROR",
-                "data": {"code": 400, "description": "Bad request."}
+                "data": {
+                    "code": 400,
+                    "description": "Bad request."
+                }
             });
         });
 });
