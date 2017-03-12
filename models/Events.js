@@ -34,7 +34,11 @@ var eventSchema = mongoose.Schema({
     pubs: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Pub'
-    }]
+    }],
+    creator: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User'
+    }
 });
 
 // static method for model

@@ -44,7 +44,8 @@ jwtRouter.post('/', function (req, res) {
             category: [req.body.category],
             description: req.body.description || '',
             photo_url: req.body.photo_url || '',
-            pubs: [ pubDetail._id ]
+            pubs: [ pubDetail._id ],
+            creator: req.decoded.id
         };
 
         var event = new Event(newEvent);
