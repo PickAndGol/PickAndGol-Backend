@@ -71,10 +71,7 @@ UserPickSchema.statics.existMailNotInsert = function(user, callback) {
     return new Promise(function (resolve, reject) {
 
         if (user){
-            reject({
-                "result": "ERROR",
-                "data": { "code": 409, "description": "Conflict (email already exists)." }
-            });
+            reject({ "code": 409, "description": "Conflict (email already exists)." });
         } else {
             resolve(user);
         }
@@ -86,10 +83,7 @@ UserPickSchema.statics.existNameNotInsert = function(user, callback) {
     return new Promise(function (resolve, reject) {
 
         if (user){
-            reject({
-                "result": "ERROR",
-                "data": {"code": 409, "description": "Conflict (username already exists)."}
-            });
+            reject({ "code": 409, "description": "Conflict (username already exists)." });
         } else {
             resolve(user);
         }
@@ -341,7 +335,7 @@ UserPickSchema.statics.recoverPassword = function(user){
         user.save(function (err, userSave) {
 
             if (err){
-                reject({ result: "ERROR", data: { "code": 400, "description": "Bad request." } });
+                return reject({ "code": 400, "description": "Bad request." });
             }
             resolve(user);
 
@@ -357,7 +351,7 @@ UserPickSchema.statics.resetPasswordWithToken = function(user, newpass){
 
 
             if (err){
-                reject({ result: "ERROR", data: { "code": 400, "description": "Bad request." } });
+                return reject({ "code": 400, "description": "Bad request." });
             }
             resolve(user);
 
