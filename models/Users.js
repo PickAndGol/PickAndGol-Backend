@@ -170,10 +170,8 @@ UserPickSchema.statics.login = function(email, password) {
                 return;
             }
 
-            const TIME_TO_EXPIRE = 60 * 24;
-
             let token = jwt.sign({ id: user._id }, config.jwt.secret, {
-                expiresIn: TIME_TO_EXPIRE
+                expiresIn: config.token_expiration
             });
 
             resolve({
