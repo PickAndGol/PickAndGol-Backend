@@ -60,6 +60,9 @@ let events = require('./routes/api/v1/events');
 app.use('/api/v1/events', events.router);
 app.use('/api/v1/events', events.jwtRouter);
 
+let categories = require('./routes/api/v1/categories');
+app.use('/api/v1/categories', categories);
+
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   var err = new Error('Not Found');
