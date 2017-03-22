@@ -8,5 +8,6 @@ module.exports = {
             user: '<USER_EMAIL>',
             pass: '<EMAIL_PASSWORD>'
         }
-    }
+    },
+    token_expiration: '<TIME_IN_SECONDS>'
 };
