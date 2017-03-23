@@ -84,7 +84,7 @@ router.get('/', function(req, res) {
     }
 
     if (typeof name !== 'undefined'){
-        criteria.name = new RegExp('^' + name, 'i');
+        criteria.name = new RegExp('.*' + name + '.*', 'i');
     }
 
     if (typeof description !== 'undefined'){
