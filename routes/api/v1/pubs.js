@@ -4,6 +4,8 @@
 
 'use strict';
 
+let wordSearch = require ('../../../lib/wordSearch');
+
 let express = require('express');
 let jwtRouter = express.Router();
 let router = express.Router();
@@ -119,7 +121,7 @@ router.get('/', function (req, res) {
     }
 
     if (typeof name !== 'undefined'){
-        searchCriteria.name = new RegExp('^' + name, 'i');
+        searchCriteria.name = wordSearch(name);
     }
 
     const listPromise = Pub.findPubsList(searchCriteria,start,limit,sort);
