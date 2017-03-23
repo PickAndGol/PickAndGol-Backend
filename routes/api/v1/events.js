@@ -3,6 +3,8 @@
  */
 'use strict';
 
+let wordSearch = require ('../../../lib/wordSearch');
+
 var express = require('express');
 var router = express.Router();
 let jwtRouter = express.Router();
@@ -58,10 +60,7 @@ jwtRouter.post('/', function (req, res) {
 
             return sendOKResponse(created);
         });
-
     }
-
-
 });
 
 // GET events list
@@ -84,11 +83,11 @@ router.get('/', function(req, res) {
     }
 
     if (typeof name !== 'undefined'){
-        criteria.name = new RegExp('.*' + name + '.*', 'i');
+        criteria.name = wordSearch(name);
     }
 
     if (typeof description !== 'undefined'){
-        criteria.description = new RegExp('.*' + description + '.*', 'i');
+        criteria.description = wordSearch(description);
     }
     if (typeof category !== 'undefined'){
         criteria.category = category;
