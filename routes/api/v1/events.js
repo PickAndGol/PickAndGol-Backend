@@ -75,6 +75,7 @@ router.get('/', function(req, res) {
     var start = parseInt(req.query.start) || 0;
     var limit = parseInt(req.query.limit) || 20;
     var sort = req.query.sort || null;
+    var text = req.query.text;
 
     var criteria = {};
 
@@ -89,9 +90,18 @@ router.get('/', function(req, res) {
     if (typeof description !== 'undefined'){
         criteria.description = wordSearch(description);
     }
+
+    if (typeof text !== 'undefined'){
+        criteria.$or = [
+            {'name': wordSearch(text)},
+            {'description': wordSearch(text)}
+        ];
+    }
+
     if (typeof category !== 'undefined'){
         criteria.category = category;
     }
+
     if (typeof date !== 'undefined'){
         criteria.date = date;
     }
