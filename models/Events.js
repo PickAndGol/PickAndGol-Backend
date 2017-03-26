@@ -48,8 +48,7 @@ eventSchema.statics.list = function (filters, start, limit, sort, cb){
         .select('name description date category pub photo_url pubs creator')
         .skip(start)
         .limit(limit)
-        .sort(sort)
-        .populate('pubs', 'name');
+        .sort(sort);
 
     return query.exec(cb);
 };
