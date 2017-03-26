@@ -76,8 +76,10 @@ router.get('/', function(req, res) {
     var limit = parseInt(req.query.limit) || 20;
     var sort = req.query.sort || null;
     var text = req.query.text;
+    var populatePubNames = req.query.populatePubNames;
 
     var criteria = {};
+    var options = {};
 
     if (typeof pub !== 'undefined'){
         criteria.pub = pub;
@@ -106,7 +108,13 @@ router.get('/', function(req, res) {
         criteria.date = date;
     }
 
-    const listPromise = Event.list(criteria,start,limit,sort);
+    if (populatePubNames &&
+        (populatePubNames === "1") || populatePubNames === "true") {
+
+        options.populatePubNames = true;
+    }
+
+    const listPromise = Event.list(criteria,start,limit,sort,options);
     const totalPromise = Event.total(criteria);
     const promises = [listPromise, totalPromise];
 
