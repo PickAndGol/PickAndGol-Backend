@@ -427,6 +427,8 @@ UserPickSchema.statics.getFavoritePubs = function(userId) {
 
                 favorites = favorites.toObject();
                 favorites.total = favorites.favorite_pubs.length;
+                favorites.items = favorites.favorite_pubs;
+                delete favorites.favorite_pubs;
 
                 resolve(favorites);
             });
