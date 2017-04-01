@@ -47,7 +47,7 @@ jwtRouter.post("/", function (req, res) {
     pubData.location.type = "Point";
     pubData.location.coordinates = [pubLat, pubLong];
     pubData.url = pubUrl;
-    pubData.photos = [pubPhoto];
+    pubData.photos = pubPhoto.split(',');
     pubData.owner_id = pubOwner;
 
 
