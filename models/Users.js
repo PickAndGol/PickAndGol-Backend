@@ -26,8 +26,8 @@ var UserPickSchema = mongoose.Schema({
     resetPasswordToken: String,
     resetPasswordExpires: Date,
     favorite_pubs: [{
-        type: String,
-        '_id': false
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Pub'
     }]
 });
 
@@ -407,21 +407,29 @@ UserPickSchema.statics.addFavoritePub = function(pubId, requesterId) {
  *
  * @param userId -> id of user data
  *
- * @return user data with favorites included, or mongo error if rejected
+ * @return favorites data and total, or mongo error if rejected
  */
 UserPickSchema.statics.getFavoritePubs = function(userId) {
 
-    let getFavoritesPromise = new Promise(function(resolve, reject) {
+    let getFavoritesPromise = new Promise(function (resolve, reject) {
         // Get user favorites
-        userPick.findById( userId, 'favorite_pubs', function(err, favorites) {
-            if (err) {
-                // User not found
-                let error = { "code": 400, "description": err };
-                return reject(error);
-            }
+        userPick.findOne({_id: userId})
+            .select('favorite_pubs -_id')
+            .populate({
+                path:'favorite_pubs'
+            })
+            .exec(function (err, favorites) {
+                if (err) {
+                    // User not found
+                    let error = { "code": 400, "description": err };
+                    return reject(error);
+                }
 
-            resolve(favorites);
-        });
+                favorites = favorites.toObject();
+                favorites.total = favorites.favorite_pubs.length;
+
+                resolve(favorites);
+            });
     });
 
     return getFavoritesPromise;
