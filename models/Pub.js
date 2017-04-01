@@ -5,8 +5,6 @@
 'use strict';
 
 let mongoose = require('mongoose');
-require('./BarPicture');
-let barPicture = mongoose.model('barPicture');
 require('./Events');
 let Event = mongoose.model('Event');
 
@@ -30,6 +28,10 @@ let pubSchema = mongoose.Schema({
     events: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Event'
+    }],
+    photos: [{
+        type: String,
+        '_id': false
     }]
 });
 
@@ -71,21 +73,14 @@ pubSchema.statics.detailPub = function (id) {
                 return;
             }
 
-            barPicture.list(pub._id, function(err, barPictures) {
-                if (err) {
-                    reject({ "code": 400, "description": err });
-                    return;
-                }
-
-                resolve({
-                    "_id": pub._id,
-                    "name": pub.name,
-                    "location": pub.location,
-                    "url": pub.url,
-                    "owner": pub.owner_id,
-                    "events": pub.events,
-                    "photos": barPictures
-                });
+            resolve({
+                "_id": pub._id,
+                "name": pub.name,
+                "location": pub.location,
+                "url": pub.url,
+                "owner": pub.owner_id,
+                "events": pub.events,
+                "photos": pub.photos
             });
         });
     });
