@@ -42,13 +42,19 @@ var eventSchema = mongoose.Schema({
 });
 
 // static method for model
-eventSchema.statics.list = function (filters, start, limit, sort, cb){
+eventSchema.statics.list = function (filters, start, limit, sort, options, cb){
     var query = Event.find(filters);
     query.sort({date: -1}) // desc date
         .select('name description date category pub photo_url pubs creator')
         .skip(start)
         .limit(limit)
         .sort(sort);
+
+    if (options){
+        if (options.populatePubNames){
+            query.populate('pubs', 'name');
+        }
+    }
 
     return query.exec(cb);
 };
