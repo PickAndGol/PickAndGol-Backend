@@ -58,7 +58,9 @@ jwtRouter.post('/', function (req, res) {
                 return sendErrorResponse(errorData);
             }
 
-            return sendOKResponse(created);
+            Pub.addEvent(pubDetail._id, event._id)
+                .then(sendOKResponse(created))
+                .catch(sendErrorResponse);
         });
     }
 });
