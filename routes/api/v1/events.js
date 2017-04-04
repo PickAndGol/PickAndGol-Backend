@@ -107,17 +107,26 @@ jwtRouter.post('/', function (req, res) {
 // GET events list
 router.get('/', function(req, res) {
 
-    var pub = req.query.pub;// assign value returned by pubs list
-    //var today = new Date().getDate();
-    var name = req.query.name;
-    var category = req.query.category;
-    var date = req.query.date;
-    var description = req.query.description;
-    var start = parseInt(req.query.start) || 0;
-    var limit = parseInt(req.query.limit) || 20;
-    var sort = req.query.sort || null;
-    var text = req.query.text;
-    var populatePubNames = req.query.populatePubNames;
+    let pub = req.query.pub;// assign value returned by pubs list
+
+    // Filter variables
+    let name = req.query.name;
+    let category = req.query.category;
+    let date = req.query.date;
+    let description = req.query.description;
+/*
+    let latitude =  parseFloat(req.query.latitude);
+    let longitude = parseFloat(req.query.longitude);
+    let radius = parseInt(req.query.radius) || 1000; // default 1km
+*/
+    let start = parseInt(req.query.start) || 0;
+    let limit = parseInt(req.query.limit) || 20;
+    let sort = req.query.sort || null;
+    let text = req.query.text;
+
+
+    // Populate variables
+    var populatePubNames = req.query.populate_pub_names;
 
     var criteria = {};
     var options = {};

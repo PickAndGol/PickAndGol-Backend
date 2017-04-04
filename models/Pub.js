@@ -12,7 +12,7 @@ let User = mongoose.model('userPick');
 
 let pubSchema = mongoose.Schema({
     name: {
-        type:String,
+        type: String,
         required: true,
         index: true
     },
@@ -88,9 +88,9 @@ pubSchema.statics.detailPub = function (id) {
     });
 };
 
-pubSchema.statics.findPubsList = function (filter, start, limit, sort, callback) {
+pubSchema.statics.findPubsList = function (filters, start, limit, sort, callback) {
 
-    let query = Pub.find(filter);
+    let query = Pub.find(filters);
 
     query.skip(start);
     query.limit(limit);

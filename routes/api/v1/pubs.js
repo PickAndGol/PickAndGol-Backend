@@ -45,7 +45,7 @@ jwtRouter.post("/", function (req, res) {
     let pubData = new Pub();
     pubData.name = pubName;
     pubData.location.type = "Point";
-    pubData.location.coordinates = [pubLat, pubLong];
+    pubData.location.coordinates = [pubLong, pubLat];
     pubData.url = pubUrl;
     pubData.photos = pubPhoto.split(',');
     pubData.owner_id = pubOwner;
@@ -57,7 +57,6 @@ jwtRouter.post("/", function (req, res) {
             return res.json({"result": "ERROR", "data": { "code": 500 }});
         }
         if (pub){
-            console.log(pub);
             return res.json({
                 "result": "ERROR",
                 "data": { "code": 409, "description": "Pub already exists" }
@@ -74,6 +73,7 @@ jwtRouter.post("/", function (req, res) {
     });
 });
 
+// GET pub
 router.get('/:id', function(req, res) {
     let id = req.params.id;
 
@@ -90,12 +90,14 @@ router.get('/:id', function(req, res) {
         .catch(sendErrorResponse);
 });
 
+
+// Get pubs list
 router.get('/', function (req, res) {
 
     let query = req.query;
     let latitude =  parseFloat(query.latitude);
     let longitude = parseFloat(query.longitude);
-    let radius = parseInt(query.radius) || 1000; //1km por defecto
+    let radius = parseInt(query.radius);// || 1000; // default 1km
     let name = query.text;
 
     let start = parseInt(query.offset) || 0;
@@ -104,19 +106,19 @@ router.get('/', function (req, res) {
 
     let searchCriteria = {};
 
-    if (latitude && longitude && radius) {
-
+    if (latitude && longitude) {
         searchCriteria.location = {
-            location: {
-                $nearSphere: {
-                    $geometry: {
-                        type: 'Point',
-                        coordinates: [latitude, longitude]
-                    },
-                    $maxDistance: radius
+            $nearSphere : {
+                $geometry: {
+                    type: "Point" ,
+                    coordinates: [ longitude , latitude ]
                 }
             }
         };
+
+        if (radius) {
+            searchCriteria.location.$nearSphere.$maxDistance = radius;
+        }
 
     }
 
@@ -142,7 +144,8 @@ router.get('/', function (req, res) {
                 "result": "ERROR",
                 "data": {
                     "code": 400,
-                    "description": "Bad request."
+                    "description": "Bad request.",
+                    "mongoError": error
                 }
             });
         });
