@@ -56,6 +56,12 @@ eventSchema.statics.list = function (filters, start, limit, sort, options, cb){
         }
     }
 
+    if (options){
+        if (options.populateCreator){
+            query.populate('creator', 'name photo_url');
+        }
+    }
+
     return query.exec(cb);
 };
 

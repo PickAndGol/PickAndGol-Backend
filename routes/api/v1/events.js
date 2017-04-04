@@ -127,6 +127,7 @@ router.get('/', function(req, res) {
 
     // Populate variables
     var populatePubNames = req.query.populate_pub_names;
+    var populateCreator = req.query.populate_creator;
 
     var criteria = {};
     var options = {};
@@ -162,6 +163,12 @@ router.get('/', function(req, res) {
         (populatePubNames === "1") || populatePubNames === "true") {
 
         options.populatePubNames = true;
+    }
+
+    if (populateCreator &&
+        (populateCreator === "1") || populateCreator === "true") {
+
+        options.populateCreator = true;
     }
 
     const listPromise = Event.list(criteria,start,limit,sort,options);
