@@ -136,15 +136,6 @@ pubSchema.statics.addEvent = function (pubId, eventId) {
                 };
 
                 resolve(resolveData);
-
-                // get the users who have this pub as favorite
-                User.find({ "favorite_pubs": pubId }, function(err, user) {
-                    if (err) {
-                        return reject({ "code": 400, "description": err });
-                    }
-
-                    console.log("user " + user.name + " has the registration_token: " + user.registration_token);
-                });
             });
     });
 
