@@ -106,6 +106,7 @@ jwtRouter.put('/:id',function(req, res) {
     userData['name'] = req.body.name;
     userData['photo_url'] = req.body.photo_url;
     userData['id'] = req.params.id;
+    userData['registration_token'] = req.body.registration_token;
 
     if (req.body.old_password != null) {
         userData['old_password'] = hash.sha256().update(req.body.old_password).digest('hex');

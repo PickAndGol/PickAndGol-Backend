@@ -28,7 +28,8 @@ var UserPickSchema = mongoose.Schema({
     favorite_pubs: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Pub'
-    }]
+    }],
+    registration_token: String
 });
 
 // This function support callback or promise
@@ -237,7 +238,8 @@ UserPickSchema.statics.updateDataUser = function (jsonDataUser,recoverDataFromDb
         if (typeof jsonDataUser.email == 'undefined'
             && typeof jsonDataUser.name == 'undefined'
             && typeof jsonDataUser.photo_url =='undefined'
-            && typeof jsonDataUser.new_password == 'undefined' ){
+            && typeof jsonDataUser.new_password == 'undefined'
+            && typeof jsonDataUser.registration_token == 'undefined') {
 
             reject({ "code": 400, "description": "Bad request." });
             return;
@@ -258,6 +260,11 @@ UserPickSchema.statics.updateDataUser = function (jsonDataUser,recoverDataFromDb
 
         if (jsonDataUser.name){
             userUpdate['name'] = jsonDataUser.name;
+        }
+
+        if (jsonDataUser.registration_token) {
+            userUpdate['registration_token'] = jsonDataUser.registration_token;
+            console.log("registration_token = " + userUpdate['registration_token']);
         }
 
 
