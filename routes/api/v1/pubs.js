@@ -95,6 +95,7 @@ router.get('/:id', function(req, res) {
 router.get('/', function (req, res) {
 
     let query = req.query;
+    let event = query.event;
     let latitude =  parseFloat(query.latitude);
     let longitude = parseFloat(query.longitude);
     let radius = parseInt(query.radius);
@@ -124,6 +125,10 @@ router.get('/', function (req, res) {
 
     if (typeof name !== 'undefined'){
         searchCriteria.name = wordSearch(name);
+    }
+
+    if (typeof event !== 'undefined'){
+        searchCriteria.events = event;
     }
 
     const listPromise = Pub.findPubsList(searchCriteria,start,limit,sort);
