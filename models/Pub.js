@@ -7,6 +7,8 @@
 let mongoose = require('mongoose');
 require('./Events');
 let Event = mongoose.model('Event');
+require('./Users');
+let User = mongoose.model('userPick');
 
 let pubSchema = mongoose.Schema({
     name: {
