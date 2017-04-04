@@ -126,11 +126,11 @@ router.get('/', function(req, res) {
 
 
     // Populate variables
-    var populatePubNames = req.query.populate_pub_names;
-    var populateCreator = req.query.populate_creator;
+    let populatePubNames = req.query.populate_pub_names;
+    let populateCreator = req.query.populate_creator;
 
-    var criteria = {};
-    var options = {};
+    let criteria = {};
+    let options = {};
 
     if (typeof pub !== 'undefined'){
         criteria.pubs = pub;
@@ -198,22 +198,34 @@ router.get('/', function(req, res) {
 
 
 router.get('/:id', function(req, res) {
-    let id = req.params.id;
 
-    Event.findOne({ _id: id }, function(err, event) {
-        if (err) {
-            return res.json({ "result": "ERROR", "data": { "code": 400, "description": err } });
-        }
-
-        if (event == null) {
+    function sendOKResponse (data) {
+        if (!data) {
             return res.json({ "result": "ERROR", "data": { "code": 404, "description": "Not found." } });
         }
+        return res.json({ result: "OK", data: data });
+    }
 
-        return res.json({
-            "result:": "OK",
-            "data": event
-        });
-    });
+    function sendErrorResponse (data) {
+        return res.json({ result: "ERROR", data: data });
+    }
+
+    let id = req.params.id;
+
+    let populateCreator = req.query.populate_creator;
+
+    let options = {};
+
+    if (populateCreator &&
+        (populateCreator === "1") || populateCreator === "true") {
+
+        options.populateCreator = true;
+    }
+
+    Event.getEventById(id, options)
+        .then(sendOKResponse)
+        .catch(sendErrorResponse);
+
 });
 
 /**
