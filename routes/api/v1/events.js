@@ -132,7 +132,7 @@ router.get('/', function(req, res) {
     var options = {};
 
     if (typeof pub !== 'undefined'){
-        criteria.pub = pub;
+        criteria.pubs = pub;
     }
 
     if (typeof name !== 'undefined'){

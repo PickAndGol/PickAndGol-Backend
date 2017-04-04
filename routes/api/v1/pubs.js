@@ -97,7 +97,7 @@ router.get('/', function (req, res) {
     let query = req.query;
     let latitude =  parseFloat(query.latitude);
     let longitude = parseFloat(query.longitude);
-    let radius = parseInt(query.radius);// || 1000; // default 1km
+    let radius = parseInt(query.radius);
     let name = query.text;
 
     let start = parseInt(query.offset) || 0;
