@@ -226,7 +226,14 @@ router.get('/:id', function(req, res) {
 jwtRouter.put('/:event_id/pubs/:pub_id', function (req, res) {
 
     function sendOKResponse (data) {
-        return res.json({ result: "OK", data: data });
+
+        const pub = data[0].pub;
+        const event = data[1].event;
+        let response = {};
+        response.pub = pub;
+        response.event = event;
+
+        return res.json({ result: "OK", data: response });
     }
 
     function sendErrorResponse (data) {
@@ -251,6 +258,7 @@ jwtRouter.put('/:event_id/pubs/:pub_id', function (req, res) {
 
         const pubPromise = Pub.addEvent(pub._id, event._id);
         const eventPromise = Event.addPub(event._id, pub._id);
+
 
         const addResponses = [pubPromise, eventPromise];
 
