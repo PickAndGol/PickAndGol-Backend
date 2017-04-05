@@ -88,12 +88,20 @@ eventSchema.statics.findEvent = function (eventData, cb) {
  *
  * @return event data or mongo error if rejected
  */
-eventSchema.statics.getEventById = function (eventId) {
+eventSchema.statics.getEventById = function (eventId, options) {
 
     console.log('getEventById');
 
     let eventPromise = new Promise(function (resolve, reject) {
-        Event.findOne({ _id: eventId }, function (err, event) {
+        let query = Event.findOne({ _id: eventId });
+
+        if (options){
+            if (options.populateCreator){
+                query.populate('creator');
+            }
+        }
+
+        query.exec(function (err, event) {
             if (err) {
                 // Event not found
                 let error = { "code": 400, "description": err };
