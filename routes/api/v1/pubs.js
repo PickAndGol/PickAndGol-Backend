@@ -47,9 +47,11 @@ jwtRouter.post("/", function (req, res) {
     pubData.location.type = "Point";
     pubData.location.coordinates = [pubLong, pubLat];
     pubData.url = pubUrl;
-    pubData.photos = pubPhoto.split(',');
     pubData.owner_id = pubOwner;
 
+	if (pubPhoto !== 'undefined') {
+        pubData.photos = pubPhoto.split(',');
+	}
 
     // Check if already exists
     Pub.findPub(pubData, function (err, pub) {
