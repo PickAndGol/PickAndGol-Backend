@@ -90,8 +90,6 @@ eventSchema.statics.findEvent = function (eventData, cb) {
  */
 eventSchema.statics.getEventById = function (eventId, options) {
 
-    console.log('getEventById');
-
     let eventPromise = new Promise(function (resolve, reject) {
         let query = Event.findOne({ _id: eventId });
 
