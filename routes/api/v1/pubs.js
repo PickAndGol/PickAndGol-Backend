@@ -50,7 +50,7 @@ jwtRouter.post("/", function (req, res) {
     pubData.owner_id = pubOwner;
 
 	if (pubPhoto !== 'undefined') {
-        pubData.photos = pubPhoto.split(',');
+		pubData.photos = pubPhoto.split(',');
 	}
 
     // Check if already exists
