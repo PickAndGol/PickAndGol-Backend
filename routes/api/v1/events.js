@@ -17,7 +17,6 @@ var Event = mongoose.model('Event');
 require('../../../models/Pub');
 let Pub = mongoose.model('Pub');
 
-let gcm = require('node-gcm');
 
 let jwtAuth = require('../../../lib/jwtAuth');
 let config = require('../../../local_config');
@@ -38,37 +37,7 @@ jwtRouter.post('/', function (req, res) {
         return res.json({ result: "ERROR", data: data });
     }
 
-    function sendPushNotification(pub) {
-        // list all users with pub_id as favorite
-        User.find({ favorite_pubs: pub._id }, function(err, users) {
-            if (err) {
-                return console.error("Error on sendPushNotification: " + err);
-            }
-
-            // send notifications: https://www.npmjs.com/package/node-gcm
-            let sender = new gcm.Sender(config.firebase_api_key);
-            let message = new gcm.Message({
-                notification: {
-                    title: "New event created",
-                    body: "New event for pub " + pub.name + " was created."
-                }
-            });
-
-            // TODO: note that cannot send message to more than 1000 users at the same time
-            let regTokens = [];
-            users.forEach(function(item, index, array) {
-                regTokens.push(item.registration_token);
-            });
-
-            sender.send(message, { registrationTokens: regTokens}, function (err, response) {
-                if (err) {
-                    return console.error("Error sending push notifications: " + err);
-                }
-
-                console.log(response);
-            });
-        });
-    }
+    const idUser = req.decoded.id;
 
     // Check if pub exists before creating event
     const pubId = req.body.pub;
@@ -98,7 +67,7 @@ jwtRouter.post('/', function (req, res) {
 
             Pub.addEvent(pubDetail._id, event._id)
                 .then(sendOKResponse(created))
-                .then(sendPushNotification(pubDetail))
+                .then(User.sendPushNotification(idUser, pubDetail))
                 .catch(sendErrorResponse);
         });
     }
@@ -275,6 +244,7 @@ jwtRouter.put('/:event_id/pubs/:pub_id', function (req, res) {
 
         Promise.all(addResponses)
             .then(sendOKResponse)
+            .then(User.sendPushNotification(pub))
             .catch(sendErrorResponse);
     }
 });

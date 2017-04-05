@@ -8,6 +8,7 @@ let jwt = require('jsonwebtoken');
 let config = require('../local_config');
 let crypto = require('crypto');
 let hash = require('hash.js');
+let gcm = require('node-gcm');
 
 var UserPickSchema = mongoose.Schema({
     name: {
@@ -442,6 +443,40 @@ UserPickSchema.statics.getFavoritePubs = function(userId) {
     });
 
     return getFavoritesPromise;
+};
+
+UserPickSchema.statics.sendPushNotification = function(idUser, pub) {
+    // list all users with pub_id as favorite
+    userPick.find({ favorite_pubs: pub._id }, function(err, users) {
+        if (err) {
+            return console.error("Error on sendPushNotification: " + err);
+        }
+
+        // send notifications: https://www.npmjs.com/package/node-gcm
+        let sender = new gcm.Sender(config.firebase_api_key);
+        let message = new gcm.Message({
+            notification: {
+                title: "New event created",
+                body: "New event for pub " + pub.name + " was created."
+            }
+        });
+
+        // TODO: note that cannot send message to more than 1000 users at the same time
+        let regTokens = [];
+        users.forEach(function(item, index, array) {
+            if (item._id !== idUser) {
+                regTokens.push(item.registration_token);
+            }
+        });
+
+        sender.send(message, { registrationTokens: regTokens}, function (err, response) {
+            if (err) {
+                return console.error("Error sending push notifications: " + err);
+            }
+
+            console.log(response);
+        });
+    });
 };
 
 

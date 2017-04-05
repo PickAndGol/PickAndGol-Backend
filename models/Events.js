@@ -51,14 +51,8 @@ eventSchema.statics.list = function (filters, start, limit, sort, options, cb){
         .sort(sort);
 
     if (options){
-        if (options.populatePubData){
-            query.populate('pubs', options.populatePubData);
-        }
-    }
-
-    if (options){
-        if (options.populateCreator){
-            query.populate('creator', 'name photo_url');
+        if (options.populatePubNames){
+            query.populate('pubs', 'name');
         }
     }
 
@@ -88,18 +82,12 @@ eventSchema.statics.findEvent = function (eventData, cb) {
  *
  * @return event data or mongo error if rejected
  */
-eventSchema.statics.getEventById = function (eventId, options) {
+eventSchema.statics.getEventById = function (eventId) {
+
+    console.log('getEventById');
 
     let eventPromise = new Promise(function (resolve, reject) {
-        let query = Event.findOne({ _id: eventId });
-
-        if (options){
-            if (options.populateCreator){
-                query.populate('creator');
-            }
-        }
-
-        query.exec(function (err, event) {
+        Event.findOne({ _id: eventId }, function (err, event) {
             if (err) {
                 // Event not found
                 let error = { "code": 400, "description": err };
