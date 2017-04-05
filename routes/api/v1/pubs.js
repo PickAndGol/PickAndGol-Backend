@@ -49,7 +49,7 @@ jwtRouter.post("/", function (req, res) {
     pubData.url = pubUrl;
     pubData.owner_id = pubOwner;
 
-	if (pubPhoto !== 'undefined') {
+	if (pubPhoto !== 'undefined' && Array.isArray(pubPhoto)) {
 		pubData.photos = pubPhoto.split(',');
 	}
 
