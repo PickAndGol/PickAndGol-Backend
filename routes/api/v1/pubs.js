@@ -49,9 +49,12 @@ jwtRouter.post("/", function (req, res) {
     pubData.url = pubUrl;
     pubData.owner_id = pubOwner;
 
-	if (pubPhoto !== 'undefined' && Array.isArray(pubPhoto)) {
-		pubData.photos = pubPhoto.split(',');
-	}
+	if (pubPhoto !== 'undefined' && typeof pubPhoto == 'string') {
+	    pubData.photos = pubPhoto.split(',');
+	    pubData.photos.forEach(function(item, index, array) {
+		    pubData.photos[index] = item.trim();
+	    });
+    }
 
     // Check if already exists
     Pub.findPub(pubData, function (err, pub) {
