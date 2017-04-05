@@ -67,7 +67,7 @@ jwtRouter.post('/', function (req, res) {
 
             Pub.addEvent(pubDetail._id, event._id)
                 .then(sendOKResponse(created))
-                .then(User.sendPushNotification(idUser, pubDetail))
+                .then(User.sendPushNotification(idUser, pubDetail, created))
                 .catch(sendErrorResponse);
         });
     }
@@ -241,10 +241,11 @@ jwtRouter.put('/:event_id/pubs/:pub_id', function (req, res) {
 
 
         const addResponses = [pubPromise, eventPromise];
+        const idUser = req.decoded.id;
 
         Promise.all(addResponses)
             .then(sendOKResponse)
-            .then(User.sendPushNotification(pub))
+            .then(User.sendPushNotification(idUser, pub, event))
             .catch(sendErrorResponse);
     }
 });

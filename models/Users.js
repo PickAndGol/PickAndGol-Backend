@@ -445,7 +445,7 @@ UserPickSchema.statics.getFavoritePubs = function(userId) {
     return getFavoritesPromise;
 };
 
-UserPickSchema.statics.sendPushNotification = function(idUser, pub) {
+UserPickSchema.statics.sendPushNotification = function(idUser, pub, event) {
     // list all users with pub_id as favorite
     userPick.find({ favorite_pubs: pub._id }, function(err, users) {
         if (err) {
@@ -457,24 +457,26 @@ UserPickSchema.statics.sendPushNotification = function(idUser, pub) {
         let message = new gcm.Message({
             notification: {
                 title: "New event created",
-                body: "New event for pub " + pub.name + " was created."
+                body: event.name + " in pub " + pub.name
             }
         });
 
         // TODO: note that cannot send message to more than 1000 users at the same time
         let regTokens = [];
         users.forEach(function(item, index, array) {
-            if (item._id !== idUser) {
+            if (item._id != idUser) {
                 regTokens.push(item.registration_token);
             }
         });
+
+        if (regTokens.length == 0) {
+            return;
+        }
 
         sender.send(message, { registrationTokens: regTokens}, function (err, response) {
             if (err) {
                 return console.error("Error sending push notifications: " + err);
             }
-
-            console.log(response);
         });
     });
 };
