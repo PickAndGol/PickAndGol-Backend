@@ -51,8 +51,8 @@ eventSchema.statics.list = function (filters, start, limit, sort, options, cb){
         .sort(sort);
 
     if (options){
-        if (options.populatePubNames){
-            query.populate('pubs', 'name');
+        if (options.populatePubData){
+            query.populate('pubs', options.populatePubData);
         }
     }
 

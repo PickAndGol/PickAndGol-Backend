@@ -126,7 +126,7 @@ router.get('/', function(req, res) {
 
 
     // Populate variables
-    var populatePubNames = req.query.populate_pub_names;
+    var populatePubData = req.query.populate_pub_data;
     var populateCreator = req.query.populate_creator;
 
     var criteria = {};
@@ -159,10 +159,9 @@ router.get('/', function(req, res) {
         criteria.date = date;
     }
 
-    if (populatePubNames &&
-        (populatePubNames === "1") || populatePubNames === "true") {
+    if (typeof populatePubData === 'string') {
 
-        options.populatePubNames = true;
+        options.populatePubData = populatePubData;
     }
 
     if (populateCreator &&
