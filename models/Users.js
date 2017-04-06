@@ -458,6 +458,9 @@ UserPickSchema.statics.sendPushNotification = function(idUser, pub, event) {
             notification: {
                 title: "New event created",
                 body: event.name + " in pub " + pub.name
+            },
+            data: {
+                pub: pub._id
             }
         });
 
