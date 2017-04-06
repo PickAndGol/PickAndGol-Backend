@@ -209,11 +209,8 @@ jwtRouter.put('/:event_id/pubs/:pub_id', function (req, res) {
 
         const pub = data[0].pub;
         const event = data[1].event;
-        let response = {};
-        response.pub = pub;
-        response.event = event;
 
-        return res.json({ result: "OK", data: response });
+        return res.json({ result: "OK", data: { pub: pub, event: event} });
     }
 
     function sendErrorResponse (data) {
