@@ -117,7 +117,7 @@ jwtRouter.put('/:id',function(req, res) {
     }
 
     User.findUserById(userData['id']).then(function(data){
-        User.updateDataUser(userData, data).then(function(data){
+        User.updateDataUser(userData, data).then(function (data){
 
             delete userData['old_password'];
             delete userData['new_password'];
@@ -153,7 +153,7 @@ jwtRouter.delete('/:id', function(req, res) {
 
 
 /**
- * POST /users/:user_id/favorites
+ * POST /users/:user_id/favorites/:pub_id
  *
  * Return user data
  *

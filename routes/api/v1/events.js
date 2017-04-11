@@ -261,7 +261,14 @@ jwtRouter.put('/:event_id/pubs/:pub_id', function (req, res) {
 jwtRouter.delete('/:event_id/pubs/:pub_id', function (req, res) {
 
     function sendOKResponse (data) {
-        return res.json({ result: "OK", data: data });
+
+        const pub = data[0].pub;
+        const event = data[1].event;
+        let response = {};
+        response.pub = pub;
+        response.event = event;
+
+        return res.json({ result: "OK", data: response });
     }
 
     function sendErrorResponse (data) {

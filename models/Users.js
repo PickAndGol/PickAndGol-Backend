@@ -235,7 +235,6 @@ UserPickSchema.statics.updateDataUser = function (jsonDataUser,recoverDataFromDb
 
         var userUpdate = {};
 
-
         if (typeof jsonDataUser.email == 'undefined'
             && typeof jsonDataUser.name == 'undefined'
             && typeof jsonDataUser.photo_url =='undefined'
