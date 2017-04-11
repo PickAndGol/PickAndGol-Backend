@@ -21,9 +21,11 @@
   * [Api de eventos](#api-de-eventos)
     - [GET /events/:event_id](#detalle-de-evento)
     - [POST /events/](#nuevo-evento)
-    - [PUT /events/:event_id](#modificar-evento)
-    - [DELETE /events/:event_id](#eliminar-evento)
     - [GET /events/](#lista-de-eventos)
+    - [PUT /events/:event_id/pubs/:pub_id](#asociar-evento-a-un-bar)
+    - [DELETE /events/:event_id/pubs/:pub_id](#asociar-evento-de-un-bar)
+  * [Api de categorías](#api-de-categorías)
+    - [GET /categories/](#listado-de-categorías)
 
 ## Descripción
 
@@ -103,7 +105,9 @@ Devuelve los datos de un usuario.
         "name": "Pepito Pérez",
         "photo_url": "https://images.pickandgol.s3.amazonaws.com/007e4567e89b",
         "email": "pepe1234@hotmail.com",
-        "pubs": [ "572934f2b56205e4135132a2", "572934f2b56205e4135132a1" ]
+        "pubs": [
+          "572934f2b56205e4135132a2", "572934f2b56205e4135132a1"
+        ]
       }
     }
     ```
@@ -154,11 +158,13 @@ O
 
 #### Alta de usuario
 
-Crea una nueva cuenta de usuario
+Crea una nueva cuenta de usuario en el sistema
 
 * **Condiciones**
 
   * Sólo los usuarios sin autenticar podrán crear un usuario.
+  * El email del usuario debe ser único en el sistema.
+  * El nombre para mostrar debe ser único en el sistema.
 
 * **URL**
 
@@ -198,7 +204,7 @@ Crea una nueva cuenta de usuario
     {
       "result": "OK",
       "data": {
-        "_id": 37,
+        "_id": "58af6bc80eb95134d4f784df",
         "email": "pepe1234@gmail.com",
         "name": "Pepito 1234"
       }
@@ -256,6 +262,9 @@ Permite a un usuario modificar sus datos de perfil y su contraseña.
 * **Condiciones**
   * Sólo los usuarios autenticados podrán realizar la petición de actualización.
   * Un usuario autenticado sólo puede actualizar su propio perfil.
+  * El email del usuario (si se actualiza) debe ser único en el sistema.
+  * El nombre para mostrar (si se actualiza) debe ser único en el sistema.
+
 
 * **URL**
 
@@ -348,6 +357,21 @@ O
         "data": {
           "code": 404,
           "description": "Not found."
+        }
+      }
+    ```
+
+O
+
+  * **Code:** 405
+  * **Content:**
+
+    ```json
+      {
+        "result": "ERROR",
+        "data": {
+          "code": 405,
+          "description": "Password is not correct."
         }
       }
     ```
@@ -529,7 +553,14 @@ usuario y contraseña.
     {
       "result": "OK",
       "data": {
-        "token": "eyJhbGci.OiJIUzI1NiI.sInR5cCI6"
+        "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjU4YWY2YmM4MGViOTUxMzRkNGY3ODRkZiIsImlhdCI6MTQ5MTQxMjgzOSwiZXhwIjoxNDkxNTg1NjM5fQ.xD2eaWcBreDMVPM3IUl9Uy402Ky8wB7qyqHUfCYHzC0",
+        "id": "58af6bc80eb95134d4f784df",
+        "email": "pepe1234@hotmail.com",
+        "name": "Nombre Usuario",
+        "favorite_pubs": [
+          "58a8ae3443ef221e58bb5b53",
+          "58dfce92ad60342884d9dc8a"
+        ]
       }
     }
     ```
@@ -585,6 +616,7 @@ Devuelve una lista de los bares favoritos de un usuario.
 * **Condiciones**
 
   * Sólo los usuarios autenticados podrán hacer esta petición.
+  * Se devuelven todos los pubs favoritos del usuario (sin paginación ni límite)
 
 * **URL**
 
@@ -613,7 +645,8 @@ Devuelve una lista de los bares favoritos de un usuario.
     {
       "result": "OK",
       "data": {
-        "favorites": [
+        "total": 2,
+        "items": [
           {
             "_id": 12,
             "name": "Bar Casa Paco",
@@ -717,25 +750,17 @@ Añade un bar como favorito de un usuario
     {
       "result": "OK",
       "data": {
-        "favorites": [
-          {
-            "_id": 12,
-            "name": "Bar Casa Paco",
-            "latitude": "40.41665",
-            "longitude": "-3.70381",
-            "url": "http://www.barcasapaco.com",
-            "phone": "912345678",
-            "owner": 24
-          },
-          {
-            "_id": 43,
-            "name": "Asador Madrid",
-            "latitude": "41.25765",
-            "longitude": "-3.64123",
-            "url": "http://www.asador-madrid.es",
-            "phone": "600123456",
-            "owner": 714
-          }
+        "_id": "58af6bc80eb95134d4f784df",
+        "enabled": true,
+        "password": "64daa44ad493ff28a96effab6e77f1732a3d97d83241581b37dbd70a7a4900fe",
+        "email": "nombre@usuario.com",
+        "name": "Nombre Usuario",
+        "__v": 0,
+        "favorite_pubs": [
+          "58a8ae3443ef221e58bb5b53",
+          "589f967df5131c3ef090e554",
+          "58dfce92ad60342884d9dc8a",
+          "58e5741c0de2ad10581252ac"
         ]
       }
     }
@@ -798,6 +823,7 @@ O
         }
       }
     ```
+
 
 ### Api de bares
 
@@ -890,12 +916,13 @@ Crea un nuevo bar.
       * `name=[string]`
       * `latitude=[float]`
       * `longitude=[float]`
+      * `token=[string]`
 
 * **Opcionales:**
 
       * `url=[string]`
       * `phone=[string]`
-      * `photo_url=[string]`
+      * `photo_url=[string]` si son varias imágenes, las url separadas por comas (photo_url=url1,url2,url3)
 
 * **Ejemplo de datos en la petición:**
   ```json
@@ -983,7 +1010,7 @@ Lista de bares. Permite filtrar los resultados
       * `offset=[integer]` (si no se indica, por defecto será 0)
       * `limit=[integer]` (si no se indica, por defecto será 20)
       * `text=[string]`
-      * `category=[integer]`
+      * `category=[string]`
       * `latitude=[float]`
       * `longitude=[float]`
       * `radius=[integer]`
@@ -1090,7 +1117,7 @@ Devuelve los detalles de un evento.
         "date": "2017-04-22T20:30:00.000Z",
         "description": "Partido correspondiente a la J.33 de liga",
         "photo_url": "https://images.pickandgol.s3.amazonaws.com/123e4567-e89b",
-        "category_id": 3,
+        "category": ["56a8ae8943ef221e58bb5b53"],
         "pubs": [ "572934f2b56205e4135132a0" ]
       }
     }
@@ -1139,7 +1166,7 @@ Crea un nuevo evento, siempre asociado a un bar existente
       * `name=[string]`
       * `date=[string]`
       * `pub=[string]`
-      * `category=[integer]`
+      * `category=[string]`
 
   * **Opcionales:**
 
@@ -1152,9 +1179,9 @@ Crea un nuevo evento, siempre asociado a un bar existente
       "name": "Liga 2016/17: Real Madrid - Barcelona",
       "date": "2017-04-22T20:30:00.000Z",
       "pub": "572934f2b56205e4135132a1",
-      "category": 3,
+      "category": "563151f32ece56ea35",
       "description": "Partido correspondiente a la J.33 de Liga",
-      "photo_url" : "https://images.pickandgol.s3.amazonaws.com/123e4567-e89b"
+      "photo_url" : "https://images.pickandgol.s3.amazonaws.com/123e4567-e89b",
     }
   ```
 
@@ -1172,7 +1199,7 @@ Crea un nuevo evento, siempre asociado a un bar existente
         "date": "2017-04-22T20:30:00.000Z",
         "description": "Partido correspondiente a la J.33 de liga",
         "photo_url": "https://images.pickandgol.s3.amazonaws.com/123e4567-e89b",
-        "category_id": 3,
+        "category": [ "58a8ae3443ef221e68bb5b53" ],
         "pubs": [ "572934f2b56205e4135132a1" ]
       }
     }
@@ -1208,12 +1235,6 @@ O
       }
     ```
 
-#### Modificar evento
-
-
-#### Eliminar evento
-
-
 #### Lista de eventos
 
 Devuelve una lista de eventos futuros. Permite filtrar los resultados.
@@ -1233,11 +1254,10 @@ Devuelve una lista de eventos futuros. Permite filtrar los resultados.
       * `offset=[integer]` (si no se indica, por defecto será 0)
       * `limit=[integer]` (si no se indica, por defecto será 20)
       * `pub=[string]`
-      * `text=[string]`
-      * `category=[integer]`
-      * `latitude=[float]`
-      * `longitude=[float]`
-      * `radius=[integer]`
+      * `text=[string]` (se realizará una búsqueda por palabras)
+      * `category=[string]`
+      * `populate_pub_data=[true|1]` (si se indica con estos valores, se devolverán los pubs, en vez de un array de ids, un array con todos los datos de cada bar)
+      * `populate_creator=[true|1]` (si se indica con estos valores, se devolverán los datos del creador del evento)
 
 * **Parámetros en datos**
 
@@ -1260,7 +1280,7 @@ Devuelve una lista de eventos futuros. Permite filtrar los resultados.
             "date": "2017-04-22T20:30:00.000Z",
             "description": "Partido correspondiente a la J.33 de Liga",
             "photo_url": "https://images.pickandgol.s3.amazonaws.com/123e4567b",
-            "category_id": 3,
+            "category": "56a8ae8543ef221e58bb5b53",
             "pubs": [ "572934f2b56205e4135132a4", "572934f2b56205e4135132a3", "572d1ccddb794a84154a16d9" ]
           },
           {
@@ -1269,8 +1289,310 @@ Devuelve una lista de eventos futuros. Permite filtrar los resultados.
             "date": "2017-05-28T14:00:00.000Z",
             "description": "6ª prueba del mundial de F1",
             "photo_url": "https://images.pickandgol.s3.amazonaws.com/987s6543h",
-            "category_id": 18,
-            "bars": []
+            "category": "58a8ae3443ef221e58bb5b53",
+            "pubs": []
+          }
+        ]
+      }
+    }
+    ```
+
+* **Ejemplos de respuesta fallida:**
+
+  * **Code:** 400
+  * **Content:**
+
+    ```json
+      {
+        "result": "ERROR",
+        "data": {
+          "code": 400,
+          "description": "Bad request."
+        }
+      }
+    ```
+
+#### Asociar evento a un bar
+
+Modifica un evento en el sistema para asociarlo con un bar existente.
+
+* **Condiciones**
+  * Sólo los usuarios autenticados podrán realizar la asociación.
+  * Cuando se asocie un evento con un bar, se deberá enviar una notificación push a todos aquellos usuarios que tengan al bar asociado en sus favoritos.
+
+
+* **URL**
+
+  `/events/:event_id/pubs/:pub_id`
+
+* **Método:**
+
+  `PUT`
+
+* **Parámetros en URL**
+
+    Ninguno
+
+* **Parámetros en datos**
+
+    Ninguno
+
+* **Ejemplo de respuesta con éxito:**
+
+  * **Code:** 200
+  * **Content:**
+
+    ```json
+    {
+      "result": "OK",
+      "data": {
+        "pub": {
+          "_id": "58a8ae3443ef221e58bb5b53",
+          "name": "Bar Latas",
+          "url": "http://www.ellatas.com",
+          "owner_id": "589f65a31c2e9251d4b47724",
+          "__v": 0,
+          "photos": [],
+          "events": [
+            "58a8b6183ded4d2ac0559e98"
+          ],
+          "location": {
+            "type": "Point",
+            "coordinates": [
+              40.41665,
+              -3.70381
+            ]
+          }
+        },
+        "event": {
+          "_id": "58a8b6183ded4d2ac0559e98",
+          "name": "Liga 2016/17: Real Madrid - Barcelona",
+          "date": "2017-04-22T20:30:00.000Z",
+          "description": "Partido correspondiente a la J.33 de Liga",
+          "photo_url": "https://images.pickandgol.s3.amazonaws.com/123e4567-e89b",
+          "__v": 0,
+          "pubs": [
+            "58a8ae3443ef221e58bb5b53"
+          ],
+          "category": [
+            "569f65a31c8e9251d4b47748"
+          ]
+        }
+      }
+    }
+    ```
+
+* **Ejemplos de respuesta fallida:**
+
+  * **Code:** 400
+  * **Content:**
+
+    ```json
+      {
+        "result": "ERROR",
+        "data": {
+          "code": 400,
+          "description": "Bad request."
+        }
+      }
+    ```
+
+O
+
+    * **Code:** 403
+  * **Content:**
+
+    ```json
+      {
+        "result": "ERROR",
+        "data": {
+          "code": 403,
+          "description": "Forbidden request."
+        }
+      }
+    ```
+O
+
+  * **Code:** 404
+  * **Content:**
+
+    ```json
+      {
+        "result": "ERROR",
+        "data": {
+          "code": 404,
+          "description": "Not found."
+        }
+      }
+    ```
+
+
+#### Desasociar evento a un bar
+
+Desasocia un bar de un evento existente.
+Si el evento sólo estaba asociado a este bar, se eliminará dicho evento del sistema
+
+* **Condiciones**
+  * Sólo los usuarios autenticados podrán realizar la desasociación.
+
+
+* **URL**
+
+  `/events/:event_id/pubs/:pub_id`
+
+* **Método:**
+
+  `DELETE`
+
+* **Parámetros en URL**
+
+    Ninguno
+
+* **Parámetros en datos**
+
+    Ninguno
+
+* **Ejemplo de respuesta con éxito:**
+
+  * **Code:** 200
+  * **Content:**
+
+    ```json
+    {
+      "result": "OK",
+      "data": {
+        "pub": {
+          "_id": "58a8ae3443ef221e58bb5b53",
+          "name": "Bar Latas",
+          "url": "http://www.ellatas.com",
+          "owner_id": "589f65a31c2e9251d4b47724",
+          "__v": 0,
+          "photos": [],
+          "events": [],
+          "location": {
+            "type": "Point",
+            "coordinates": [
+              40.41665,
+              -3.70381
+            ]
+          }
+        },
+        "event": {
+          "_id": "58a8b6183ded4d2ac0559e98",
+          "name": "Liga 2016/17: Real Madrid - Barcelona",
+          "date": "2017-04-22T20:30:00.000Z",
+          "description": "Partido correspondiente a la J.33 de Liga",
+          "photo_url": "https://images.pickandgol.s3.amazonaws.com/123e4567-e89b",
+          "__v": 0,
+          "pubs": [],
+          "category": [
+            "569f65a31c8e9251d4b47748"
+          ]
+        }
+      }
+    }
+    ```
+
+* **Ejemplos de respuesta fallida:**
+
+  * **Code:** 400
+  * **Content:**
+
+    ```json
+      {
+        "result": "ERROR",
+        "data": {
+          "code": 400,
+          "description": "Bad request."
+        }
+      }
+    ```
+
+O
+
+    * **Code:** 403
+  * **Content:**
+
+    ```json
+      {
+        "result": "ERROR",
+        "data": {
+          "code": 403,
+          "description": "Forbidden request."
+        }
+      }
+    ```
+O
+
+  * **Code:** 404
+  * **Content:**
+
+    ```json
+      {
+        "result": "ERROR",
+        "data": {
+          "code": 404,
+          "description": "Not found."
+        }
+      }
+    ```
+
+## Api de categorías
+
+### Listado de categorías
+
+Devuelve un listado de las categorías de eventos disponibles.
+
+* **URL**
+
+  `/categories/`
+
+* **Método:**
+
+  `GET`
+
+*  **Parámetros en URL**
+
+    Ninguno
+
+* **Parámetros en datos**
+
+    Ninguno
+
+* **Ejemplo de respuesta con éxito:**
+
+  * **Code:** 200
+  * **Content:**
+
+    ```json
+    {
+      "result": "OK",
+      "data": {
+        "total": 6,
+        "items": [
+          {
+            "_id": "58d2a1f0d8f095c81d439f66",
+            "name": "Fútbol"
+          },
+          {
+            "_id": "58d2a1f9d8f095c81d439f67",
+            "name": "Fórmula 1"
+          },
+          {
+            "_id": "58d2a204d8f095c81d439f68",
+            "name": "Motociclismo"
+          },
+          {
+            "_id": "58d2a20ed8f095c81d439f69",
+            "name": "Ciclismo"
+          },
+          {
+            "_id": "58d2a215d8f095c81d439f6a",
+            "name": "Tenis"
+          },
+          {
+            "_id": "58d2a21cd8f095c81d439f6b",
+            "name": "Baloncesto"
           }
         ]
       }
