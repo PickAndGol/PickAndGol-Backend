@@ -9,5 +9,6 @@ module.exports = {
             pass: '<EMAIL_PASSWORD>'
         }
     },
-    token_expiration: '<TIME_IN_SECONDS>'
+    token_expiration: '<TIME_IN_SECONDS>',
+    firebase_api_key: '<FIREBASE_KEY_API>'
 };
