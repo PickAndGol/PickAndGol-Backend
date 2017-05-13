@@ -24,29 +24,25 @@ describe('Users', () => {
 
     describe('POST /api/v1/users/register', () => {
         it('it should register a new user', (done) => {
-            let user = {
-                email: "peter.parker@pickandgol.com",
-                name: "Peter Parker",
-                password: "YourFriendAndNeighbour"
-            };
+            const firstUser = createPeterParker();
 
             chai.request(app)
                 .post('/api/v1/users/register')
-                .send(user)
+                .send(firstUser)
                 .end((err, res) => {
                     res.should.have.status(200);
                     res.body.should.be.an('object');
-                    res.body.should.have.property('result').and.equal('OK');
+                    res.body.should.have.property('result').equal('OK');
                     res.body.should.have.deep.property('data.id');
-                    res.body.should.have.deep.property('data.email', 'peter.parker@pickandgol.com');
-                    res.body.should.have.deep.property('data.name', 'Peter Parker');
+                    res.body.should.have.deep.property('data.email').equal('peter.parker@pickandgol.com');
+                    res.body.should.have.deep.property('data.name').equal('Peter Parker');
 
                     done();
                 });
         });
 
         it('it should fails to register a new user without email', (done) => {
-            let user = {
+            const user = {
                 name: "Peter Parker",
                 password: "YourFriendAndNeighbour"
             };
@@ -55,7 +51,7 @@ describe('Users', () => {
         });
 
         it('it should fails to register a new user without name', (done) => {
-            let user = {
+            const user = {
                 email: "peter.parker@pickandgol.com",
                 password: "YourFriendAndNeighbour"
             };
@@ -64,7 +60,7 @@ describe('Users', () => {
         });
 
         it('it should fails to register a new user without password', (done) => {
-            let user = {
+            const user = {
                 email: "peter.parker@pickandgol.com",
                 name: "Peter Parker"
             };
@@ -73,13 +69,41 @@ describe('Users', () => {
         });
 
         it('it should fails to register a new user with an existing email', (done) => {
-            let user = {
+            const secondUser = {
                 email: "peter.parker@pickandgol.com",
                 name: "Bruce Banner",
                 password: "ImGreen"
             };
 
-            testRegisterUserThatFails(user, USER_FIELD_CONFLICT, done);
+            const firstUser = createPeterParker();
+
+            firstUser.save((err, user) => {
+                testRegisterUserThatFails(secondUser, USER_FIELD_CONFLICT, done);
+            });
+        });
+
+        it('should fails to register a new user with an existing name', (done) => {
+            const secondUser = {
+                email: "bruce.banner@pickandgol.com",
+                name: "Peter Parker",
+                password: "ImGreen"
+            };
+
+            const firstUser = createPeterParker();
+
+            firstUser.save((err, user) => {
+                testRegisterUserThatFails(secondUser, USER_FIELD_CONFLICT, done);
+            });
+        });
+
+        it('should fails to register a new user with a badly formatted email', (done) => {
+            const user = {
+                email: "tonystarkatpickandgoldotcom",
+                name: "Tony Stark",
+                password: "ImIronMan"
+            };
+
+            testRegisterUserThatFails(user, BAD_REQUEST, done);
         });
 
         function testRegisterUserThatFails(user, errorCode, done) {
@@ -89,12 +113,20 @@ describe('Users', () => {
                 .end((err, res) => {
                     res.should.have.status(200);
                     res.body.should.be.an('object');
-                    res.body.should.have.property('result').and.equal('ERROR');
-                    res.body.should.have.deep.property('data.code', errorCode);
+                    res.body.should.have.property('result').equal('ERROR');
+                    res.body.should.have.deep.property('data.code').equal(errorCode);
                     res.body.should.have.deep.property('data.description');
 
                     done();
                 });
+        }
+
+        function createPeterParker() {
+            return new User({
+                email: "peter.parker@pickandgol.com",
+                name: "Peter Parker",
+                password: "YourFriendAndNeighbour"
+            });
         }
     });
 });
