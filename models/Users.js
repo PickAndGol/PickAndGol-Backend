@@ -69,14 +69,10 @@ UserPickSchema.statics.saveNewUser = function(data, callback) {
 };
 
 UserPickSchema.statics.existMailNotInsert = function(user, callback) {
-
     return new Promise(function (resolve, reject) {
 
         if (user){
-            reject({
-                "result": "ERROR",
-                "data": { "code": 409, "description": "Conflict (email already exists)." }
-            });
+            reject({ "code": 409, "description": "Conflict (email already exists)." });
         } else {
             resolve(user);
         }
@@ -88,19 +84,27 @@ UserPickSchema.statics.existNameNotInsert = function(user, callback) {
     return new Promise(function (resolve, reject) {
 
         if (user){
-            reject({
-                "result": "ERROR",
-                "data": {"code": 409, "description": "Conflict (username already exists)."}
-            });
+            reject({ "code": 409, "description": "Conflict (username already exists)." });
         } else {
             resolve(user);
         }
     });
 };
 
+UserPickSchema.statics.validateEmail = function(email, callback) {
+    return new Promise(function(resolve, reject) {
+        const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        if (re.test(email)) {
+            return resolve();
+        }
+
+        return reject({ "code": 400, "description": "Badly formatted email" });
+    });
+};
+
 
 UserPickSchema.statics.filterByField = function(filter, callback){
-
+    
     return new Promise(function(resolve, reject){
 
         var exist=false;

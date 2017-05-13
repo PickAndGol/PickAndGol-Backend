@@ -4,9 +4,10 @@
   "private": true,
   "description": "Backend for PickAndGol project",
   "scripts": {
-    "start": "node ./bin/www",
+    "start": "set NODE_ENV=default && node ./bin/www",
     "startdb": ". ./scripts/startDB.sh",
-    "dev": "nodemon ./bin/www DEBUG=generated:*"
+    "dev": "nodemon --config nodemon-dev.json ./bin/www",
+    "test": "mocha --timeout 10000"
   },
   "repository": {
     "type": "git",
@@ -15,6 +16,7 @@
   "author": "PickAndGol Team",
   "dependencies": {
     "body-parser": "~1.16.0",
+    "config": "^1.26.1",
     "cookie-parser": "~1.4.3",
     "cors": "^2.8.1",
     "debug": "~2.6.0",
@@ -29,6 +31,9 @@
     "serve-favicon": "~2.3.2"
   },
   "devDependencies": {
+    "chai": "^3.5.0",
+    "chai-http": "^3.0.0",
+    "mocha": "^3.3.0",
     "nodemon": "^1.11.0"
   }
 }

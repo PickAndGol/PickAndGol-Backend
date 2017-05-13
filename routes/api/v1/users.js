@@ -63,7 +63,8 @@ router.post('/register', function(req,res) {
     filterEmail['email']= req.body.email;
     filterNameUser['name'] = req.body.name;
 
-    User.filterByField(filterEmail).then(User.existMailNotInsert).then(function(data){
+    User.validateEmail(req.body.email)
+        .then(User.filterByField(filterEmail).then(User.existMailNotInsert).then(function(data){
         User.filterByField(filterNameUser).then(User.existNameNotInsert).then(function(data){
             User.saveNewUser(req.body).then(function(data){
                 res.json({result: "OK", data: data});
@@ -74,10 +75,10 @@ router.post('/register', function(req,res) {
             res.json({ "result": "ERROR", "data": err });
         });
     }).catch(function(err){
-        console.log(err);
         res.json({ "result": "ERROR", "data": err });
+    })).catch(function(err) {
+        res.json({"result": "ERROR", "data": err})
     });
-
 });
 
 
