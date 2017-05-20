@@ -9,6 +9,7 @@ let config = require('../local_config');
 let crypto = require('crypto');
 let hash = require('hash.js');
 let gcm = require('node-gcm');
+const HttpStatus = require('http-status-codes');
 
 var UserPickSchema = mongoose.Schema({
     name: {
@@ -33,6 +34,10 @@ var UserPickSchema = mongoose.Schema({
     registration_token: String
 });
 
+UserPickSchema.statics.encodePassword = function(password) {
+    return hash.sha256().update(password).digest('hex');
+};
+
 // This function support callback or promise
 
 UserPickSchema.statics.saveNewUser = function(data, callback) {
@@ -42,7 +47,7 @@ UserPickSchema.statics.saveNewUser = function(data, callback) {
 
         usuario.name = data.name;
         usuario.email = data.email;
-        usuario.password = hash.sha256().update(data.password).digest('hex');
+        usuario.password = userPick.encodePassword(data.password);
         // For now, users are enabled at first
         //usuario.enabled = data.enabled;
         usuario.enabled = true;
@@ -55,7 +60,7 @@ UserPickSchema.statics.saveNewUser = function(data, callback) {
                     return;
                 }
 
-                return reject({ "code": 400, "description": err });
+                return reject({ "code": HttpStatus.BAD_REQUEST, "description": err });
             }
 
             if (callback){
@@ -68,40 +73,64 @@ UserPickSchema.statics.saveNewUser = function(data, callback) {
     });
 };
 
-UserPickSchema.statics.existMailNotInsert = function(user, callback) {
-    return new Promise(function (resolve, reject) {
-
-        if (user){
-            reject({ "code": 409, "description": "Conflict (email already exists)." });
-        } else {
-            resolve(user);
-        }
-    });
-};
-
-UserPickSchema.statics.existNameNotInsert = function(user, callback) {
-
-    return new Promise(function (resolve, reject) {
-
-        if (user){
-            reject({ "code": 409, "description": "Conflict (username already exists)." });
-        } else {
-            resolve(user);
-        }
-    });
-};
-
-UserPickSchema.statics.validateEmail = function(email, callback) {
+/**
+ * Validates the email format and returns a promise. If the email format is not
+ * valid then calls to reject sending a JSON response. If the email format is ok,
+ * then calls resolve sending the user data received as a parameter.
+ *
+ * @param userData userData has to have the attribute email.
+ * @returns {Promise}
+ */
+UserPickSchema.statics.validateEmail = function(userData) {
     return new Promise(function(resolve, reject) {
         const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-        if (re.test(email)) {
-            return resolve();
+        if (re.test(userData.email)) {
+            return resolve(userData);
         }
 
-        return reject({ "code": 400, "description": "Badly formatted email" });
+        return reject({ "code": HttpStatus.BAD_REQUEST, "description": "Badly formatted email" });
     });
 };
 
+/**
+ * Validates that the user email does not exist and returns a promise. If the user email
+ * exists then calls to reject sending a JSON response. If the user email does not exist,
+ * then calls resolve sending the user data received as a parameter.
+ *
+ * @param userData userData has to have the attribute email.
+ * @returns {Promise}
+ */
+UserPickSchema.statics.validateUserWithTheSameEmailNotExist = function(userData) {
+    return new Promise((resolve, reject) => {
+        userPick.findOne({ email: userData.email }, (error, user) => {
+            if (user) {
+                return reject({ "code": HttpStatus.CONFLICT, "description": "Conflict (email already exists)." });
+            }
+
+            resolve(userData);
+        });
+    });
+};
+
+/**
+ * Validates that the user name does not exist and returns a promise. If the user name
+ * exists then calls to reject sending a JSON response. If the user name does not exist,
+ * then calls resolve sending the user data received as a parameter.
+ *
+ * @param userData userData has to have the attribute name.
+ * @returns {Promise}
+ */
+UserPickSchema.statics.validateUserWithTheSameNameNotExist = function (userData) {
+    return new Promise((resolve, reject) => {
+        userPick.findOne({ name: userData.name }, (error, user) => {
+            if (user) {
+                return reject({ "code": HttpStatus.CONFLICT, "description": "Conflict (username already exists)." });
+            }
+
+            resolve(userData);
+        });
+    });
+};
 
 UserPickSchema.statics.filterByField = function(filter, callback){
     
@@ -153,26 +182,26 @@ UserPickSchema.statics.login = function(email, password) {
             return;
         }
 
-        const encodedPassword = hash.sha256().update(password).digest('hex');
+        const encodedPassword = userPick.encodePassword(password);
 
         userPick.findOne({ email: email }, function(err, user) {
             if (err) {
-                reject({ "code": 400, "description": "Bad request." });
+                reject({ "code": HttpStatus.BAD_REQUEST, "description": "Bad request." });
                 return;
             }
 
             if (user === null) {
-                reject({ "code": 404, "description": "User not found." });
+                reject({ "code": HttpStatus.NOT_FOUND, "description": "User not found." });
                 return;
             }
 
             if (user.enabled === 'undefined' || !user.enabled) {
-                reject({ "code": 403, "description": "User account disabled." });
+                reject({ "code": HttpStatus.FORBIDDEN, "description": "User account disabled." });
                 return;
             }
 
             if (user.password !== encodedPassword) {
-                reject({ "code": 401, "description": "Bad credentials." });
+                reject({ "code": HttpStatus.UNAUTHORIZED, "description": "Bad credentials." });
                 return;
             }
 
