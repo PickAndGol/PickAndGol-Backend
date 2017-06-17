@@ -18,6 +18,7 @@ let jwtAuth = require('../../../lib/jwtAuth');
 let mail = require('../../../lib/mail/senderMail');
 let htmlMessenger = require('../../../lib/mail/htmlMessage');
 let hash = require('hash.js');
+const HttpStatus = require('http-status-codes');
 
 jwtRouter.use(jwtAuth());
 
@@ -51,36 +52,28 @@ jwtRouter.get('/:user_id', function (req, res) {
 
 });
 
-
 router.post('/register', function(req,res) {
     if (req.body.password == null || req.body.name == null || req.body.email == null) {
-        return res.json({ "result": "ERROR", "data": { "code": 400, "description": "Bad request." } });
+        return res.json({ "result": "ERROR", "data": { "code": HttpStatus.BAD_REQUEST, "description": "Bad request." } });
     }
 
-    let filterEmail ={};
-    let filterNameUser={};
+    const userData = {
+        name: req.body.name,
+        email: req.body.email,
+        password: req.body.password
+    };
 
-    filterEmail['email']= req.body.email;
-    filterNameUser['name'] = req.body.name;
-
-    User.validateEmail(req.body.email)
-        .then(User.filterByField(filterEmail).then(User.existMailNotInsert).then(function(data){
-        User.filterByField(filterNameUser).then(User.existNameNotInsert).then(function(data){
-            User.saveNewUser(req.body).then(function(data){
-                res.json({result: "OK", data: data});
-            }).catch(function(err){
-                res.json({ "result": "ERROR", "data": err });
-            });
-        }).catch(function(err){
+    User.validateEmail(userData)
+        .then(User.validateUserWithTheSameEmailNotExist)
+        .then(User.validateUserWithTheSameNameNotExist)
+        .then(User.saveNewUser)
+        .then((data) => {
+            res.json({ result: "OK", data: data });
+        })
+        .catch((err) => {
             res.json({ "result": "ERROR", "data": err });
         });
-    }).catch(function(err){
-        res.json({ "result": "ERROR", "data": err });
-    })).catch(function(err) {
-        res.json({"result": "ERROR", "data": err})
-    });
 });
-
 
 router.post('/login', function(req, res) {
     function sendOKResponse(data) {
